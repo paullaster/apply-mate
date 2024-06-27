@@ -14,10 +14,13 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
+    "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "vuetify": "^3.6.10"
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@playwright/test": "^1.44.1",
     "@rushstack/eslint-patch": "^1.8.0",
     "@vitejs/plugin-vue": "^5.0.5",

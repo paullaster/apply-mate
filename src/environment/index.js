@@ -1,0 +1,5 @@
+export const {
+VUE_APP_NAME:APPNAME,
+BASE_URL:APPURL,
+VUE_APP_API_BASE_URL:BASEAPIURL
+} = import.meta.env;
