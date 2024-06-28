@@ -305,7 +305,7 @@ function addProfessionalBody(){
             <v-text-field v-model="formData.lastName" label="Last Name*" required></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.dob" label="Date of Birth*" required> </v-text-field>
+            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" required> </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field v-model="formData.idNumber" label="ID Number*" required> </v-text-field>
