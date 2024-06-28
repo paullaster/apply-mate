@@ -225,11 +225,6 @@ async function submitApplication() {
           cv: cvBase64.value.split(',')[1],
           coverLetter: coverLetterBase64.value.split(',')[1]
         },
-        education: {
-          ...formData.value.education,
-          yearOfStart: Number(formData.value.education.yearOfStart),
-          yearOfGraduation: Number(formData.value.education.yearOfGraduation)
-        },
         dob: new Date(formData.value.dob).toISOString()
       }
     })
@@ -255,6 +250,8 @@ function addEducation() {
       useToast().error('Year of Start cannot be later than Year of Graduation')
       return
     }
+    educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart);
+    educationObject.value.yearOfGraduation = Number(educationObject.value.yearOfGraduation);
     formData.value.education.push(educationObject.value);
     educationObject.value = {};
   } catch (error) {
