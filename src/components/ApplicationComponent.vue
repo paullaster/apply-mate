@@ -82,7 +82,197 @@ const prefession = [
   'Communication and Branding',
   'ICT',
   'Other support professions'
-]
+];
+const countisList = [
+  {
+    code: '001',
+    description: 'Mombasa',
+  },
+  {
+    code: '002',
+    description: ' Kwale',
+  },
+  {
+    code: '003',
+    description: 'Kilifi',
+  },
+  {
+    code: '004',
+    description: 'Tana River',
+  },
+  {
+    code: '005',
+    description: 'Lamu',
+  },
+  {
+    code: '006',
+    description: 'Taita Taveta',
+  },
+  {
+    code: '007',
+    description: 'Garissa',
+  },
+  {
+    code: '008',
+    description: 'Wajir',
+  },
+  {
+    code: '009',
+    description: 'Mandera',
+  },
+  {
+    code: '010',
+    description: 'Marsabit',
+  },
+  {
+    code: '011',
+    description: 'Isiolo',
+  },
+  {
+    code: '012',
+    description: 'Meru',
+  },
+  {
+    code: '013',
+    description: 'Tharaka Nithi',
+  },
+  {
+    code: '014',
+    description: 'Embu',
+  },
+  {
+    code: '015',
+    description: 'Kitui',
+  },
+  {
+    code: '016',
+    description: 'Machakos',
+  },
+  {
+    code: '017',
+    description: 'Makueni',
+  },
+  {
+    code: '018',
+    description: 'Nyandarua',
+  },
+  {
+    code: '019',
+    description: 'Nyeri',
+  },
+  {
+    code: '020',
+    description: 'Kirinyaga',
+  },
+  {
+    code: '021',
+    description: 'Murang\'a',
+  },
+  {
+    code: '022',
+    description: 'Kiambu',
+  },
+  {
+    code: '023',
+    description: 'Turkana',
+  },
+  {
+    code: '024',
+    description: 'West Pokot',
+  },
+  {
+    code: '025',
+    description: 'Samburu',
+  },
+  {
+    code: '026',
+    description: 'Trans Nzoia',
+  },
+  {
+    code: '027',
+    description: 'Uasin Gishu',
+  },
+  {
+    code: '028',
+    description: 'Elgeyo-Marakwet'
+  },
+  {
+    code: '029',
+    description: 'Nandi'
+  },
+  {
+    code: '030',
+    description: 'Baringo'
+  },
+  {
+    code: '031',
+    description: 'Laikipia'
+  },
+  {
+    code: '032',
+    description: 'Nakuru'
+  },
+  {
+    code: '033',
+    description: 'Narok'
+  },
+  {
+    code: '034',
+    description: 'Kajiado'
+  },
+  {
+    code: '035',
+    description: 'Kericho'
+  },
+  {
+    code: '036',
+    description: 'Bomet'
+  },
+  {
+    code: '037',
+    description: 'Kakamega'
+  },
+  {
+    code: '038',
+    description: 'Vihiga',
+  },
+  {
+    code: '039',
+    description: 'Bungoma',
+  },
+  {
+    code: '040',
+    description: 'Busia'
+  },
+  {
+    code: '041',
+    description: 'Siaya',
+  },
+  {
+    code: '042',
+    description: 'Kisumu'
+  },
+  {
+    code: '043',
+    description: 'Homabay',
+  },
+  {
+    code: '044',
+    description: 'Migori'
+  },
+  {
+    code: '045',
+    description: 'Kisii'
+  },
+  {
+    code: '046',
+    description: 'Nyamira'
+  },
+  {
+    code: '047',
+    description: 'Nairobi City',
+  },
+];
 const educationLevel = [
   {
     description: 'Select Education Level',
@@ -346,8 +536,14 @@ function addProfessionalBody() {
             </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.countyOfOrigin" label="County of Origin*" required>
-            </v-text-field>
+            <v-select 
+            v-model="formData.countyOfOrigin" 
+            label="County of Origin*" 
+            :items="countisList"
+            item-value="code"
+            item-title="description"
+            required>
+            </v-select>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-radio-group v-model="formData.gender">
@@ -399,11 +595,14 @@ function addProfessionalBody() {
         </v-card>
         <v-row>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field
+            <v-select
               v-model="formData.physicalAddress.countyOfResidence"
+              :items="countisList"
+              item-value="code"
+              item-title="description"
               label="County of Residence*"
               required
-            ></v-text-field>
+            ></v-select>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
