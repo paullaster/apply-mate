@@ -43,7 +43,8 @@ const formData = ref({
     cv: '',
     certificate_testimonials: ''
   },
-  declaration: false
+  declaration: false,
+  willingToWorkAnyWhere: false,
 })
 const educationObject = ref({
   educationLevel: '',
@@ -599,6 +600,19 @@ function addProfessionalBody(){
             ></v-textarea>
           </v-col>
         </v-row>
+        <v-card class="my-3" elevation="0">
+          <v-card-text>
+            <h2>Preferences</h2>
+          </v-card-text>
+          <v-row>
+            <v-col cols="12">
+            <v-checkbox
+              v-model="formData.willingToWorkAnyWhere"
+              label="Are you willing to work anywhere in Kenya?"
+            ></v-checkbox>
+          </v-col>
+          </v-row>
+        </v-card>
         <v-card class="my-3" elevation="0">
           <v-card-text>
             <h2>Application Attachments</h2>
