@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { BASEAPIURL } from '@/environment'
+import governLogo from '@/assets/images/government-logo.png'
 
 const formData = ref({
   firstName: '',
@@ -44,27 +45,30 @@ const formData = ref({
     certificate_testimonials: ''
   },
   declaration: false,
-  willingToWorkAnyWhere: false,
+  willingToWorkAnyWhere: false
 })
+const otherProfession = ref('')
 const educationObject = ref({
   educationLevel: '',
   institution: '',
   degree: '',
   yearOfStart: '',
   yearOfGraduation: ''
-});
+})
 const professionalBodys = ref({
   bodyName: '',
   membershipNumber: '',
   membershipType: ''
-});
+})
+const otherMembershipBody = ref('')
+const othermembershipType = ref('')
 
 const gender = ['Male', 'Female']
 const prefession = [
   'Select Profession',
   'Architecture',
-  'Quantity Surveying',
   'Construction Management',
+  'Quantity Surveying',
   'Civil/Structural Engineering',
   'Mechanical Engineering',
   'Electrical Engineering',
@@ -77,7 +81,7 @@ const prefession = [
   'Land Surveyors',
   'Communication and Branding',
   'ICT',
-  'Others'
+  'Other support professions'
 ]
 const educationLevel = [
   {
@@ -144,37 +148,37 @@ const headersProfessionalBody = [
 ]
 
 const membershipTypes = ['Select Membership Type', 'Corporate', 'Graduate', 'Licentiate', 'Other']
-const professionBody = ['Select Professional Body', 'Institue of Engineers Kenya', 'Other']
+const professionBody = ['Select Professional Body', 'Institue of Engineers of Kenya', 'Other']
 const coverLetterBase64 = ref('')
 const cvBase64 = ref('')
 const certificateTestimonialsBase64 = ref('')
-const showEducationForm = ref(true);
-const showProfessionalAssociationForm = ref(true);
+const showEducationForm = ref(true)
+const showProfessionalAssociationForm = ref(true)
 
 // COMPUTED
 const setAddEducation = computed({
   get: () => showEducationForm.value,
   set: (value) => (showEducationForm.value = value)
-});
+})
 
 const setAddProfessionalAssociation = computed({
   get: () => showProfessionalAssociationForm.value,
   set: (value) => (showProfessionalAssociationForm.value = value)
-});
+})
 
-const educationTableLength = computed(() => formData.value.education.length);
-const professionalBodysTableLength = computed(() => formData.value.professionalBodys.length);
+const educationTableLength = computed(() => formData.value.education.length)
+const professionalBodysTableLength = computed(() => formData.value.professionalBodys.length)
 // WATCH
 watch(educationTableLength, (value) => {
   if (value && value > 0) {
     setAddEducation.value = false
   }
-});
+})
 watch(professionalBodysTableLength, (value) => {
   if (value && value > 0) {
     setAddProfessionalAssociation.value = false
   }
-});
+})
 
 // METHODS
 async function setCoverLetter() {
@@ -220,6 +224,10 @@ async function submitApplication() {
       baseURL: BASEAPIURL,
       data: {
         ...formData.value,
+        profession:
+          formData.value.profession === 'Other support professions'
+            ? otherProfession.value
+            : formData.value.profession,
         attachments: {
           certificate_testimonials: certificateTestimonialsBase64.value.split(',')[1],
           cv: cvBase64.value.split(',')[1],
@@ -250,39 +258,64 @@ function addEducation() {
       useToast().error('Year of Start cannot be later than Year of Graduation')
       return
     }
-    educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart);
-    educationObject.value.yearOfGraduation = Number(educationObject.value.yearOfGraduation);
-    formData.value.education.push(educationObject.value);
-    educationObject.value = {};
+    educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart)
+    educationObject.value.yearOfGraduation = Number(educationObject.value.yearOfGraduation)
+    formData.value.education.push(educationObject.value)
+    educationObject.value = {}
   } catch (error) {
     useToast().error(error.message)
   }
 }
 
-function addProfessionalBody(){
+function addProfessionalBody() {
   try {
     for (let prop in professionalBodys.value) {
       if (professionalBodys.value[prop] === '') {
-        useToast().error(
-          `Please fill out all fields.`
-        );
+        useToast().error(`Please fill out all fields.`)
         return
       }
     }
-    formData.value.professionalBodys.push(professionalBodys.value);
-    professionalBodys.value = {};
+    professionalBodys.value.bodyName =
+      professionalBodys.value.bodyName === 'Other'
+        ? otherMembershipBody.value
+        : professionalBodys.value.bodyName
+    professionalBodys.value.membershipType =
+      professionalBodys.value.membershipType === 'Other'
+        ? othermembershipType.value
+        : professionalBodys.value.membershipType
+    formData.value.professionalBodys.push(professionalBodys.value)
+    professionalBodys.value = {}
   } catch (error) {
     useToast().error(error.message)
   }
 }
-
 </script>
 <template>
-  <header style="margin-top: 2rem">
-    <h4>Please provide the following information to complete your application</h4>
-    <p>All the fields marked with (*) must be provided!</p>
+  <header style="margin-top: 2rem; margin-bottom: 4rem">
+    <div class="d-flex justify-content-center">
+      <img :src="governLogo" alt="Government of Kenya Logo" style="max-width: 500px; margin-bottom: 2rem;" />
+    </div>
+    <div>
+      <h1>
+      Kenya's National Graduate Recruitment Programme (NGRP) - 2023-2026
+    </h1>
+    <p>
+      The Government of Kenya has a goal to bridge the annual gap of 250,000 homes by activating
+      affordable projects across the nation under the affordable housing program and needs the
+      support of young professionals in the Built Environment and Related sectors. This initiative
+      is meant to create employment for the Graduate youths in Kenya. The State Department for
+      Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment of up
+      to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They will
+      work under the supervision of professional consultants already engaged and contracted by
+      SDHUD.
+    </p>
+    </div>
   </header>
   <main>
+    <section>
+      <h4>Please provide the following information to complete your application</h4>
+      <p>All the fields marked with (*) must be provided!</p>
+    </section>
     <section>
       <v-form>
         <v-card class="my-3" elevation="0">
@@ -302,7 +335,8 @@ function addProfessionalBody(){
             <v-text-field v-model="formData.lastName" label="Last Name*" required></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" required> </v-text-field>
+            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" required>
+            </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field v-model="formData.idNumber" label="ID Number*" required> </v-text-field>
@@ -422,6 +456,12 @@ function addProfessionalBody(){
               required
             ></v-select>
           </v-col>
+          <v-col cols="12" sm="6" v-if="formData.profession === 'Other support professions'">
+            <v-text-field
+              v-model="otherProfession"
+              placeholder="Other support profession"
+            ></v-text-field>
+          </v-col>
           <v-col cols="12" sm="6">
             <div class="isdisabled_container">
               <div><span>Registered Professional?</span></div>
@@ -469,8 +509,14 @@ function addProfessionalBody(){
           <v-col cols="12" sm="6">
             <v-select
               v-model="educationObject.educationLevel"
-              :items="educationLevel.filter(
-                (level) => !formData.education.find((addedLevel) => addedLevel.educationLevel === level.code))"
+              :items="
+                educationLevel.filter(
+                  (level) =>
+                    !formData.education.find(
+                      (addedLevel) => addedLevel.educationLevel === level.code
+                    )
+                )
+              "
               item-title="description"
               item-value="code"
               label="Education Level*"
@@ -539,6 +585,13 @@ function addProfessionalBody(){
               required
             ></v-select>
           </v-col>
+          <v-col cols="12" sm="6" v-if="professionalBodys.bodyName === 'Other'">
+            <v-text-field
+              v-model="otherMembershipBody"
+              label="Other membership body*"
+              required
+            ></v-text-field>
+          </v-col>
           <v-col cols="12" sm="6">
             <v-text-field
               v-model="professionalBodys.membershipNumber"
@@ -554,10 +607,15 @@ function addProfessionalBody(){
               required
             ></v-select>
           </v-col>
+          <v-col cols="12" sm="6" v-if="professionalBodys.membershipType === 'Other'">
+            <v-text-field
+              v-model="othermembershipType"
+              label="Other membership type*"
+              required
+            ></v-text-field>
+          </v-col>
           <v-col cols="12" sm="6">
-            <v-btn color="secondary" width="300px" @click="addProfessionalBody">
-              save
-            </v-btn>
+            <v-btn color="secondary" width="300px" @click="addProfessionalBody"> save </v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -603,11 +661,11 @@ function addProfessionalBody(){
           </v-card-text>
           <v-row>
             <v-col cols="12">
-            <v-checkbox
-              v-model="formData.willingToWorkAnyWhere"
-              label="Are you willing to work anywhere in Kenya?"
-            ></v-checkbox>
-          </v-col>
+              <v-checkbox
+                v-model="formData.willingToWorkAnyWhere"
+                label="Are you willing to work anywhere in Kenya?"
+              ></v-checkbox>
+            </v-col>
           </v-row>
         </v-card>
         <v-card class="my-3" elevation="0">
@@ -658,7 +716,11 @@ function addProfessionalBody(){
         </v-card>
         <v-row>
           <v-col>
-            <v-btn  width="300px" color="primary" :disabled="!formData.declaration" @click="submitApplication"
+            <v-btn
+              width="300px"
+              color="primary"
+              :disabled="!formData.declaration"
+              @click="submitApplication"
               >Submit</v-btn
             >
           </v-col>
