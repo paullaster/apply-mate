@@ -1,9 +1,8 @@
 <template>
-  <ApplicationComponent />
+   <router-view></router-view>
 </template>
 
 <script setup>
-import ApplicationComponent from "@/components/ApplicationComponent.vue";
 </script>
 
 <style lang="scss" scoped>
