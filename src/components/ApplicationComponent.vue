@@ -534,11 +534,11 @@ async function validateEssayPayload(essay) {
 <template>
   <header style="margin-top: 2rem; margin-bottom: 4rem">
     <div class="d-flex justify-content-center">
-      <img
+      <v-img
         :src="governLogo"
         alt="Government of Kenya Logo"
         style="max-width: 500px; margin-bottom: 2rem"
-      />
+      ></v-img>
     </div>
     <div>
       <h1>Kenya's National Graduate Recruitment Programme (NGRP) - 2023-2026</h1>
