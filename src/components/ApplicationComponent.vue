@@ -45,7 +45,12 @@ const formData = ref({
     certificate_testimonials: ''
   },
   declaration: false,
-  willingToWorkAnyWhere: false
+  willingToWorkAnyWhere: false,
+  essay: {
+    heading:
+      'Housing not only provides shelter to Kenyans, but also is a great source of employment for citizens and generates demand for manufacturing',
+    content: ''
+  }
 })
 const otherProfession = ref('')
 const educationObject = ref({
@@ -60,8 +65,10 @@ const professionalBodys = ref({
   membershipNumber: '',
   membershipType: ''
 })
-const otherMembershipBody = ref('')
-const othermembershipType = ref('')
+const otherMembershipBody = ref('');
+const othermembershipType = ref('');
+const educationPayloadValid = ref(false);
+const essayPayloadValid = ref(false);
 
 const gender = ['Male', 'Female']
 const prefession = [
@@ -81,116 +88,117 @@ const prefession = [
   'Land Surveyors',
   'Communication and Branding',
   'ICT',
+  'Urban and Regional Planning',
   'Other support professions'
-];
+]
 const countisList = [
   {
     code: '001',
-    description: 'Mombasa',
+    description: 'Mombasa'
   },
   {
     code: '002',
-    description: ' Kwale',
+    description: ' Kwale'
   },
   {
     code: '003',
-    description: 'Kilifi',
+    description: 'Kilifi'
   },
   {
     code: '004',
-    description: 'Tana River',
+    description: 'Tana River'
   },
   {
     code: '005',
-    description: 'Lamu',
+    description: 'Lamu'
   },
   {
     code: '006',
-    description: 'Taita Taveta',
+    description: 'Taita Taveta'
   },
   {
     code: '007',
-    description: 'Garissa',
+    description: 'Garissa'
   },
   {
     code: '008',
-    description: 'Wajir',
+    description: 'Wajir'
   },
   {
     code: '009',
-    description: 'Mandera',
+    description: 'Mandera'
   },
   {
     code: '010',
-    description: 'Marsabit',
+    description: 'Marsabit'
   },
   {
     code: '011',
-    description: 'Isiolo',
+    description: 'Isiolo'
   },
   {
     code: '012',
-    description: 'Meru',
+    description: 'Meru'
   },
   {
     code: '013',
-    description: 'Tharaka Nithi',
+    description: 'Tharaka Nithi'
   },
   {
     code: '014',
-    description: 'Embu',
+    description: 'Embu'
   },
   {
     code: '015',
-    description: 'Kitui',
+    description: 'Kitui'
   },
   {
     code: '016',
-    description: 'Machakos',
+    description: 'Machakos'
   },
   {
     code: '017',
-    description: 'Makueni',
+    description: 'Makueni'
   },
   {
     code: '018',
-    description: 'Nyandarua',
+    description: 'Nyandarua'
   },
   {
     code: '019',
-    description: 'Nyeri',
+    description: 'Nyeri'
   },
   {
     code: '020',
-    description: 'Kirinyaga',
+    description: 'Kirinyaga'
   },
   {
     code: '021',
-    description: 'Murang\'a',
+    description: "Murang'a"
   },
   {
     code: '022',
-    description: 'Kiambu',
+    description: 'Kiambu'
   },
   {
     code: '023',
-    description: 'Turkana',
+    description: 'Turkana'
   },
   {
     code: '024',
-    description: 'West Pokot',
+    description: 'West Pokot'
   },
   {
     code: '025',
-    description: 'Samburu',
+    description: 'Samburu'
   },
   {
     code: '026',
-    description: 'Trans Nzoia',
+    description: 'Trans Nzoia'
   },
   {
     code: '027',
-    description: 'Uasin Gishu',
+    description: 'Uasin Gishu'
   },
   {
     code: '028',
@@ -234,11 +242,11 @@ const countisList = [
   },
   {
     code: '038',
-    description: 'Vihiga',
+    description: 'Vihiga'
   },
   {
     code: '039',
-    description: 'Bungoma',
+    description: 'Bungoma'
   },
   {
     code: '040',
@@ -246,7 +254,7 @@ const countisList = [
   },
   {
     code: '041',
-    description: 'Siaya',
+    description: 'Siaya'
   },
   {
     code: '042',
@@ -254,7 +262,7 @@ const countisList = [
   },
   {
     code: '043',
-    description: 'Homabay',
+    description: 'Homabay'
   },
   {
     code: '044',
@@ -270,9 +278,9 @@ const countisList = [
   },
   {
     code: '047',
-    description: 'Nairobi City',
-  },
-];
+    description: 'Nairobi City'
+  }
+]
 const educationLevel = [
   {
     description: 'Select Education Level',
@@ -344,6 +352,8 @@ const cvBase64 = ref('')
 const certificateTestimonialsBase64 = ref('')
 const showEducationForm = ref(true)
 const showProfessionalAssociationForm = ref(true)
+const wordCount = ref(0)
+const maxLength = ref(5000)
 
 // COMPUTED
 const setAddEducation = computed({
@@ -408,6 +418,16 @@ async function setCertificateTestimonials() {
 }
 async function submitApplication() {
   try {
+    await validateEducationPayload(formData.value.education);
+    await validateEssayPayload(formData.value.essay);
+    if (!educationPayloadValid.value) {
+      useToast().error('You add must your Bachelors education level!');
+      return;
+    }
+    if (!essayPayloadValid.value) {
+      useToast().error('You must write the requested essay to complete your application!')
+      return;
+    }
     const response = await axios.request({
       method: 'post',
       url: '/application',
@@ -479,26 +499,59 @@ function addProfessionalBody() {
     useToast().error(error.message)
   }
 }
+
+function checkWordLimit() {
+  const words = formData.value.essay.content.split(/\s+/).filter((word) => word.length > 0)
+  wordCount.value = words.length
+  if (wordCount.value > maxLength.value) {
+    formData.value.essay.content = words.slice(0, maxLength.value).join(' ')
+    wordCount.value = maxLength.value
+  }
+}
+
+async function validateEducationPayload(education) {
+  try {
+    education.forEach(level => {
+      if (level.educationLevel === 'BACHELORS') {
+        educationPayloadValid.value = true;
+      }
+    });
+  } catch (error) {
+    useToast().error("Please make sure your education information is correct")
+  }
+}
+async function validateEssayPayload(essay) {
+  try {
+    if (essay.content !== '') {
+      essayPayloadValid.value = true;
+    }
+  } catch (error) {
+    useToast().error("Please make sure your education information is correct")
+  }
+}
+
 </script>
 <template>
   <header style="margin-top: 2rem; margin-bottom: 4rem">
     <div class="d-flex justify-content-center">
-      <img :src="governLogo" alt="Government of Kenya Logo" style="max-width: 500px; margin-bottom: 2rem;" />
+      <img
+        :src="governLogo"
+        alt="Government of Kenya Logo"
+        style="max-width: 500px; margin-bottom: 2rem"
+      />
     </div>
     <div>
-      <h1>
-      Kenya's National Graduate Recruitment Programme (NGRP) - 2023-2026
-    </h1>
-    <p>
-      The Government of Kenya has a goal to bridge the annual gap of 250,000 homes by activating
-      affordable projects across the nation under the affordable housing program and needs the
-      support of young professionals in the Built Environment and Related sectors. This initiative
-      is meant to create employment for the Graduate youths in Kenya. The State Department for
-      Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment of up
-      to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They will
-      work under the supervision of professional consultants already engaged and contracted by
-      SDHUD.
-    </p>
+      <h1>Kenya's National Graduate Recruitment Programme (NGRP) - 2023-2026</h1>
+      <p>
+        The Government of Kenya has a goal to bridge the annual gap of 250,000 homes by activating
+        affordable projects across the nation under the affordable housing program and needs the
+        support of young professionals in the Built Environment and Related sectors. This initiative
+        is meant to create employment for the Graduate youths in Kenya. The State Department for
+        Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment of up
+        to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They will
+        work under the supervision of professional consultants already engaged and contracted by
+        SDHUD.
+      </p>
     </div>
   </header>
   <main>
@@ -506,7 +559,7 @@ function addProfessionalBody() {
       <h4>Please provide the following information to complete your application</h4>
       <p>All the fields marked with (*) must be provided!</p>
     </section>
-    <section>
+    <section style="margin-bottom: 2rem">
       <v-form>
         <v-card class="my-3" elevation="0">
           <v-card-text>
@@ -536,13 +589,14 @@ function addProfessionalBody() {
             </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-select 
-            v-model="formData.countyOfOrigin" 
-            label="County of Origin*" 
-            :items="countisList"
-            item-value="code"
-            item-title="description"
-            required>
+            <v-select
+              v-model="formData.countyOfOrigin"
+              label="County of Origin*"
+              :items="countisList"
+              item-value="code"
+              item-title="description"
+              required
+            >
             </v-select>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
@@ -855,6 +909,29 @@ function addProfessionalBody() {
           </v-col>
         </v-row>
         <v-card class="my-3" elevation="0">
+          <v-card-text>
+            <h2>Write an Essay</h2>
+            <p>Write 500 words essay on the subject:</p>
+            <h3>{{ formData.essay.heading }}</h3>
+          </v-card-text>
+        </v-card>
+        <v-row>
+          <v-col col="12">
+            <v-textarea
+              v-model="formData.essay.content"
+              placeholder="Write your essay here."
+              :maxlength="maxLength"
+              @input="checkWordLimit"
+              auto-grow
+              required
+            >
+            </v-textarea>
+            <sub style="display: block; margin-top: -0.8rem; background-color: red"
+              >{{ wordCount }} / 500 words</sub
+            >
+          </v-col>
+        </v-row>
+        <v-card class="my-4" elevation="0">
           <v-card-text>
             <h2>Preferences</h2>
           </v-card-text>
