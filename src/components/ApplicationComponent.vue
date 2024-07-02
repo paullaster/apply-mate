@@ -653,7 +653,7 @@ async function validateWorkExperiencePayload(workExperience) {
         The recruitment will bring on board young people to work as interns in the following areas
         of proficiency:
       </p>
-      <ol>
+      <ol style="padding-left: 1.6rem;">
         <li>Architecture</li>
         <li>Quantity Surveying</li>
         <li>Construction Management</li>
