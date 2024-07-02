@@ -76,8 +76,8 @@ const addressPayloadInvalid = ref(true)
 const workExperiencePayloadInvalid = ref(true)
 const applicationForm = ref(null)
 
-const gender = ['Male', 'Female', 'Prefer to say other'];
-const disabilityOptions = ['Yes', 'No', 'prefer not to answer'];
+const gender = ['Male', 'Female', 'Intersex']
+const disabilityOptions = ['Yes', 'No', 'prefer not to answer']
 const prefession = [
   'Select Profession',
   'Architecture',
@@ -98,196 +98,199 @@ const prefession = [
   'Urban and Regional Planning',
   'Other support professions'
 ]
-const countisList = _.sortBy([
-  {
-    code: '001',
-    description: 'Mombasa'
-  },
-  {
-    code: '002',
-    description: ' Kwale'
-  },
-  {
-    code: '003',
-    description: 'Kilifi'
-  },
-  {
-    code: '004',
-    description: 'Tana River'
-  },
-  {
-    code: '005',
-    description: 'Lamu'
-  },
-  {
-    code: '006',
-    description: 'Taita Taveta'
-  },
-  {
-    code: '007',
-    description: 'Garissa'
-  },
-  {
-    code: '008',
-    description: 'Wajir'
-  },
-  {
-    code: '009',
-    description: 'Mandera'
-  },
-  {
-    code: '010',
-    description: 'Marsabit'
-  },
-  {
-    code: '011',
-    description: 'Isiolo'
-  },
-  {
-    code: '012',
-    description: 'Meru'
-  },
-  {
-    code: '013',
-    description: 'Tharaka Nithi'
-  },
-  {
-    code: '014',
-    description: 'Embu'
-  },
-  {
-    code: '015',
-    description: 'Kitui'
-  },
-  {
-    code: '016',
-    description: 'Machakos'
-  },
-  {
-    code: '017',
-    description: 'Makueni'
-  },
-  {
-    code: '018',
-    description: 'Nyandarua'
-  },
-  {
-    code: '019',
-    description: 'Nyeri'
-  },
-  {
-    code: '020',
-    description: 'Kirinyaga'
-  },
-  {
-    code: '021',
-    description: "Murang'a"
-  },
-  {
-    code: '022',
-    description: 'Kiambu'
-  },
-  {
-    code: '023',
-    description: 'Turkana'
-  },
-  {
-    code: '024',
-    description: 'West Pokot'
-  },
-  {
-    code: '025',
-    description: 'Samburu'
-  },
-  {
-    code: '026',
-    description: 'Trans Nzoia'
-  },
-  {
-    code: '027',
-    description: 'Uasin Gishu'
-  },
-  {
-    code: '028',
-    description: 'Elgeyo-Marakwet'
-  },
-  {
-    code: '029',
-    description: 'Nandi'
-  },
-  {
-    code: '030',
-    description: 'Baringo'
-  },
-  {
-    code: '031',
-    description: 'Laikipia'
-  },
-  {
-    code: '032',
-    description: 'Nakuru'
-  },
-  {
-    code: '033',
-    description: 'Narok'
-  },
-  {
-    code: '034',
-    description: 'Kajiado'
-  },
-  {
-    code: '035',
-    description: 'Kericho'
-  },
-  {
-    code: '036',
-    description: 'Bomet'
-  },
-  {
-    code: '037',
-    description: 'Kakamega'
-  },
-  {
-    code: '038',
-    description: 'Vihiga'
-  },
-  {
-    code: '039',
-    description: 'Bungoma'
-  },
-  {
-    code: '040',
-    description: 'Busia'
-  },
-  {
-    code: '041',
-    description: 'Siaya'
-  },
-  {
-    code: '042',
-    description: 'Kisumu'
-  },
-  {
-    code: '043',
-    description: 'Homabay'
-  },
-  {
-    code: '044',
-    description: 'Migori'
-  },
-  {
-    code: '045',
-    description: 'Kisii'
-  },
-  {
-    code: '046',
-    description: 'Nyamira'
-  },
-  {
-    code: '047',
-    description: 'Nairobi City'
-  }
-], 'description');
+const countisList = _.sortBy(
+  [
+    {
+      code: '001',
+      description: 'Mombasa'
+    },
+    {
+      code: '002',
+      description: ' Kwale'
+    },
+    {
+      code: '003',
+      description: 'Kilifi'
+    },
+    {
+      code: '004',
+      description: 'Tana River'
+    },
+    {
+      code: '005',
+      description: 'Lamu'
+    },
+    {
+      code: '006',
+      description: 'Taita Taveta'
+    },
+    {
+      code: '007',
+      description: 'Garissa'
+    },
+    {
+      code: '008',
+      description: 'Wajir'
+    },
+    {
+      code: '009',
+      description: 'Mandera'
+    },
+    {
+      code: '010',
+      description: 'Marsabit'
+    },
+    {
+      code: '011',
+      description: 'Isiolo'
+    },
+    {
+      code: '012',
+      description: 'Meru'
+    },
+    {
+      code: '013',
+      description: 'Tharaka Nithi'
+    },
+    {
+      code: '014',
+      description: 'Embu'
+    },
+    {
+      code: '015',
+      description: 'Kitui'
+    },
+    {
+      code: '016',
+      description: 'Machakos'
+    },
+    {
+      code: '017',
+      description: 'Makueni'
+    },
+    {
+      code: '018',
+      description: 'Nyandarua'
+    },
+    {
+      code: '019',
+      description: 'Nyeri'
+    },
+    {
+      code: '020',
+      description: 'Kirinyaga'
+    },
+    {
+      code: '021',
+      description: "Murang'a"
+    },
+    {
+      code: '022',
+      description: 'Kiambu'
+    },
+    {
+      code: '023',
+      description: 'Turkana'
+    },
+    {
+      code: '024',
+      description: 'West Pokot'
+    },
+    {
+      code: '025',
+      description: 'Samburu'
+    },
+    {
+      code: '026',
+      description: 'Trans Nzoia'
+    },
+    {
+      code: '027',
+      description: 'Uasin Gishu'
+    },
+    {
+      code: '028',
+      description: 'Elgeyo-Marakwet'
+    },
+    {
+      code: '029',
+      description: 'Nandi'
+    },
+    {
+      code: '030',
+      description: 'Baringo'
+    },
+    {
+      code: '031',
+      description: 'Laikipia'
+    },
+    {
+      code: '032',
+      description: 'Nakuru'
+    },
+    {
+      code: '033',
+      description: 'Narok'
+    },
+    {
+      code: '034',
+      description: 'Kajiado'
+    },
+    {
+      code: '035',
+      description: 'Kericho'
+    },
+    {
+      code: '036',
+      description: 'Bomet'
+    },
+    {
+      code: '037',
+      description: 'Kakamega'
+    },
+    {
+      code: '038',
+      description: 'Vihiga'
+    },
+    {
+      code: '039',
+      description: 'Bungoma'
+    },
+    {
+      code: '040',
+      description: 'Busia'
+    },
+    {
+      code: '041',
+      description: 'Siaya'
+    },
+    {
+      code: '042',
+      description: 'Kisumu'
+    },
+    {
+      code: '043',
+      description: 'Homabay'
+    },
+    {
+      code: '044',
+      description: 'Migori'
+    },
+    {
+      code: '045',
+      description: 'Kisii'
+    },
+    {
+      code: '046',
+      description: 'Nyamira'
+    },
+    {
+      code: '047',
+      description: 'Nairobi City'
+    }
+  ],
+  'description'
+)
 const educationLevel = [
   {
     description: 'Select Education Level',
@@ -374,9 +377,7 @@ const setAddProfessionalAssociation = computed({
 })
 
 const formValidate = computed(() => ({
-    required: [
-      v => !!v || 'required field',
-    ],
+  required: [(v) => !!v || 'required field']
 }))
 
 const educationTableLength = computed(() => formData.value.education.length)
@@ -431,15 +432,16 @@ async function setCertificateTestimonials() {
 }
 async function submitApplication() {
   try {
-    const { valid } = await applicationForm.value.validate();
+    const { valid } = await applicationForm.value.validate()
     await validateEducationPayload(formData.value.education)
     await validateEssayPayload(formData.value.essay)
     await validateContactPayload(formData.value.contact)
     await validateAddressPayload(formData.value.physicalAddress)
     await validateAttachmentsPayload()
-    formData.value.currentlyEmployed && await validateWorkExperiencePayload(formData.value.workExperience)
+    formData.value.currentlyEmployed &&
+      (await validateWorkExperiencePayload(formData.value.workExperience))
     if (!valid) {
-      useToast().error("Please add all the required fields")
+      useToast().error('Please add all the required fields')
       return
     }
     if (!educationPayloadValid.value) {
@@ -466,7 +468,7 @@ async function submitApplication() {
     }
 
     if (workExperiencePayloadInvalid.value) {
-      useToast().error('uuuuuugh!!!, You said you\'re currently employed?')
+      useToast().error("uuuuuugh!!!, You said you're currently employed?")
       return
     }
 
@@ -576,10 +578,10 @@ async function validateContactPayload(contact) {
   try {
     for (let prop in contact) {
       if (contact[prop] === '') {
-        contactPayloadInvalid.value = true;
-      }else {
-        contactPayloadInvalid.value = false;
-        break;
+        contactPayloadInvalid.value = true
+      } else {
+        contactPayloadInvalid.value = false
+        break
       }
     }
   } catch (error) {
@@ -591,10 +593,10 @@ async function validateAddressPayload(address) {
   try {
     for (let prop in address) {
       if (address[prop] === '') {
-        addressPayloadInvalid.value = true;
-      }else {
-        addressPayloadInvalid.value = false;
-        break;
+        addressPayloadInvalid.value = true
+      } else {
+        addressPayloadInvalid.value = false
+        break
       }
     }
   } catch (error) {
@@ -604,11 +606,11 @@ async function validateAddressPayload(address) {
 
 async function validateAttachmentsPayload() {
   try {
-      if ( cvBase64.value === '' || coverLetterBase64.value === '' ) {
-        attachmentsPayloadInvalid.value = true;
-      }else {
-        attachmentsPayloadInvalid.value = false;
-      }
+    if (cvBase64.value === '' || coverLetterBase64.value === '') {
+      attachmentsPayloadInvalid.value = true
+    } else {
+      attachmentsPayloadInvalid.value = false
+    }
   } catch (error) {
     useToast().error('Please check you attachments')
   }
@@ -618,17 +620,16 @@ async function validateWorkExperiencePayload(workExperience) {
   try {
     for (let prop in workExperience) {
       if (workExperience[prop] === '') {
-        workExperiencePayloadInvalid.value = true;
-      }else {
-        workExperiencePayloadInvalid.value = false;
-        break;
+        workExperiencePayloadInvalid.value = true
+      } else {
+        workExperiencePayloadInvalid.value = false
+        break
       }
     }
   } catch (error) {
     useToast().error('Add your current employment work experience')
   }
 }
-
 </script>
 <template>
   <header style="margin-top: 2rem; margin-bottom: 4rem">
@@ -640,16 +641,16 @@ async function validateWorkExperiencePayload(workExperience) {
       ></v-img>
     </div>
     <div>
-      <h1>Kenya's National Graduate Recruitment Programme (NGRP) - 2023-2026</h1>
+      <h1>GRADUATE INTERN RECRUITMENT UNDER THE AFFORDABLE HOUSING PROGRAM</h1>
       <p>
-        The Government of Kenya has a goal to bridge the annual gap of 250,000 homes by activating
-        affordable projects across the nation under the affordable housing program and needs the
-        support of young professionals in the Built Environment and Related sectors. This initiative
-        is meant to create employment for the Graduate youths in Kenya. The State Department for
-        Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment of up
-        to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They will
-        work under the supervision of professional consultants already engaged and contracted by
-        SDHUD.
+        The Government of Kenya aims to bridge the annual gap of 250,000 homes by activating housing
+        projects across the countryunder the affordable housing program. This in turn has generated
+        the opportunity for engagement of young professionals in the Built Environment and Related
+        sectors, creating employment for the Graduate youths in Kenya. The State Department for
+        Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment drive
+        of up to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They
+        will work under the supervision of professional consultants already engaged and contracted
+        by SDHUD.
       </p>
     </div>
     <div style="margin: 0.8rem 0">
@@ -669,6 +670,18 @@ async function validateWorkExperiencePayload(workExperience) {
         <li>Be proficient in computer skills.</li>
       </ul>
     </div>
+    <div style="margin: 0.8rem 0">
+      <h2>Graduate Internship Duties and Responsibilities</h2>
+      <p>Duties include, but are not limited to;</p>
+      <ul class="duties">
+        <li>
+          Completing duties mutually agreed upon and assigned by the supervising consultants
+        </li>
+        <li>Documenting relevant skills acquired in their areas of deployment; and</li>
+        <li>BActively participating in any relevant mentorship activities and additional responsibilities designed for the program.</li>
+        <li>Registration or undertaking registration with a professional body is highly encouraged.</li>
+      </ul>
+    </div>
   </header>
   <main>
     <section>
@@ -685,24 +698,41 @@ async function validateWorkExperiencePayload(workExperience) {
         </v-card>
         <v-row>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.firstName" label="First Name*" :rules="formValidate.required"></v-text-field>
+            <v-text-field
+              v-model="formData.firstName"
+              label="First Name*"
+              :rules="formValidate.required"
+            ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.middleName" label="Other Name*" ></v-text-field>
+            <v-text-field v-model="formData.middleName" label="Other Name*"></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.lastName" label="Last Name*" :rules="formValidate.required"></v-text-field>
+            <v-text-field
+              v-model="formData.lastName"
+              label="Last Name*"
+              :rules="formValidate.required"
+            ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" :rules="formValidate.required">
+            <v-text-field
+              v-model="formData.dob"
+              label="Date of Birth*"
+              type="date"
+              :rules="formValidate.required"
+            >
             </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.idNumber" label="ID Number*" :rules="formValidate.required"> </v-text-field>
+            <v-text-field
+              v-model="formData.idNumber"
+              label="ID Number*"
+              :rules="formValidate.required"
+            >
+            </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.pinNumber" label="KRA PIN Number*" >
-            </v-text-field>
+            <v-text-field v-model="formData.pinNumber" label="KRA PIN Number*"> </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-select
@@ -720,11 +750,9 @@ async function validateWorkExperiencePayload(workExperience) {
               <template v-slot:label>
                 <p>Are you</p>
               </template>
-              <v-row>
-                <v-col col="12" lg="6" md="12" sm="12" v-for="(item, index) in gender" :key="index">
-                    <v-radio :value="item" :label="item"></v-radio>
-                </v-col>
-              </v-row>
+              <template v-for="(item, index) in gender" :key="index">
+                <v-radio :value="item" :label="item"></v-radio>
+              </template>
             </v-radio-group>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
@@ -732,15 +760,13 @@ async function validateWorkExperiencePayload(workExperience) {
               <div><span></span></div>
               <div>
                 <v-radio-group v-model="formData.disabled" :rules="formValidate.required">
-              <template v-slot:label>
-                <p>Are you a person living with a disability?</p>
-              </template>
-              <v-row>
-                <v-col col="12" lg="12" md="12" sm="12" v-for="(item, index) in disabilityOptions" :key="index">
+                  <template v-slot:label>
+                    <p>Are you a person living with a disability?</p>
+                  </template>
+                  <template v-for="(item, index) in disabilityOptions" :key="index">
                     <v-radio :value="item" :label="item"></v-radio>
-                </v-col>
-              </v-row>
-            </v-radio-group>
+                  </template>
+                </v-radio-group>
               </div>
             </div>
           </v-col>
@@ -1135,4 +1161,11 @@ async function validateWorkExperiencePayload(workExperience) {
 </template>
 
 <style scoped>
+.duties {
+  font-style: italic;
+}
+.duties > li {
+  margin-bottom: 0.5rem;
+  list-style-type: lower-roman;
+}
 </style>
