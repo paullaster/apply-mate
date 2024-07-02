@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { BASEAPIURL } from '@/environment'
 import governLogo from '@/assets/images/government-logo.png'
+import _ from 'lodash'
 
 const formData = ref({
   firstName: '',
@@ -14,7 +15,7 @@ const formData = ref({
   pinNumber: '',
   countyOfOrigin: '',
   gender: '',
-  disabled: false,
+  disabled: '',
   contact: {
     phoneNumber: '',
     email: ''
@@ -65,12 +66,18 @@ const professionalBodys = ref({
   membershipNumber: '',
   membershipType: ''
 })
-const otherMembershipBody = ref('');
-const othermembershipType = ref('');
-const educationPayloadValid = ref(false);
-const essayPayloadValid = ref(false);
+const otherMembershipBody = ref('')
+const othermembershipType = ref('')
+const educationPayloadValid = ref(false)
+const essayPayloadValid = ref(false)
+const attachmentsPayloadInvalid = ref(true)
+const contactPayloadInvalid = ref(true)
+const addressPayloadInvalid = ref(true)
+const workExperiencePayloadInvalid = ref(true)
+const applicationForm = ref(null)
 
-const gender = ['Male', 'Female']
+const gender = ['Male', 'Female', 'Prefer to say other'];
+const disabilityOptions = ['Yes', 'No', 'prefer not to answer'];
 const prefession = [
   'Select Profession',
   'Architecture',
@@ -91,7 +98,7 @@ const prefession = [
   'Urban and Regional Planning',
   'Other support professions'
 ]
-const countisList = [
+const countisList = _.sortBy([
   {
     code: '001',
     description: 'Mombasa'
@@ -280,7 +287,7 @@ const countisList = [
     code: '047',
     description: 'Nairobi City'
   }
-]
+], 'description');
 const educationLevel = [
   {
     description: 'Select Education Level',
@@ -366,6 +373,12 @@ const setAddProfessionalAssociation = computed({
   set: (value) => (showProfessionalAssociationForm.value = value)
 })
 
+const formValidate = computed(() => ({
+    required: [
+      v => !!v || 'required field',
+    ],
+}))
+
 const educationTableLength = computed(() => formData.value.education.length)
 const professionalBodysTableLength = computed(() => formData.value.professionalBodys.length)
 // WATCH
@@ -418,16 +431,45 @@ async function setCertificateTestimonials() {
 }
 async function submitApplication() {
   try {
-    await validateEducationPayload(formData.value.education);
-    await validateEssayPayload(formData.value.essay);
+    const { valid } = await applicationForm.value.validate();
+    await validateEducationPayload(formData.value.education)
+    await validateEssayPayload(formData.value.essay)
+    await validateContactPayload(formData.value.contact)
+    await validateAddressPayload(formData.value.physicalAddress)
+    await validateAttachmentsPayload()
+    formData.value.currentlyEmployed && await validateWorkExperiencePayload(formData.value.workExperience)
+    if (!valid) {
+      useToast().error("Please add all the required fields")
+      return
+    }
     if (!educationPayloadValid.value) {
-      useToast().error('You add must your Bachelors education level!');
-      return;
+      useToast().error('You add must your Bachelors education level!')
+      return
     }
     if (!essayPayloadValid.value) {
       useToast().error('You must write the requested essay to complete your application!')
-      return;
+      return
     }
+    if (contactPayloadInvalid.value) {
+      useToast().error('Please fill out all fields for Contact Information!')
+      return
+    }
+
+    if (addressPayloadInvalid.value) {
+      useToast().error('Please fill out all fields for Address!')
+      return
+    }
+
+    if (attachmentsPayloadInvalid.value) {
+      useToast().error('You must upload both CV and cover letter!')
+      return
+    }
+
+    if (workExperiencePayloadInvalid.value) {
+      useToast().error('uuuuuugh!!!, You said you\'re currently employed?')
+      return
+    }
+
     const response = await axios.request({
       method: 'post',
       url: '/application',
@@ -511,22 +553,79 @@ function checkWordLimit() {
 
 async function validateEducationPayload(education) {
   try {
-    education.forEach(level => {
+    education.forEach((level) => {
       if (level.educationLevel === 'BACHELORS') {
-        educationPayloadValid.value = true;
+        educationPayloadValid.value = true
       }
-    });
+    })
   } catch (error) {
-    useToast().error("Please make sure your education information is correct")
+    useToast().error('Please make sure your education information is correct')
   }
 }
 async function validateEssayPayload(essay) {
   try {
     if (essay.content !== '') {
-      essayPayloadValid.value = true;
+      essayPayloadValid.value = true
     }
   } catch (error) {
-    useToast().error("Please make sure your education information is correct")
+    useToast().error('Please check you essay!')
+  }
+}
+
+async function validateContactPayload(contact) {
+  try {
+    for (let prop in contact) {
+      if (contact[prop] === '') {
+        contactPayloadInvalid.value = true;
+      }else {
+        contactPayloadInvalid.value = false;
+        break;
+      }
+    }
+  } catch (error) {
+    useToast().error('Please provider correct contact information')
+  }
+}
+
+async function validateAddressPayload(address) {
+  try {
+    for (let prop in address) {
+      if (address[prop] === '') {
+        addressPayloadInvalid.value = true;
+      }else {
+        addressPayloadInvalid.value = false;
+        break;
+      }
+    }
+  } catch (error) {
+    useToast().error('Please provide correct address information')
+  }
+}
+
+async function validateAttachmentsPayload() {
+  try {
+      if ( cvBase64.value === '' || coverLetterBase64.value === '' ) {
+        attachmentsPayloadInvalid.value = true;
+      }else {
+        attachmentsPayloadInvalid.value = false;
+      }
+  } catch (error) {
+    useToast().error('Please check you attachments')
+  }
+}
+
+async function validateWorkExperiencePayload(workExperience) {
+  try {
+    for (let prop in workExperience) {
+      if (workExperience[prop] === '') {
+        workExperiencePayloadInvalid.value = true;
+      }else {
+        workExperiencePayloadInvalid.value = false;
+        break;
+      }
+    }
+  } catch (error) {
+    useToast().error('Add your current employment work experience')
   }
 }
 
@@ -553,6 +652,23 @@ async function validateEssayPayload(essay) {
         SDHUD.
       </p>
     </div>
+    <div style="margin: 0.8rem 0">
+      <h2>Requirements for Appointment</h2>
+      <p>For appointment to a Graduate internship position, a candidate must:</p>
+      <ul>
+        <li>
+          Have a Bachelor’s degree in any of the outlined disciplines from a recognized university;
+          (Civil /Structural Engineering, Architecture, Construction Management, Mechanical
+          Engineering, Electrical Engineering Building Economics/Quantity Surveyor, Land Economics,
+          Landscape Architecture, Interior Design, Social Development Experts, Urban and Regional
+          Planning, Environmental Science, Health and Safety, Communication and Branding, ICT
+          Experts and any other built environment courses relevant to the technical aspects of the
+          program)
+        </li>
+        <li>Have graduated not earlier than the year 2019; and</li>
+        <li>Be proficient in computer skills.</li>
+      </ul>
+    </div>
   </header>
   <main>
     <section>
@@ -560,7 +676,7 @@ async function validateEssayPayload(essay) {
       <p>All the fields marked with (*) must be provided!</p>
     </section>
     <section style="margin-bottom: 2rem">
-      <v-form>
+      <v-form ref="applicationForm">
         <v-card class="my-3" elevation="0">
           <v-card-text>
             <h2>Personal Details</h2>
@@ -569,23 +685,23 @@ async function validateEssayPayload(essay) {
         </v-card>
         <v-row>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.firstName" label="First Name*" required></v-text-field>
+            <v-text-field v-model="formData.firstName" label="First Name*" :rules="formValidate.required"></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.middleName" label="Other Name*" required></v-text-field>
+            <v-text-field v-model="formData.middleName" label="Other Name*" ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.lastName" label="Last Name*" required></v-text-field>
+            <v-text-field v-model="formData.lastName" label="Last Name*" :rules="formValidate.required"></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" required>
+            <v-text-field v-model="formData.dob" label="Date of Birth*" type="date" :rules="formValidate.required">
             </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.idNumber" label="ID Number*" required> </v-text-field>
+            <v-text-field v-model="formData.idNumber" label="ID Number*" :rules="formValidate.required"> </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-text-field v-model="formData.pinNumber" label="KRA PIN Number*" required>
+            <v-text-field v-model="formData.pinNumber" label="KRA PIN Number*" >
             </v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
@@ -595,25 +711,36 @@ async function validateEssayPayload(essay) {
               :items="countisList"
               item-value="code"
               item-title="description"
-              required
+              :rules="formValidate.required"
             >
             </v-select>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
-            <v-radio-group v-model="formData.gender">
+            <v-radio-group v-model="formData.gender" :rules="formValidate.required">
               <template v-slot:label>
-                <p>Gender</p>
+                <p>Are you</p>
               </template>
-              <template v-for="(item, index) in gender" :key="index">
-                <v-radio :value="item" :label="item"></v-radio>
-              </template>
+              <v-row>
+                <v-col col="12" lg="6" md="12" sm="12" v-for="(item, index) in gender" :key="index">
+                    <v-radio :value="item" :label="item"></v-radio>
+                </v-col>
+              </v-row>
             </v-radio-group>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <div class="isdisabled_container">
-              <div><span>Physically Challenged?</span></div>
-              <div class="check-box">
-                <input type="checkbox" v-model="formData.disabled" :checked="formData.disabled" />
+              <div><span></span></div>
+              <div>
+                <v-radio-group v-model="formData.disabled" :rules="formValidate.required">
+              <template v-slot:label>
+                <p>Are you a person living with a disability?</p>
+              </template>
+              <v-row>
+                <v-col col="12" lg="12" md="12" sm="12" v-for="(item, index) in disabilityOptions" :key="index">
+                    <v-radio :value="item" :label="item"></v-radio>
+                </v-col>
+              </v-row>
+            </v-radio-group>
               </div>
             </div>
           </v-col>
@@ -630,14 +757,15 @@ async function validateEssayPayload(essay) {
               v-model="formData.contact.email"
               label="Email Address*"
               type="email"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="6" md="6" sm="12">
             <v-text-field
               v-model="formData.contact.phoneNumber"
               label="Phone Number*"
-              required
+              type="tel"
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -655,42 +783,42 @@ async function validateEssayPayload(essay) {
               item-value="code"
               item-title="description"
               label="County of Residence*"
-              required
+              :rules="formValidate.required"
             ></v-select>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
               v-model="formData.physicalAddress.constituency"
               label="Constituency*"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
               v-model="formData.physicalAddress.street"
               label="Street*"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
               v-model="formData.physicalAddress.city"
               label="City/Town*"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
               v-model="formData.physicalAddress.estate"
               label="Estate*"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="4" md="4" sm="12">
             <v-text-field
               v-model="formData.physicalAddress.village"
               label="Flat or Apartment or Village*"
-              required
+              :rules="formValidate.required"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -706,7 +834,7 @@ async function validateEssayPayload(essay) {
               v-model="formData.profession"
               :items="prefession"
               label="Profession*"
-              required
+              :rules="formValidate.required"
             ></v-select>
           </v-col>
           <v-col cols="12" sm="6" v-if="formData.profession === 'Other support professions'">
