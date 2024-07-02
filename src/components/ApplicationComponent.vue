@@ -433,8 +433,7 @@ async function submitApplication() {
     await validateContactPayload(formData.value.contact)
     await validateAddressPayload(formData.value.physicalAddress)
     await validateAttachmentsPayload()
-    formData.value.currentlyEmployed &&
-      (await validateWorkExperiencePayload(formData.value.workExperience))
+    await validateWorkExperiencePayload(formData.value.workExperience)
     if (!valid) {
       useToast().error('Please add all the required fields')
       return
@@ -613,6 +612,10 @@ async function validateAttachmentsPayload() {
 
 async function validateWorkExperiencePayload(workExperience) {
   try {
+    if (!formData.value.currentlyEmployed) {
+      workExperiencePayloadInvalid.value = false
+      return
+    }
     for (let prop in workExperience) {
       if (workExperience[prop] === '') {
         workExperiencePayloadInvalid.value = true
