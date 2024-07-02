@@ -637,45 +637,68 @@ async function validateWorkExperiencePayload(workExperience) {
     </div>
     <div>
       <h1>GRADUATE INTERN RECRUITMENT UNDER THE AFFORDABLE HOUSING PROGRAM</h1>
-      <p>
-        The Government of Kenya aims to bridge the annual gap of 250,000 homes by activating housing
-        projects across the country under the affordable housing program. This in turn has generated
-        the opportunity for engagement of young professionals in the Built Environment and Related
-        sectors, creating employment for the Graduate youths in Kenya. The State Department for
-        Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment drive
-        of up to 10,000 Graduates in various Lots for a period of 3 years, renewable annually. They
-        will work under the supervision of professional consultants already engaged and contracted
-        by SDHUD.
+      <p style="margin: 0.8rem 0">
+        The Affordable Housing Programme (AHP) is an intervention to construct 200,000 homes for
+        Kenyans by activating housing projects across the country. This in turn has generated the
+        opportunity for engagement of young professionals in the built environment and related
+        sectors.
       </p>
+      <p style="margin: 0.8rem 0">
+        The State Department for Housing and Urban Development (SDHUD) is therefore pleased to
+        announce the recruitment drive of up to 10,000 university graduates in various Lots. This
+        Lot 1 seeks to recruit 4000 interns . The interns will work under the supervision of
+        professional consultants already engaged and contracted by SDHUD.
+      </p>
+      <p style="margin: 0.8rem 0">
+        The recruitment will bring on board young people to work as interns in the following areas
+        of proficiency:
+      </p>
+      <ol>
+        <li>Architecture</li>
+        <li>Quantity Surveying</li>
+        <li>Construction Management</li>
+        <li>Civil Engineering</li>
+        <li>Structural Engineering</li>
+        <li>Mechanical Engineering</li>
+        <li>Electrical Engineering</li>
+        <li>Land Surveyors</li>
+        <li>Geoinformatics</li>
+        <li>Landscape Architecture</li>
+        <li>Interior Design</li>
+        <li>Social Development</li>
+        <li>Urban and Regional Planning</li>
+        <li>Environmental Scientists</li>
+        <li>Health and Safety</li>
+        <li>Communication and Branding</li>
+        <li>ICT</li>
+      </ol>
     </div>
     <div style="margin: 0.8rem 0">
       <h2>Requirements for Appointment</h2>
-      <p>For appointment to a Graduate internship position, a candidate must:</p>
-      <ul>
-        <li>
-          Have a Bachelor’s degree in any of the outlined disciplines from a recognized university;
-          (Civil /Structural Engineering, Architecture, Construction Management, Mechanical
-          Engineering, Electrical Engineering Building Economics/Quantity Surveyor, Land Economics,
-          Landscape Architecture, Interior Design, Social Development Experts, Urban and Regional
-          Planning, Environmental Science, Health and Safety, Communication and Branding, ICT
-          Experts and any other built environment courses relevant to the technical aspects of the
-          program)
-        </li>
-        <li>Have graduated not earlier than the year 2019; and</li>
-        <li>Be proficient in computer skills.</li>
-      </ul>
+      <p>
+        For appointment to a graduate internship position, a candidate must have at least a
+        Bachelor’s degree in the above outlined disciplines from a recognized university;
+      </p>
     </div>
     <div style="margin: 0.8rem 0">
-      <h2>Graduate Internship Duties and Responsibilities</h2>
-      <p>Duties include, but are not limited to;</p>
-      <ul class="duties">
-        <li>
-          Completing duties mutually agreed upon and assigned by the supervising consultants
-        </li>
-        <li>Documenting relevant skills acquired in their areas of deployment; and</li>
-        <li>BActively participating in any relevant mentorship activities and additional responsibilities designed for the program.</li>
-        <li>Registration or undertaking registration with a professional body is highly encouraged.</li>
-      </ul>
+      <h2>Duration of Internship</h2>
+      <p>The duration is for twelve (12) months.</p>
+    </div>
+    <div style="margin: 0.8rem 0">
+      <h2>Remuneration</h2>
+      <p>
+        The interns will be remunerated in accordance with terms governing internship as per Public
+        Service Commission.
+      </p>
+    </div>
+    <div style="margin: 0.8rem 0">
+      <h2>Mentorship and Certification</h2>
+      <p>
+        The interns working under registered professionals, will maintain work portfolios which will
+        form part of requirements leading to professional examination and registration. On
+        successful completion of the Internship Programme, the interns will be issued with a
+        certificate.
+      </p>
     </div>
   </header>
   <main>
