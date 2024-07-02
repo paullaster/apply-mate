@@ -644,7 +644,7 @@ async function validateWorkExperiencePayload(workExperience) {
       <h1>GRADUATE INTERN RECRUITMENT UNDER THE AFFORDABLE HOUSING PROGRAM</h1>
       <p>
         The Government of Kenya aims to bridge the annual gap of 250,000 homes by activating housing
-        projects across the countryunder the affordable housing program. This in turn has generated
+        projects across the country under the affordable housing program. This in turn has generated
         the opportunity for engagement of young professionals in the Built Environment and Related
         sectors, creating employment for the Graduate youths in Kenya. The State Department for
         Housing and Urban Development (SDHUD) is therefore pleased to announce the recruitment drive
