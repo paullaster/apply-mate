@@ -79,7 +79,6 @@ const applicationForm = ref(null)
 const gender = ['Male', 'Female', 'Intersex']
 const disabilityOptions = ['Yes', 'No', 'prefer not to answer']
 const prefession = [
-  'Select Profession',
   'Architecture',
   'Construction Management',
   'Quantity Surveying',
@@ -293,10 +292,6 @@ const countisList = _.sortBy(
 )
 const educationLevel = [
   {
-    description: 'Select Education Level',
-    code: 'NONE'
-  },
-  {
     description: 'PHD',
     code: 'PHD'
   },
@@ -355,8 +350,8 @@ const headersProfessionalBody = [
   }
 ]
 
-const membershipTypes = ['Select Membership Type', 'Corporate', 'Graduate', 'Licentiate', 'Other']
-const professionBody = ['Select Professional Body', 'Institue of Engineers of Kenya', 'Other']
+const membershipTypes = ['Corporate', 'Graduate', 'Licentiate', 'Other']
+const professionBody = ['Institue of Engineers of Kenya', 'Other']
 const coverLetterBase64 = ref('')
 const cvBase64 = ref('')
 const certificateTestimonialsBase64 = ref('')
