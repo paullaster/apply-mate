@@ -14,8 +14,10 @@
     "docker-build": "docker build -t apply-mate:production  . && docker run -d -p 3000:80 --rm --name apply-mate-app apply-mate:production"
   },
   "dependencies": {
+    "@brainspore/transport": "^0.0.8",
     "axios": "^1.7.2",
     "lodash": "^4.17.21",
+    "luxon": "^3.4.4",
     "pinia": "^2.1.7",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.29",
