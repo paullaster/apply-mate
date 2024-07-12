@@ -846,7 +846,7 @@ async function submitApplication() {
       return
     }
     let dob = new Date(formData.value.dob)
-    dob = `${dob.getFullYear()}-0${dob.getMonth()}-0${dob.getDate()}`;
+    dob = `${dob.getFullYear()}-${dob.getMonth() > 9 ? dob.getMonth()+1 : '0'+dob.getMonth()+1}-${dob.getDate() > 9 ? dob.getDate() : '0'+dob.getDate()}`;
     submitingStatus.value = true;
     const response = await axios.request({
       method: 'post',
