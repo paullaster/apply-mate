@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { useApplication } from '@/stores'
+import { useApplication, useSetupStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
@@ -57,11 +57,12 @@ const headers = [
 
 // STORE
 const applicationStore = useApplication();
+const setupStore = useSetupStore();
 
 
 // STATE & GETTERS
 const { applications } = storeToRefs(applicationStore);
-console.log(applications.value);
+const { counties } = storeToRefs(setupStore);
 
 // METHODS
 function viewApplication(item) {
@@ -75,6 +76,7 @@ function viewApplication(item) {
 
 // STORE ACTIONS
 applicationStore.getApplications({ offset: 1, limit: 10 });
+setupStore.getCouties()
 </script>
 
 <style lang="scss" scoped>

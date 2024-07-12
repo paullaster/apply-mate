@@ -1,11 +1,29 @@
-// auth.js
+import WebStorage from "@/util/storage";
+import { APPNAME } from "@/environment";
 class AuthService {
-    #token;
+    #token = null;
     #user = {
-        name: 'John Smith',
-        id: '123',
-        email: 'john.smith@example.com'
+        id: 1,
+        name: "Test User",
+        email: "test@example.com",
+        role: "admin",
     };
+    constructor() {
+        this.setToken = this.setToken.bind(this);
+        this.setUser = this.setUser.bind(this);
+        this.init = this.init.bind(this);
+        this.getToken = this.getToken.bind(this);
+        this.getUser = this.getUser.bind(this);
+        this.login = this.login.bind(this);
+        this.tokenResourcename =  `${APPNAME.split(" ").join("")}_token`;
+        this.userResourcename = `${APPNAME.split(" ").join("")}_user`;
+        // this.init();
+    }
+
+    init() {
+        this.#token = WebStorage.GetFromWebStorage('local', this.tokenResourcename);
+        this.#user = WebStorage.GetFromWebStorage('local', this.userResourcename);
+    }
     /*
     *isAuthenticated: boolean
     */
@@ -13,19 +31,37 @@ class AuthService {
    //If you don't call this method isAuthenticated, you must give it this alias how you
     //prefer
     isAuthenticated() {
-        return true;
+        return this.#token && this.#user;
     }
     //If you don't call this method getToken, you must give it this alias how you
     //prefer
     getToken() {  
+        
         return this.#token;
     }
-    getUser() { return this.#user; }
-    setUse(){ this.#user}
+    getUser() { 
+        return this.#user; 
+    }
+    async setUser(user){ 
+        this.#user = user;
+        WebStorage.storeToWebDB('local', this.userResourcename, this.#user);
+    }
+    async setToken(token){ 
+        this.#token = token;
+        WebStorage.storeToWebDB('local', this.tokenResourcename, this.#token);
+    }
+    async login(payload) {
+        await this.setToken(payload.token);
+        await this.setUser(payload.user);
+    }
     //If you don't call this method logout, you must give it this alias how you
     //prefer
     async logout() {
-        // session.clear();
+        this.#token = null;
+        this.#user = null;
+        WebStorage.RemoveFromStorage('local', this.tokenResourcename);
+        WebStorage.RemoveFromStorage('local', this.userResourcename);
+        window.location.reload()  // You may also want to remove token from cookies.
     }
 }
 

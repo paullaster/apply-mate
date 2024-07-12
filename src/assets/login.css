@@ -1,0 +1,14 @@
+.auth {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    min-width: 100dvw !important;
+    min-height: 100dvh !important;
+    & .auth-image {
+        background-image: url(./images/login_bg_img.jpeg);
+        background-size: contain;
+        background-repeat: no-repeat;
+        min-width: 100%;
+        min-height: 100%;
+        background-position: center;
+    }
+}

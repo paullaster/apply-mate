@@ -1,649 +1,3 @@
-<script setup>
-import { computed, ref, watch } from 'vue'
-import axios from 'axios'
-import { useToast } from 'vue-toastification'
-import { BASEAPIURL } from '@/environment'
-import governLogo from '@/assets/images/government-logo.png'
-import _ from 'lodash'
-
-const formData = ref({
-  firstName: '',
-  lastName: '',
-  middleName: '',
-  dob: '',
-  idNumber: '',
-  pinNumber: '',
-  countyOfOrigin: '',
-  gender: '',
-  disabled: '',
-  contact: {
-    phoneNumber: '',
-    email: ''
-  },
-  physicalAddress: {
-    countyOfResidence: '',
-    constituency: '',
-    street: '',
-    city: '',
-    estate: '',
-    village: ''
-  },
-  profession: '',
-  education: [],
-  registeredProfessional: false,
-  registeredProfessionalBody: '',
-  registeredProfessionalRegistrationNumber: '',
-  professionalBodys: [],
-  currentlyEmployed: false,
-  workExperience: {
-    companyName: '',
-    jobTitle: '',
-    jobDescription: ''
-  },
-  attachments: {
-    coverLetter: '',
-    cv: '',
-    certificate_testimonials: ''
-  },
-  declaration: false,
-  willingToWorkAnyWhere: false,
-  essay: {
-    heading:
-      'Housing not only provides shelter to Kenyans, but also is a great source of employment for citizens and generates demand for manufacturing',
-    content: ''
-  }
-})
-const otherProfession = ref('')
-const educationObject = ref({
-  educationLevel: '',
-  institution: '',
-  degree: '',
-  yearOfStart: '',
-  yearOfGraduation: ''
-})
-const professionalBodys = ref({
-  bodyName: '',
-  membershipNumber: '',
-  membershipType: ''
-})
-const otherMembershipBody = ref('')
-const othermembershipType = ref('')
-const educationPayloadValid = ref(false)
-const essayPayloadValid = ref(false)
-const attachmentsPayloadInvalid = ref(true)
-const contactPayloadInvalid = ref(true)
-const addressPayloadInvalid = ref(true)
-const workExperiencePayloadInvalid = ref(true)
-const applicationForm = ref(null)
-
-const gender = ['Male', 'Female', 'Intersex']
-const disabilityOptions = ['Yes', 'No', 'prefer not to answer']
-const prefession = [
-  'Architecture',
-  'Construction Management',
-  'Quantity Surveying',
-  'Civil/Structural Engineering',
-  'Mechanical Engineering',
-  'Electrical Engineering',
-  'Landscape Architecture',
-  'Interior Design',
-  'Sociology',
-  'Environmental Scientists',
-  'Health and Safety',
-  'Real Estate',
-  'Land Surveyors',
-  'Communication and Branding',
-  'ICT',
-  'Urban and Regional Planning',
-  'Other support professions'
-]
-const countisList = _.sortBy(
-  [
-    {
-      code: '001',
-      description: 'Mombasa'
-    },
-    {
-      code: '002',
-      description: ' Kwale'
-    },
-    {
-      code: '003',
-      description: 'Kilifi'
-    },
-    {
-      code: '004',
-      description: 'Tana River'
-    },
-    {
-      code: '005',
-      description: 'Lamu'
-    },
-    {
-      code: '006',
-      description: 'Taita Taveta'
-    },
-    {
-      code: '007',
-      description: 'Garissa'
-    },
-    {
-      code: '008',
-      description: 'Wajir'
-    },
-    {
-      code: '009',
-      description: 'Mandera'
-    },
-    {
-      code: '010',
-      description: 'Marsabit'
-    },
-    {
-      code: '011',
-      description: 'Isiolo'
-    },
-    {
-      code: '012',
-      description: 'Meru'
-    },
-    {
-      code: '013',
-      description: 'Tharaka Nithi'
-    },
-    {
-      code: '014',
-      description: 'Embu'
-    },
-    {
-      code: '015',
-      description: 'Kitui'
-    },
-    {
-      code: '016',
-      description: 'Machakos'
-    },
-    {
-      code: '017',
-      description: 'Makueni'
-    },
-    {
-      code: '018',
-      description: 'Nyandarua'
-    },
-    {
-      code: '019',
-      description: 'Nyeri'
-    },
-    {
-      code: '020',
-      description: 'Kirinyaga'
-    },
-    {
-      code: '021',
-      description: "Murang'a"
-    },
-    {
-      code: '022',
-      description: 'Kiambu'
-    },
-    {
-      code: '023',
-      description: 'Turkana'
-    },
-    {
-      code: '024',
-      description: 'West Pokot'
-    },
-    {
-      code: '025',
-      description: 'Samburu'
-    },
-    {
-      code: '026',
-      description: 'Trans Nzoia'
-    },
-    {
-      code: '027',
-      description: 'Uasin Gishu'
-    },
-    {
-      code: '028',
-      description: 'Elgeyo-Marakwet'
-    },
-    {
-      code: '029',
-      description: 'Nandi'
-    },
-    {
-      code: '030',
-      description: 'Baringo'
-    },
-    {
-      code: '031',
-      description: 'Laikipia'
-    },
-    {
-      code: '032',
-      description: 'Nakuru'
-    },
-    {
-      code: '033',
-      description: 'Narok'
-    },
-    {
-      code: '034',
-      description: 'Kajiado'
-    },
-    {
-      code: '035',
-      description: 'Kericho'
-    },
-    {
-      code: '036',
-      description: 'Bomet'
-    },
-    {
-      code: '037',
-      description: 'Kakamega'
-    },
-    {
-      code: '038',
-      description: 'Vihiga'
-    },
-    {
-      code: '039',
-      description: 'Bungoma'
-    },
-    {
-      code: '040',
-      description: 'Busia'
-    },
-    {
-      code: '041',
-      description: 'Siaya'
-    },
-    {
-      code: '042',
-      description: 'Kisumu'
-    },
-    {
-      code: '043',
-      description: 'Homabay'
-    },
-    {
-      code: '044',
-      description: 'Migori'
-    },
-    {
-      code: '045',
-      description: 'Kisii'
-    },
-    {
-      code: '046',
-      description: 'Nyamira'
-    },
-    {
-      code: '047',
-      description: 'Nairobi City'
-    }
-  ],
-  'description'
-)
-const educationLevel = [
-  {
-    description: 'PHD',
-    code: 'PHD'
-  },
-  {
-    description: 'Masters',
-    code: 'MASTERS'
-  },
-  {
-    description: 'Bachelors',
-    code: 'BACHELORS'
-  },
-  {
-    description: 'Diploma',
-    code: 'DIPLOMA'
-  },
-  {
-    description: 'Certificate',
-    code: 'CERTIFICATE'
-  }
-]
-const headers = [
-  {
-    title: 'Education Level',
-    value: 'educationLevel'
-  },
-  {
-    title: 'University/College',
-    value: 'institution'
-  },
-  {
-    title: 'Course',
-    value: 'degree'
-  },
-  {
-    title: 'Year of Start',
-    value: 'yearOfStart'
-  },
-  {
-    title: 'Year of Graduation',
-    value: 'yearOfGraduation'
-  }
-]
-
-const headersProfessionalBody = [
-  {
-    title: 'Body Name',
-    value: 'bodyName'
-  },
-  {
-    title: 'Membership Number',
-    value: 'membershipNumber'
-  },
-  {
-    title: 'Membership Type',
-    value: 'membershipType'
-  }
-]
-
-const membershipTypes = ['Corporate', 'Graduate', 'Licentiate', 'Other']
-const professionBody = ['Institue of Engineers of Kenya', 'Other']
-const coverLetterBase64 = ref('')
-const cvBase64 = ref('')
-const certificateTestimonialsBase64 = ref('')
-const showEducationForm = ref(true)
-const showProfessionalAssociationForm = ref(true)
-const wordCount = ref(0)
-const maxLength = ref(5000)
-
-// COMPUTED
-const setAddEducation = computed({
-  get: () => showEducationForm.value,
-  set: (value) => (showEducationForm.value = value)
-})
-
-const setAddProfessionalAssociation = computed({
-  get: () => showProfessionalAssociationForm.value,
-  set: (value) => (showProfessionalAssociationForm.value = value)
-})
-
-const formValidate = computed(() => ({
-  required: [(v) => !!v || 'required field']
-}))
-
-const educationTableLength = computed(() => formData.value.education.length)
-const professionalBodysTableLength = computed(() => formData.value.professionalBodys.length)
-// WATCH
-watch(educationTableLength, (value) => {
-  if (value && value > 0) {
-    setAddEducation.value = false
-  }
-})
-watch(professionalBodysTableLength, (value) => {
-  if (value && value > 0) {
-    setAddProfessionalAssociation.value = false
-  }
-})
-
-// METHODS
-async function setCoverLetter() {
-  try {
-    coverLetterBase64.value = ''
-    if (formData.value.attachments.coverLetter.size > 10485760) {
-      useToast().error('Cover letter file size exceeds 10MB')
-      return
-    }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      coverLetterBase64.value = reader.result
-    }
-    reader.readAsDataURL(formData.value.attachments.coverLetter)
-  } catch (error) {
-    useToast().error(error.message)
-  }
-}
-
-async function setCV() {
-  try {
-    cvBase64.value = ''
-    if (formData.value.attachments.cv.size > 10485760) {
-      useToast().error('CV file size exceeds 10MB')
-      return
-    }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      cvBase64.value = reader.result
-    }
-    reader.readAsDataURL(formData.value.attachments.cv)
-  } catch (error) {
-    useToast().error(error.message)
-  }
-}
-
-async function setCertificateTestimonials() {
-  try {
-    certificateTestimonialsBase64.value = ''
-    if (formData.value.attachments.certificate_testimonials.size > 10485760) {
-      useToast().error(' Other certificates file size exceeds 10MB')
-      return
-    }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      certificateTestimonialsBase64.value = reader.result
-    }
-    reader.readAsDataURL(formData.value.attachments.certificate_testimonials)
-  } catch (error) {
-    useToast().error(error.message)
-  }
-}
-async function submitApplication() {
-  try {
-    const { valid } = await applicationForm.value.validate()
-    await validateEducationPayload(formData.value.education)
-    await validateEssayPayload(formData.value.essay)
-    await validateContactPayload(formData.value.contact)
-    await validateAddressPayload(formData.value.physicalAddress)
-    await validateAttachmentsPayload()
-    await validateWorkExperiencePayload(formData.value.workExperience)
-    if (!valid) {
-      useToast().error('Please add all the required fields')
-      return
-    }
-    if (!educationPayloadValid.value) {
-      useToast().error('You add must your Bachelors education level!')
-      return
-    }
-    if (!essayPayloadValid.value) {
-      useToast().error('You must write the requested essay to complete your application!')
-      return
-    }
-    if (contactPayloadInvalid.value) {
-      useToast().error('Please fill out all fields for Contact Information!')
-      return
-    }
-
-    if (addressPayloadInvalid.value) {
-      useToast().error('Please fill out all fields for Address!')
-      return
-    }
-
-    if (attachmentsPayloadInvalid.value) {
-      useToast().error('You must upload both CV and cover letter!')
-      return
-    }
-
-    if (workExperiencePayloadInvalid.value) {
-      useToast().error("uuuuuugh!!!, You said you're currently employed?")
-      return
-    }
-
-    const response = await axios.request({
-      method: 'post',
-      url: '/application',
-      baseURL: BASEAPIURL,
-      data: {
-        ...formData.value,
-        profession:
-          formData.value.profession === 'Other support professions'
-            ? otherProfession.value
-            : formData.value.profession,
-        attachments: {
-          certificate_testimonials: certificateTestimonialsBase64.value.split(',')[1],
-          cv: cvBase64.value.split(',')[1],
-          coverLetter: coverLetterBase64.value.split(',')[1]
-        },
-        dob: new Date(formData.value.dob).toISOString()
-      }
-    })
-    useToast().success(response?.data?.message)
-  } catch (error) {
-    useToast().error('Failed to submit application. Please try again.')
-  }
-}
-function addEducation() {
-  try {
-    console.log(educationObject.value)
-    for (let prop in educationObject.value) {
-      if (educationObject.value[prop] === '') {
-        useToast().error(
-          `Please fill out all fields for Education ${educationObject.value.educationLevel} ${educationObject.value.degree}`
-        )
-        return
-      }
-    }
-    if (
-      Number(educationObject.value.yearOfStart) > Number(educationObject.value.yearOfGraduation)
-    ) {
-      useToast().error('Year of Start cannot be later than Year of Graduation')
-      return
-    }
-    educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart)
-    educationObject.value.yearOfGraduation = Number(educationObject.value.yearOfGraduation)
-    formData.value.education.push(educationObject.value)
-    educationObject.value = {}
-  } catch (error) {
-    useToast().error(error.message)
-  }
-}
-
-function addProfessionalBody() {
-  try {
-    for (let prop in professionalBodys.value) {
-      if (professionalBodys.value[prop] === '') {
-        useToast().error(`Please fill out all fields.`)
-        return
-      }
-    }
-    professionalBodys.value.bodyName =
-      professionalBodys.value.bodyName === 'Other'
-        ? otherMembershipBody.value
-        : professionalBodys.value.bodyName
-    professionalBodys.value.membershipType =
-      professionalBodys.value.membershipType === 'Other'
-        ? othermembershipType.value
-        : professionalBodys.value.membershipType
-    formData.value.professionalBodys.push(professionalBodys.value)
-    professionalBodys.value = {}
-  } catch (error) {
-    useToast().error(error.message)
-  }
-}
-
-function checkWordLimit() {
-  const words = formData.value.essay.content.split(/\s+/).filter((word) => word.length > 0)
-  wordCount.value = words.length
-  if (wordCount.value > maxLength.value) {
-    formData.value.essay.content = words.slice(0, maxLength.value).join(' ')
-    wordCount.value = maxLength.value
-  }
-}
-
-async function validateEducationPayload(education) {
-  try {
-    education.forEach((level) => {
-      if (level.educationLevel === 'BACHELORS') {
-        educationPayloadValid.value = true
-      }
-    })
-  } catch (error) {
-    useToast().error('Please make sure your education information is correct')
-  }
-}
-async function validateEssayPayload(essay) {
-  try {
-    if (essay.content !== '') {
-      essayPayloadValid.value = true
-    }
-  } catch (error) {
-    useToast().error('Please check you essay!')
-  }
-}
-
-async function validateContactPayload(contact) {
-  try {
-    for (let prop in contact) {
-      if (contact[prop] === '') {
-        contactPayloadInvalid.value = true
-      } else {
-        contactPayloadInvalid.value = false
-        break
-      }
-    }
-  } catch (error) {
-    useToast().error('Please provider correct contact information')
-  }
-}
-
-async function validateAddressPayload(address) {
-  try {
-    for (let prop in address) {
-      if (address[prop] === '') {
-        addressPayloadInvalid.value = true
-      } else {
-        addressPayloadInvalid.value = false
-        break
-      }
-    }
-  } catch (error) {
-    useToast().error('Please provide correct address information')
-  }
-}
-
-async function validateAttachmentsPayload() {
-  try {
-    if (cvBase64.value === '' || coverLetterBase64.value === '') {
-      attachmentsPayloadInvalid.value = true
-    } else {
-      attachmentsPayloadInvalid.value = false
-    }
-  } catch (error) {
-    useToast().error('Please check you attachments')
-  }
-}
-
-async function validateWorkExperiencePayload(workExperience) {
-  try {
-    if (!formData.value.currentlyEmployed) {
-      workExperiencePayloadInvalid.value = false
-      return
-    }
-    for (let prop in workExperience) {
-      if (workExperience[prop] === '') {
-        workExperiencePayloadInvalid.value = true
-      } else {
-        workExperiencePayloadInvalid.value = false
-        break
-      }
-    }
-  } catch (error) {
-    useToast().error('Add your current employment work experience')
-  }
-}
-</script>
 <template>
   <div class="landing">
     <header style="margin-top: 2rem; margin-bottom: 4rem">
@@ -756,7 +110,7 @@ async function validateWorkExperiencePayload(workExperience) {
                 v-model="formData.dob"
                 label="Date of Birth*"
                 type="date"
-                :rules="formValidate.required"
+                :rules="formValidate.date"
               >
               </v-text-field>
             </v-col>
@@ -775,9 +129,9 @@ async function validateWorkExperiencePayload(workExperience) {
               <v-select
                 v-model="formData.countyOfOrigin"
                 label="County of Origin*"
-                :items="countisList"
-                item-value="code"
-                item-title="description"
+                :items="counties"
+                item-value="CountyNo"
+                item-title="countyName"
                 :rules="formValidate.required"
               >
               </v-select>
@@ -801,7 +155,7 @@ async function validateWorkExperiencePayload(workExperience) {
                       <p>Are you a person living with a disability?</p>
                     </template>
                     <template v-for="(item, index) in disabilityOptions" :key="index">
-                      <v-radio :value="item" :label="item"></v-radio>
+                      <v-radio :value="item.code" :label="item.description"></v-radio>
                     </template>
                   </v-radio-group>
                 </div>
@@ -817,18 +171,18 @@ async function validateWorkExperiencePayload(workExperience) {
           <v-row>
             <v-col cols="12" lg="6" md="6" sm="12">
               <v-text-field
-                v-model="formData.contact.email"
+                v-model="formData.email"
                 label="Email Address*"
                 type="email"
-                :rules="formValidate.required"
+                :rules="formValidate.email"
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6" md="6" sm="12">
               <v-text-field
-                v-model="formData.contact.phoneNumber"
+                v-model="formData.phoneNumber"
                 label="Phone Number*"
                 type="tel"
-                :rules="formValidate.required"
+                :rules="formValidate.phone"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -842,9 +196,9 @@ async function validateWorkExperiencePayload(workExperience) {
             <v-col cols="12" lg="4" md="4" sm="12">
               <v-select
                 v-model="formData.physicalAddress.countyOfResidence"
-                :items="countisList"
-                item-value="code"
-                item-title="description"
+                :items="counties"
+                item-value="CountyNo"
+                item-title="countyName"
                 label="County of Residence*"
                 :rules="formValidate.required"
               ></v-select>
@@ -895,12 +249,14 @@ async function validateWorkExperiencePayload(workExperience) {
             <v-col cols="12" sm="6">
               <v-select
                 v-model="formData.profession"
-                :items="prefession"
+                :items="categories"
+                item-value="code"
+                item-title="description"
                 label="Profession*"
                 :rules="formValidate.required"
               ></v-select>
             </v-col>
-            <v-col cols="12" sm="6" v-if="formData.profession === 'Other support professions'">
+            <v-col cols="12" sm="6" v-if="formData.profession === 'OTHERS'">
               <v-text-field
                 v-model="otherProfession"
                 placeholder="Other support profession"
@@ -1186,7 +542,7 @@ async function validateWorkExperiencePayload(workExperience) {
               <v-btn
                 width="300px"
                 color="primary"
-                :disabled="!formData.declaration"
+                :disabled="!formData.declaration || submitingStatus"
                 @click="submitApplication"
                 >Submit</v-btn
               >
@@ -1197,7 +553,460 @@ async function validateWorkExperiencePayload(workExperience) {
     </main>
   </div>
 </template>
+<script setup>
+import { computed, ref, watch } from 'vue'
+import axios from 'axios'
+import { useToast } from 'vue-toastification'
+import { BASEAPIURL } from '@/environment'
+import governLogo from '@/assets/images/government-logo.png'
+import _ from 'lodash'
+import { useSetupStore } from '@/stores'
+import { storeToRefs } from 'pinia'
 
+// STATUS
+const submitingStatus = ref(false);
+
+
+// STORE
+const setupStore = useSetupStore();
+
+const { counties, categories } = storeToRefs(setupStore);
+
+// STORE ACTIONS
+
+const formData = ref({
+  firstName: '',
+  lastName: '',
+  middleName: '',
+  dob: '',
+  idNumber: '',
+  pinNumber: '',
+  countyOfOrigin: '',
+  gender: '',
+  disabled: '',
+  phoneNumber: '',
+  email: '',
+  physicalAddress: {
+    countyOfResidence: '',
+    constituency: '',
+    street: '',
+    city: '',
+    estate: '',
+    village: ''
+  },
+  profession: '',
+  education: [],
+  registeredProfessional: false,
+  registeredProfessionalBody: '',
+  registeredProfessionalRegistrationNumber: '',
+  professionalBodys: [],
+  currentlyEmployed: false,
+  workExperience: {
+    companyName: '',
+    jobTitle: '',
+    jobDescription: ''
+  },
+  attachments: {
+    coverLetter: {},
+    cv: {},
+    certificate_testimonials: {}
+  },
+  declaration: false,
+  willingToWorkAnyWhere: false,
+  essay: {
+    heading:
+      'Housing not only provides shelter to Kenyans, but also is a great source of employment for citizens and generates demand for manufacturing',
+    content: ''
+  }
+})
+const otherProfession = ref('')
+const educationObject = ref({
+  educationLevel: '',
+  institution: '',
+  degree: '',
+  yearOfStart: '',
+  yearOfGraduation: ''
+})
+const professionalBodys = ref({
+  bodyName: '',
+  membershipNumber: '',
+  membershipType: ''
+})
+const otherMembershipBody = ref('')
+const othermembershipType = ref('')
+const educationPayloadValid = ref(false)
+const essayPayloadValid = ref(false)
+const attachmentsPayloadInvalid = ref(true)
+const addressPayloadInvalid = ref(true)
+const workExperiencePayloadInvalid = ref(true)
+const applicationForm = ref(null)
+
+const gender = ['Male', 'Female', 'Intersex']
+const disabilityOptions = [
+  { code: 'Yes', description: 'Yes' },
+  { code: 'No', description: 'No' },
+  { code: 'Prefer-Not-To-Say', description: 'prefer not to answer' }
+]
+const educationLevel = [
+  {
+    description: 'PHD',
+    code: 'PHD'
+  },
+  {
+    description: 'Masters',
+    code: 'MASTERS'
+  },
+  {
+    description: 'Bachelors',
+    code: 'BACHELORS'
+  },
+  {
+    description: 'Diploma',
+    code: 'DIPLOMA'
+  },
+  {
+    description: 'Certificate',
+    code: 'CERTIFICATE'
+  }
+]
+const headers = [
+  {
+    title: 'Education Level',
+    value: 'educationLevel'
+  },
+  {
+    title: 'University/College',
+    value: 'institution'
+  },
+  {
+    title: 'Course',
+    value: 'degree'
+  },
+  {
+    title: 'Year of Start',
+    value: 'yearOfStart'
+  },
+  {
+    title: 'Year of Graduation',
+    value: 'yearOfGraduation'
+  }
+]
+
+const headersProfessionalBody = [
+  {
+    title: 'Body Name',
+    value: 'bodyName'
+  },
+  {
+    title: 'Membership Number',
+    value: 'membershipNumber'
+  },
+  {
+    title: 'Membership Type',
+    value: 'membershipType'
+  }
+]
+
+const membershipTypes = ['Corporate', 'Graduate', 'Licentiate', 'Other']
+const professionBody = ['Institue of Engineers of Kenya', 'Other']
+const coverLetterBase64 = ref('')
+const cvBase64 = ref('')
+const certificateTestimonialsBase64 = ref('')
+const showEducationForm = ref(true)
+const showProfessionalAssociationForm = ref(true)
+const wordCount = ref(0)
+const maxLength = ref(5000)
+
+// COMPUTED
+const setAddEducation = computed({
+  get: () => showEducationForm.value,
+  set: (value) => (showEducationForm.value = value)
+})
+
+const setAddProfessionalAssociation = computed({
+  get: () => showProfessionalAssociationForm.value,
+  set: (value) => (showProfessionalAssociationForm.value = value)
+})
+
+const formValidate = computed(() => ({
+  required: [(v) => !!v || 'required field'],
+  email: [
+    (v) => !!v || 'Email is required',
+    (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Invalid email format'
+  ],
+  phone: [
+    (v) =>!!v || 'Phone number is required',
+    (v) => /^\+254\d{9}$/.test(v) || 'Invalid phone number format. Start with +254'
+  ],
+  date: [
+    (v) =>!!v || 'Date is required',
+     (v) => new Date(v).getTime() < new Date('2006-12-31').getTime() || "Invalid date of birth",
+
+    ],
+}))
+
+const educationTableLength = computed(() => formData.value.education.length)
+const professionalBodysTableLength = computed(() => formData.value.professionalBodys.length)
+// WATCH
+watch(educationTableLength, (value) => {
+  if (value && value > 0) {
+    setAddEducation.value = false
+  }
+})
+watch(professionalBodysTableLength, (value) => {
+  if (value && value > 0) {
+    setAddProfessionalAssociation.value = false
+  }
+})
+
+// METHODS
+async function setCoverLetter() {
+  try {
+    coverLetterBase64.value = ''
+    if (formData.value.attachments.coverLetter.size > 10485760) {
+      useToast().error('Cover letter file size exceeds 10MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      coverLetterBase64.value = reader.result
+    }
+    reader.readAsDataURL(formData.value.attachments.coverLetter)
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+
+async function setCV() {
+  try {
+    cvBase64.value = ''
+    if (formData.value.attachments.cv.size > 10485760) {
+      useToast().error('CV file size exceeds 10MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      cvBase64.value = reader.result
+    }
+    reader.readAsDataURL(formData.value.attachments.cv)
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+
+async function setCertificateTestimonials() {
+  try {
+    certificateTestimonialsBase64.value = ''
+    if (formData.value.attachments.certificate_testimonials.size > 10485760) {
+      useToast().error(' Other certificates file size exceeds 10MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      certificateTestimonialsBase64.value = reader.result
+    }
+    reader.readAsDataURL(formData.value.attachments.certificate_testimonials)
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+async function submitApplication() {
+  try {
+    const { valid } = await applicationForm.value.validate()
+    await validateEducationPayload(formData.value.education)
+    await validateEssayPayload(formData.value.essay)
+    await validateAddressPayload(formData.value.physicalAddress)
+    await validateAttachmentsPayload()
+    await validateWorkExperiencePayload(formData.value.workExperience)
+    if (!valid) {
+      useToast().error('Please add all the required fields')
+      return
+    }
+    if (!educationPayloadValid.value) {
+      useToast().error('You add must your Bachelors education level!')
+      return
+    }
+    if (!essayPayloadValid.value) {
+      useToast().error('You must write the requested essay to complete your application!')
+      return
+    }
+
+    if (addressPayloadInvalid.value) {
+      useToast().error('Please fill out all fields for Address!')
+      return
+    }
+
+    if (attachmentsPayloadInvalid.value) {
+      useToast().error('You must upload both CV and cover letter!')
+      return
+    }
+
+    if (workExperiencePayloadInvalid.value) {
+      useToast().error("uuuuuugh!!!, You said you're currently employed?")
+      return
+    }
+    let dob = new Date(formData.value.dob)
+    dob = `${dob.getFullYear()}-0${dob.getMonth()}-0${dob.getDate()}`;
+    submitingStatus.value = true;
+    const response = await axios.request({
+      method: 'post',
+      url: '/application',
+      baseURL: BASEAPIURL,
+      data: {
+        ...formData.value,
+        profession:
+          formData.value.profession === 'Other support professions'
+            ? otherProfession.value
+            : formData.value.profession,
+        attachments: {
+          certificate_testimonials: certificateTestimonialsBase64.value.split(',')[1],
+          cv: cvBase64.value.split(',')[1],
+          coverLetter: coverLetterBase64.value.split(',')[1]
+        },
+        dob: dob
+      }
+    })
+    useToast().success(response?.data?.message);
+    formData.value = {};
+  } catch (error) {
+    useToast().error(
+      error.response?.data?.message ||
+        error.message ||
+        'Sorry, We could not submit your application at this time!, Please try again later!'
+    )
+  }finally {
+    submitingStatus.value = false;
+  }
+}
+function addEducation() {
+  try {
+    console.log(educationObject.value)
+    for (let prop in educationObject.value) {
+      if (educationObject.value[prop] === '') {
+        useToast().error(
+          `Please fill out all fields for Education ${educationObject.value.educationLevel} ${educationObject.value.degree}`
+        )
+        return
+      }
+    }
+    if (
+      Number(educationObject.value.yearOfStart) > Number(educationObject.value.yearOfGraduation)
+    ) {
+      useToast().error('Year of Start cannot be later than Year of Graduation')
+      return
+    }
+    educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart)
+    educationObject.value.yearOfGraduation = Number(educationObject.value.yearOfGraduation)
+    formData.value.education.push(educationObject.value)
+    educationObject.value = {}
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+
+function addProfessionalBody() {
+  try {
+    for (let prop in professionalBodys.value) {
+      if (professionalBodys.value[prop] === '') {
+        useToast().error(`Please fill out all fields.`)
+        return
+      }
+    }
+    professionalBodys.value.bodyName =
+      professionalBodys.value.bodyName === 'Other'
+        ? otherMembershipBody.value
+        : professionalBodys.value.bodyName
+    professionalBodys.value.membershipType =
+      professionalBodys.value.membershipType === 'Other'
+        ? othermembershipType.value
+        : professionalBodys.value.membershipType
+    formData.value.professionalBodys.push(professionalBodys.value)
+    professionalBodys.value = {}
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+
+function checkWordLimit() {
+  const words = formData.value.essay.content.split(/\s+/).filter((word) => word.length > 0)
+  wordCount.value = words.length
+  if (wordCount.value > maxLength.value) {
+    formData.value.essay.content = words.slice(0, maxLength.value).join(' ')
+    wordCount.value = maxLength.value
+  }
+}
+
+async function validateEducationPayload(education) {
+  try {
+    education.forEach((level) => {
+      if (level.educationLevel === 'BACHELORS') {
+        educationPayloadValid.value = true
+      }
+    })
+  } catch (error) {
+    useToast().error('Please make sure your education information is correct')
+  }
+}
+async function validateEssayPayload(essay) {
+  try {
+    if (essay.content !== '') {
+      essayPayloadValid.value = true
+    }
+  } catch (error) {
+    useToast().error('Please check you essay!')
+  }
+}
+
+async function validateAddressPayload(address) {
+  try {
+    for (let prop in address) {
+      if (address[prop] === '') {
+        addressPayloadInvalid.value = true
+      } else {
+        addressPayloadInvalid.value = false
+        break
+      }
+    }
+  } catch (error) {
+    useToast().error('Please provide correct address information')
+  }
+}
+
+async function validateAttachmentsPayload() {
+  try {
+    if (cvBase64.value === '' || coverLetterBase64.value === '') {
+      attachmentsPayloadInvalid.value = true
+    } else {
+      attachmentsPayloadInvalid.value = false
+    }
+  } catch (error) {
+    useToast().error('Please check you attachments')
+  }
+}
+
+async function validateWorkExperiencePayload(workExperience) {
+  try {
+    if (!formData.value.currentlyEmployed) {
+      workExperiencePayloadInvalid.value = false
+      return
+    }
+    for (let prop in workExperience) {
+      if (workExperience[prop] === '') {
+        workExperiencePayloadInvalid.value = true
+      } else {
+        workExperiencePayloadInvalid.value = false
+        break
+      }
+    }
+  } catch (error) {
+    useToast().error('Add your current employment work experience')
+  }
+}
+
+// STORE ACTIONS
+setupStore.getCouties();
+setupStore.getCategories()
+</script>
 <style scoped>
 .landing {
   max-width: 1280px;

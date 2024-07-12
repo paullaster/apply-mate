@@ -1,12 +1,50 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ApplicationComponent from '@/components/ApplicationComponent.vue'
+import LandingView from '@/packages/Lading/views/LadingView.vue';
+import ApplyView from '@/packages/Lading/components/ApplyComponent.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
-      component: ApplicationComponent
+      redirect: { name: 'apply'},
+      component: LandingView,
+      children: [
+        {
+          path: 'apply',
+          name: 'apply',
+          components: { default: ApplyView },
+          meta: {
+            title: 'Apply',
+          },
+        }
+      ],
+      meta: {
+        title: 'Home'
+      }
+    },
+    {
+      path: '/auth',
+      name: 'auth',
+      component: () => import('@/packages/auth/views/AuthView.vue'),
+      redirect: {name: 'login'},
+      children: [
+        {
+          path: 'login',
+          name: 'login',
+          component: () => import('@/packages/auth/components/LoginView.vue'),
+        },
+        {
+          path: 'activate',
+          name: 'activate',
+          component: () => import('@/packages/auth/components/ActivateAccount.vue'),
+        },
+        {
+          path: 'forgot-password',
+          name: 'forgot-password',
+          component: () => import('@/packages/auth/components/ForgotPassword.vue'),
+        }
+      ],
     },
     {
       path: '/:user',
