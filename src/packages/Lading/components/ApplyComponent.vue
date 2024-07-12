@@ -845,8 +845,7 @@ async function submitApplication() {
       useToast().error("uuuuuugh!!!, You said you're currently employed?")
       return
     }
-    let dob = new Date(formData.value.dob)
-    dob = `${dob.getFullYear()}-${dob.getMonth() > 9 ? dob.getMonth()+1 : '0'+dob.getMonth()+1}-${dob.getDate() > 9 ? dob.getDate() : '0'+dob.getDate()}`;
+    let dob = new Date(formData.value.dob);
     submitingStatus.value = true;
     const response = await axios.request({
       method: 'post',
