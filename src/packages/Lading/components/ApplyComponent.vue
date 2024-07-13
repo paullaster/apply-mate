@@ -302,7 +302,13 @@
                 <v-spacer></v-spacer>
                 <v-btn @click="setAddEducation = true" color="blue">Add Education</v-btn>
               </v-toolbar>
-              <v-data-table :headers="headers" :items="formData.education"> </v-data-table>
+              <v-data-table :headers="headers" :items="formData.education">
+                <template v-slot:[`item.action`]="{ item }">
+                  <v-btn variant="text" @click="deleteItem(item, 'education')"
+                    ><v-icon>mdi-delete</v-icon></v-btn
+                  >
+                </template>
+              </v-data-table>
             </v-col>
           </v-row>
           <v-row v-if="setAddEducation || !formData.education.length">
@@ -373,6 +379,11 @@
                 </v-btn>
               </v-toolbar>
               <v-data-table :headers="headersProfessionalBody" :items="formData.professionalBodys">
+                <template v-slot:[`item.action`]="{ item }">
+                  <v-btn variant="text" @click="deleteItem(item, 'professionalBodys')"
+                    ><v-icon>mdi-delete</v-icon></v-btn
+                  >
+                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -563,13 +574,12 @@ import { useSetupStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
 // STATUS
-const submitingStatus = ref(false);
-
+const submitingStatus = ref(false)
 
 // STORE
-const setupStore = useSetupStore();
+const setupStore = useSetupStore()
 
-const { counties, categories } = storeToRefs(setupStore);
+const { counties, categories } = storeToRefs(setupStore)
 
 // STORE ACTIONS
 
@@ -688,6 +698,10 @@ const headers = [
   {
     title: 'Year of Graduation',
     value: 'yearOfGraduation'
+  },
+  {
+    title: 'Action',
+    value: 'action'
   }
 ]
 
@@ -703,6 +717,10 @@ const headersProfessionalBody = [
   {
     title: 'Membership Type',
     value: 'membershipType'
+  },
+  {
+    title: 'Action',
+    value: 'action'
   }
 ]
 
@@ -734,23 +752,22 @@ const formValidate = computed(() => ({
     (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Invalid email format'
   ],
   phone: [
-    (v) =>!!v || 'Phone number is required',
+    (v) => !!v || 'Phone number is required',
     (v) => /^\+254\d{9}$/.test(v) || 'Invalid phone number format. Start with +254'
   ],
   date: [
-    (v) =>!!v || 'Date is required',
-     (v) => new Date(v).getTime() < new Date('2006-12-31').getTime() || "Invalid date of birth",
-
-    ],
-    yearOfStart: [
-    (v) =>!!v || 'Year of start is required',
-    (v) => Number(v) > 2000 || 'Invalid year of start',
+    (v) => !!v || 'Date is required',
+    (v) => new Date(v).getTime() < new Date('2006-12-31').getTime() || 'Invalid date of birth'
+  ],
+  yearOfStart: [
+    (v) => !!v || 'Year of start is required',
+    (v) => Number(v) > 2000 || 'Invalid year of start'
   ],
   yearOfGraduation: [
-    (v) =>!!v || 'Year of graduation is required',
+    (v) => !!v || 'Year of graduation is required',
     (v) => Number(v) > 2000 || 'Invalid year of graduation',
-    (v) => 2025 > Number(v) || 'Invalid year of graduation',
-  ],
+    (v) => 2025 > Number(v) || 'Invalid year of graduation'
+  ]
 }))
 
 const educationTableLength = computed(() => formData.value.education.length)
@@ -768,6 +785,28 @@ watch(professionalBodysTableLength, (value) => {
 })
 
 // METHODS
+
+function deleteItem(item, type) {
+  try {
+    switch (type) {
+      case 'education':
+        formData.value.education = formData.value.education.filter(
+          (edu) => edu.educationLevel !== item.educationLevel
+        )
+        break
+      case 'professionalBodys':
+        formData.value.professionalBodys = formData.value.professionalBodys.filter(
+          (bdy) => bdy.membershipNumber !== item.membershipNumber
+        )
+        break
+      default:
+        useToast().error('Invalid type')
+        break
+    }
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
 async function setCoverLetter() {
   try {
     coverLetterBase64.value = ''
@@ -853,8 +892,8 @@ async function submitApplication() {
       useToast().error("uuuuuugh!!!, You said you're currently employed?")
       return
     }
-    let dob = new Date(formData.value.dob);
-    submitingStatus.value = true;
+    let dob = new Date(formData.value.dob)
+    submitingStatus.value = true
     const response = await axios.request({
       method: 'post',
       url: '/application',
@@ -873,16 +912,16 @@ async function submitApplication() {
         dob: dob
       }
     })
-    useToast().success(response?.data?.message);
-    formData.value = {};
+    useToast().success(response?.data?.message)
+    formData.value = {}
   } catch (error) {
     useToast().error(
       error.response?.data?.message ||
         error.message ||
         'Sorry, We could not submit your application at this time!, Please try again later!'
     )
-  }finally {
-    submitingStatus.value = false;
+  } finally {
+    submitingStatus.value = false
   }
 }
 function addEducation() {
@@ -906,7 +945,10 @@ function addEducation() {
       useToast().error('Invalied value for Year of Start')
       return
     }
-    if (Number(educationObject.value.yearOfGraduation) < 2000 || Number(educationObject.value.yearOfGraduation) > 2024) {
+    if (
+      Number(educationObject.value.yearOfGraduation) < 2000 ||
+      Number(educationObject.value.yearOfGraduation) > 2024
+    ) {
       useToast().error('Invalied value for Year of Graduation')
       return
     }
@@ -1019,7 +1061,7 @@ async function validateWorkExperiencePayload(workExperience) {
 }
 
 // STORE ACTIONS
-setupStore.getCouties();
+setupStore.getCouties()
 setupStore.getCategories()
 </script>
 <style scoped>
