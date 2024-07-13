@@ -894,6 +894,7 @@ async function submitApplication() {
     }
     let dob = new Date(formData.value.dob)
     submitingStatus.value = true
+    formData.value.category === formData.value.profession
     const response = await axios.request({
       method: 'post',
       url: '/application',
@@ -901,7 +902,7 @@ async function submitApplication() {
       data: {
         ...formData.value,
         profession:
-          formData.value.profession === 'Other support professions'
+          formData.value.profession === 'OTHERS'
             ? otherProfession.value
             : formData.value.profession,
         attachments: {
