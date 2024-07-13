@@ -744,12 +744,12 @@ const formValidate = computed(() => ({
     ],
     yearOfStart: [
     (v) =>!!v || 'Year of start is required',
-    (v) => Number(v) < 2010 || 'Invalid year of start',
+    (v) => Number(v) > 2000 || 'Invalid year of start',
   ],
   yearOfGraduation: [
-    (v) =>!!v || 'Year of start is required',
-    (v) => Number(v) < 2017 || 'Invalid year of graduation',
-    (v) => Number(v) > 2024 || 'Invalid year of graduation',
+    (v) =>!!v || 'Year of graduation is required',
+    (v) => Number(v) > 2000 || 'Invalid year of graduation',
+    (v) => 2025 > Number(v) || 'Invalid year of graduation',
   ],
 }))
 
@@ -897,9 +897,17 @@ function addEducation() {
       }
     }
     if (
-      Number(educationObject.value.yearOfStart) > Number(educationObject.value.yearOfGraduation)
+      Number(educationObject.value.yearOfStart) >= Number(educationObject.value.yearOfGraduation)
     ) {
       useToast().error('Year of Start cannot be later than Year of Graduation')
+      return
+    }
+    if (Number(educationObject.value.yearOfStart) < 2000) {
+      useToast().error('Invalied value for Year of Start')
+      return
+    }
+    if (Number(educationObject.value.yearOfGraduation) < 2000 || Number(educationObject.value.yearOfGraduation) > 2024) {
+      useToast().error('Invalied value for Year of Graduation')
       return
     }
     educationObject.value.yearOfStart = Number(educationObject.value.yearOfStart)
