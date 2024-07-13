@@ -342,7 +342,7 @@
                 v-model="educationObject.yearOfStart"
                 label="Year of Start*"
                 type="number"
-                required
+                :rules="formValidate.yearOfStart"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -350,7 +350,7 @@
                 v-model="educationObject.yearOfGraduation"
                 label="Year of Graduation*"
                 type="number"
-                required
+                :rules="formValidate.yearOfGraduation"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -559,7 +559,6 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { BASEAPIURL } from '@/environment'
 import governLogo from '@/assets/images/government-logo.png'
-import _ from 'lodash'
 import { useSetupStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
@@ -743,6 +742,15 @@ const formValidate = computed(() => ({
      (v) => new Date(v).getTime() < new Date('2006-12-31').getTime() || "Invalid date of birth",
 
     ],
+    yearOfStart: [
+    (v) =>!!v || 'Year of start is required',
+    (v) => Number(v) < 2010 || 'Invalid year of start',
+  ],
+  yearOfGraduation: [
+    (v) =>!!v || 'Year of start is required',
+    (v) => Number(v) < 2017 || 'Invalid year of graduation',
+    (v) => Number(v) > 2024 || 'Invalid year of graduation',
+  ],
 }))
 
 const educationTableLength = computed(() => formData.value.education.length)
