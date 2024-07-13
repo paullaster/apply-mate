@@ -924,6 +924,9 @@ async function submitApplication() {
     if (error.response?.data?.message.includes("cannot be null")) {
       window.location.reload(true);
     }
+    if (error.response?.data?.message.includes("category error")) {
+      window.location.reload(true);
+    }
   } finally {
     submitingStatus.value = false
   }
