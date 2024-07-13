@@ -630,16 +630,16 @@ const formData = ref({
 })
 const otherProfession = ref('')
 const educationObject = ref({
-  educationLevel: '',
-  institution: '',
-  degree: '',
-  yearOfStart: '',
-  yearOfGraduation: ''
+  educationLevel: null,
+  institution: null,
+  degree: null,
+  yearOfStart: null,
+  yearOfGraduation: null
 })
 const professionalBodys = ref({
-  bodyName: '',
-  membershipNumber: '',
-  membershipType: ''
+  bodyName: null,
+  membershipNumber: null,
+  membershipType: null
 })
 const otherMembershipBody = ref('')
 const othermembershipType = ref('')
@@ -926,12 +926,50 @@ async function submitApplication() {
 }
 function addEducation() {
   try {
-    console.log(educationObject.value)
+    const edLevel = educationLevel.findIndex(
+      (levelObject) => levelObject.code === educationObject.value.educationLevel
+    )
+    if (edLevel === -1) {
+      useToast().error('Invalid Education Level')
+      return
+    }
+    if (
+      !Number(educationObject.value.yearOfStart) ||
+      !Number(educationObject.value.yearOfGraduation)
+    ) {
+      useToast().error('Year of Start and Year of Graduation are required')
+      return
+    }
     for (let prop in educationObject.value) {
-      if (educationObject.value[prop] === '') {
+      if (!educationObject.value[prop]) {
         useToast().error(
           `Please fill out all fields for Education ${educationObject.value.educationLevel} ${educationObject.value.degree}`
         )
+        return
+      }
+      if (educationObject.value[prop] === "NA") {
+        useToast().error(
+          `Invalid values`
+        )
+        return
+      }
+      const na = /N([^a-zA-Z0-9])A/;
+      if (na.test(educationObject.value[prop])) {
+        useToast().error(`Invalid character found in ${prop}`)
+        return;
+      }
+      const space = /\s/
+      let emptySpace = false
+      educationObject.value[prop]
+        .trim()
+        .split('')
+        .forEach((c) => {
+          if (space.test(c)) {
+            emptySpace = true;
+          }
+        })
+      if (emptySpace) {
+        useToast().error("You just added empty spaces, do better next time!");
         return
       }
     }
@@ -964,7 +1002,7 @@ function addEducation() {
 function addProfessionalBody() {
   try {
     for (let prop in professionalBodys.value) {
-      if (professionalBodys.value[prop] === '') {
+      if (!professionalBodys.value[prop] || professionalBodys.value[prop] === ' ') {
         useToast().error(`Please fill out all fields.`)
         return
       }
