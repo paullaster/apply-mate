@@ -919,7 +919,10 @@ async function submitApplication() {
       error.response?.data?.message ||
         error.message ||
         'Sorry, We could not submit your application at this time!, Please try again later!'
-    )
+    );
+    if (error.response?.data?.message.includes("cannot be null")) {
+      window.location.reload(true);
+    }
   } finally {
     submitingStatus.value = false
   }
