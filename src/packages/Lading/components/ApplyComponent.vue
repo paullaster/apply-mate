@@ -965,20 +965,6 @@ function addEducation() {
         useToast().error(`Invalid character found in ${prop}`)
         return;
       }
-      const space = /\s/
-      let emptySpace = false
-      educationObject.value[prop]
-        .trim()
-        .split('')
-        .forEach((c) => {
-          if (space.test(c)) {
-            emptySpace = true;
-          }
-        })
-      if (emptySpace) {
-        useToast().error("You just added empty spaces, do better next time!");
-        return
-      }
     }
     if (
       Number(educationObject.value.yearOfStart) >= Number(educationObject.value.yearOfGraduation)
