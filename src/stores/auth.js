@@ -3,6 +3,8 @@ import { useToast } from "vue-toastification";
 import { _request } from "@/service";
 import AuthService from "@/packages/auth/AuthService";
 
+
+const customError = "Sorry, We experienced an error!, Please try again later";
 export const useAuth = defineStore("auth", {
     state: () => ({
         user: {},
@@ -49,10 +51,35 @@ export const useAuth = defineStore("auth", {
                 .then(async (response) => {
                     await AuthService.login(response.data);
                     await this.setUser(response.data.user);
-                    await this.setLoader({loading: false, root: true});
                 })
+                .catch(async (error) => {
+                    useToast().error(error?.response?.data?.message || error.message || customError);
+                    
+                });
             } catch (error) {
                 useToast().error(error.message);
+            }finally {
+                await this.setLoader({loading: false, root: true});
+            }
+        },
+        async activateConsoltium(payload) {
+            try {
+                this.setLoader({loading: true, root: true});
+                _request.axiosRequest({
+                    url: "/auth/activate",
+                    method: "POST",
+                    data: payload,
+                })
+                .then(async (response) => {
+                    await this.setUser(response.data.user);
+                })
+                .catch(async (error) => {
+                    useToast().error(error?.response?.data?.message || error.message || customError);
+                });
+            } catch (error) {
+                useToast().error(error.message);
+            }finally {
+                await this.setLoader({loading: false, root: true});
             }
         }
     },

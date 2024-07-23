@@ -18,12 +18,13 @@
                         label="email"
                         type="email"
                         v-model="formData.email"
+                        hint="Enter consoltium email address"
                         >
 
                         </v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-btn text flat>
+                        <v-btn text flat @click="()=>" type="submit">
                             <v-icon class="mr-3" >mdi-lock-open-outline</v-icon>
                             <span>activate now</span>
                         </v-btn>
