@@ -24,7 +24,8 @@
                     </v-col>
                     <v-col cols="12">
                         <v-btn text flat>
-                            activate now
+                            <v-icon class="mr-3" >mdi-lock-open-outline</v-icon>
+                            <span>activate now</span>
                         </v-btn>
                     </v-col>
                 </v-row>

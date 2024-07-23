@@ -1,14 +1,28 @@
 .auth {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 100%;
     min-width: 100dvw !important;
     min-height: 100dvh !important;
-    & .auth-image {
+    position: relative;
+    & .auth-mobile {
         background-image: url(./images/login_bg_img.jpeg);
-        background-size: contain;
+        background-size: cover;
         background-repeat: no-repeat;
         min-width: 100%;
-        min-height: 100%;
-        background-position: center;
+        min-height: 100dvh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media (min-width:900px){
+            grid-template-columns: 50% 50%;
+            & .auth-image {
+                background-image: url(./images/login_bg_img.jpeg);
+                background-size: contain;
+                background-repeat: no-repeat;
+                min-width: 100%;
+                min-height: 100%;
+            }
     }
 }
