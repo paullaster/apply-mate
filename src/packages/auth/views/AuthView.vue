@@ -6,6 +6,7 @@
         <LoginView v-if="route.name === 'login'"/>
         <ActivateAccount v-if="route.name === 'activate'"/>
         <ForgotPassword v-if="route.name === 'forgot-password'"/>
+        <SetPassword v-if="route.name ==='set-password'"/>
       </v-card>
     </section>
   </main>
@@ -16,6 +17,7 @@ import { useRoute } from 'vue-router';
 import LoginView from '../components/LoginView.vue';
 import ActivateAccount from '../components/ActivateAccount.vue';
 import ForgotPassword from '../components/ForgotPassword.vue';
+import SetPassword from '../components/SetPassword.vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
 
 

@@ -71,7 +71,7 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                 .then(async (response) => {
-                    await this.setUser(response.data.user);
+                    useToast().success(response.data.message);
                 })
                 .catch(async (error) => {
                     useToast().error(error?.response?.data?.message || error.message || customError);
