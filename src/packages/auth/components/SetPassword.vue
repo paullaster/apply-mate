@@ -8,7 +8,7 @@
           label="password" 
           type="password" 
           v-model="formData.password"
-          :rules="rules.email"
+          :rules="rules.password"
           ></v-text-field>
         </v-col>
         <v-col cols="12">
@@ -21,7 +21,7 @@
           </v-text-field>
         </v-col>
         <v-col>
-          <v-btn flat @click="login">
+          <v-btn flat @click="setPassword">
             <v-icon class="mr-3">mdi-onepassword</v-icon>
             <span>set password</span>
           </v-btn>
@@ -33,6 +33,12 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useAuth } from '@/stores';
+
+
+// STORE INSTANCE
+const authStore = useAuth();
 
 const newPasswordForm = ref(null);
 const formData = ref({
@@ -48,10 +54,24 @@ const rules = computed(() => {
         ],
         confirmPassword: [
             v =>!!v || 'Password is required',
-            v => v !== formData.value.password || 'Confirm Password and Password must be the same!'
+            v => v === formData.value.password || 'Confirm Password and Password must be the same!'
         ]
     }
 })
+
+// COMPONENT METHODS
+async function setPassword() {
+    try {
+        const { valid } = await newPasswordForm.value.validate();
+        if (!valid) {
+            useToast().error("Invalid password");
+            return;
+        };
+        await authStore.setPassword(formData.value);
+    } catch (error) {
+        useToast().error(error.message);
+    }
+}
 
 </script>
 

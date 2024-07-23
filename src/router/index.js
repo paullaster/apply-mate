@@ -45,7 +45,7 @@ const router = createRouter({
           component: () => import('@/packages/auth/components/ForgotPassword.vue'),
         },
         {
-          path:'set-password',
+          path:'set-password/:auth',
           name:'set-password',
           component: () => import('@/packages/auth/components/SetPassword.vue'),
         }

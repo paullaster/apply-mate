@@ -81,6 +81,27 @@ export const useAuth = defineStore("auth", {
             }finally {
                 await this.setLoader({loading: false, root: true});
             }
+        },
+        async setPassword(payload) {
+            try {
+                this.setLoader({loading: true, root: true});
+                _request.axiosRequest({
+                    url: "/auth/set-password",
+                    method: "POST",
+                    data: payload,
+                })
+                .then(async (response) => {
+                    useToast().success(response.data.message);
+                    await this.login(payload);
+                })
+                .catch(async (error) => {
+                    useToast().error(error?.response?.data?.message || error.message || customError);
+                });
+            } catch (error) {
+                useToast().error(error.message);
+            }finally {
+                await this.setLoader({loading: false, root: true});
+            }
         }
     },
 });
