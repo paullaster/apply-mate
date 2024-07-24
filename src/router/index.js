@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingView from '@/packages/Lading/views/LadingView.vue';
 import ApplyView from '@/packages/Lading/components/ApplyComponent.vue';
+import AuthService from '@/packages/auth/AuthService';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -45,7 +46,7 @@ const router = createRouter({
           component: () => import('@/packages/auth/components/ForgotPassword.vue'),
         },
         {
-          path:'set-password/:auth',
+          path:'set-password/:token',
           name:'set-password',
           component: () => import('@/packages/auth/components/SetPassword.vue'),
         }
@@ -54,6 +55,7 @@ const router = createRouter({
     {
       path: '/:user',
       name: 'userLayout',
+      redirect: { name: 'dashboard'},
       component: () => import("@/layout/DashboardLayout.vue"),
       children: [
         {
@@ -94,6 +96,16 @@ const router = createRouter({
     }
     
   ]
+})
+
+
+router.beforeEach((to, from, next) => {
+  const { requiresAuth } = to.meta;
+  if (requiresAuth &&!AuthService.isAuthenticated()) {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
 })
 
 export default router

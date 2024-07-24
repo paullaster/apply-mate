@@ -35,15 +35,19 @@
 import { ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useAuth } from '@/stores';
+import { useRoute } from 'vue-router';
 
+// ROUTES
+const route = useRoute();
 
 // STORE INSTANCE
 const authStore = useAuth();
 
 const newPasswordForm = ref(null);
 const formData = ref({
-  email: '',
-  password: ''
+  token: route.params.token,
+  password: '',
+  confirmPassword: '',
 });
 
 const rules = computed(() => {
@@ -67,9 +71,11 @@ async function setPassword() {
             useToast().error("Invalid password");
             return;
         };
-        await authStore.setPassword(formData.value);
+        await authStore.setPassword({token:formData.value.token, password: formData.value.password});
     } catch (error) {
         useToast().error(error.message);
+    }finally {
+        newPasswordForm.value.reset();
     }
 }
 

@@ -1,13 +1,9 @@
 import WebStorage from "@/util/storage";
 import { APPNAME } from "@/environment";
+import { useToast } from "vue-toastification";
 class AuthService {
     #token = null;
-    #user = {
-        id: 1,
-        name: "Test User",
-        email: "test@example.com",
-        role: "admin",
-    };
+    #user = null;
     constructor() {
         this.setToken = this.setToken.bind(this);
         this.setUser = this.setUser.bind(this);
@@ -15,9 +11,9 @@ class AuthService {
         this.getToken = this.getToken.bind(this);
         this.getUser = this.getUser.bind(this);
         this.login = this.login.bind(this);
-        this.tokenResourcename =  `${APPNAME.split(" ").join("")}_token`;
+        this.tokenResourcename = `${APPNAME.split(" ").join("")}_token`;
         this.userResourcename = `${APPNAME.split(" ").join("")}_user`;
-        // this.init();
+        this.init();
     }
 
     init() {
@@ -28,31 +24,36 @@ class AuthService {
     *isAuthenticated: boolean
     */
 
-   //If you don't call this method isAuthenticated, you must give it this alias how you
+    //If you don't call this method isAuthenticated, you must give it this alias how you
     //prefer
     isAuthenticated() {
         return this.#token && this.#user;
     }
     //If you don't call this method getToken, you must give it this alias how you
     //prefer
-    getToken() {  
-        
+    getToken() {
+
         return this.#token;
     }
-    getUser() { 
-        return this.#user; 
+    getUser() {
+        return this.#user;
     }
-    async setUser(user){ 
+    async setUser(user) {
         this.#user = user;
         WebStorage.storeToWebDB('local', this.userResourcename, this.#user);
     }
-    async setToken(token){ 
+    async setToken(token) {
         this.#token = token;
         WebStorage.storeToWebDB('local', this.tokenResourcename, this.#token);
     }
     async login(payload) {
-        await this.setToken(payload.token);
-        await this.setUser(payload.user);
+        try {
+            await this.setToken(payload);
+            await this.setUser(JSON.parse(atob(payload.split(".")[1])));
+            return this.getUser();
+        } catch (error) {
+            useToast().error(error.message);
+        }
     }
     //If you don't call this method logout, you must give it this alias how you
     //prefer
