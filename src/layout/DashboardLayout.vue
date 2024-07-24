@@ -19,7 +19,8 @@ import links from '@/packages/Dashboard/links'
 // STORE
 const dashboardStore = useDashboard();
 const setupStore = useSetupStore();
-setupStore.getCouties()
+setupStore.getCouties();
+setupStore.getCategories();
 
 
 
