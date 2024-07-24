@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="0">
+  <v-card elevation="0" style="width:100%; padding-inline: 0 !important;">
     <v-card-title>
       <v-toolbar>
         <v-toolbar-items>
@@ -11,7 +11,7 @@
         <v-spacer></v-spacer>
         <v-btn color="primary" variant="flat" class="mr-2">
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
-          onboard
+          accept application
         </v-btn>
       </v-toolbar>
     </v-card-title>
@@ -59,7 +59,7 @@
                     Email:
                   </v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                    <v-chip>{{ applicant.Biodatum?.Contact?.email }}</v-chip>
+                    <v-chip>{{ applicant.Biodatum?.email }}</v-chip>
                   </v-col>
                 </v-row>
               </div>
@@ -67,7 +67,7 @@
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Phone:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12"><v-chip>
-                    {{ applicant.Biodatum?.Contact?.phoneNumber }}
+                    {{ applicant.Biodatum?.phoneNumber }}
                   </v-chip></v-col>
                 </v-row></div>
               <!-- Add more fields as needed -->
@@ -82,7 +82,7 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12"><v-chip>County of residence:</v-chip></v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      {{ applicant.Biodatum?.Address?.countyOfResidence }}
+                      {{ counties.find(c => c.CountyNo === applicant.Biodatum?.Address?.countyOfResidence)?.countyName }}
                   </v-col>
                 </v-row>
                  </div>
@@ -127,7 +127,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-container fluid>
+      <v-container fluid style="width: 100%; padding-inline: 0 !important;">
         <v-row>
           <!-- Vertical Tabs -->
           <v-col cols="12" lg="3" md="12" sm="12">
@@ -137,7 +137,7 @@
           </v-col>
           <v-divider vertical></v-divider>
           <!-- Tab Content -->
-          <v-col cols="12" lg="9" md="12" sm="12">
+          <v-col cols="12" lg="9" md="12" sm="12" style="width: 100%; padding-inline: 0 !important;">
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="Biodatum">
                 <BiodataComponent :item="applicant.Biodatum" />
@@ -184,13 +184,13 @@
                     <v-btn
                       @click="() => downloadFile(item.url, item.name)"
                       color="secondary"
-                      class="mr-3"
+                      class="mr-3 mb-3"
                     >
                       <v-icon>mdi-cloud-download</v-icon>
                       <span>Download</span>
                     </v-btn>
-                    <v-btn @click="viewFile(item.url)" color="primary">
-                      <v-icon>mdi-file-cloud</v-icon>
+                    <v-btn @click="viewFile(item)" color="primary" class="mr-3 mb-3">
+                      <v-icon>mdi-eye-circle</v-icon>
                       <span>View</span>
                     </v-btn>
                   </template>
@@ -202,16 +202,19 @@
       </v-container>
     </v-card-text>
   </v-card>
+  <ViewDocument />
 </template>
 
 <script setup>
-import { useApplication } from '@/stores'
+import { useApplication, useSetupStore, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import DateUtil from '@/util/DateUtil'
 import { ref } from 'vue'
 import EssayView from './EssayView.vue'
 import BiodataComponent from './BiodataComponent.vue'
+import ViewDocument from '@/components/ViewDocument.vue'
+import { useToast } from 'vue-toastification'
 
 // REFS
 const tab = ref()
@@ -298,13 +301,24 @@ const router = useRouter()
 const applicantId = route?.params?.id || null
 
 // STORE
-const applicationStore = useApplication()
-
-const { applicant } = storeToRefs(applicationStore)
-
-// STORE ACTIONS
+const applicationStore = useApplication();
+const setupStore = useSetupStore();
+const globalStore = useGlobalStore();
 applicantId && applicationStore.getApplicant(applicantId)
-</script>
 
-<style lang="scss" scoped>
-</style>
+
+// COMPONENT METHODS
+function viewFile(item) {
+  try {
+    const dialog = {
+      status: true,
+      document: item
+    };
+    globalStore.setDocumentViewerDialog(dialog); return;
+  } catch (error) {
+    useToast().error(error.message);
+  }
+}
+const { applicant } = storeToRefs(applicationStore);
+const {counties } = storeToRefs(setupStore);
+</script>

@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app>
-    <v-toolbar-title>My Dashboard</v-toolbar-title>
+    <v-toolbar-title>{{ APPNAME }}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn icon>
       <v-icon>mdi-account</v-icon>
@@ -10,9 +10,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAuth } from '@/stores';
+import AuthService from '@/packages/auth/AuthService';
+import { APPNAME } from '@/environment';
 
-  const user = ref({ name: 'John Doe' });
+// STORES
+const authStore = useAuth();
+const {user} = storeToRefs(authStore);
+authStore.setUser(AuthService.getUser());
+
 </script>
 
 <style lang="scss" scoped>

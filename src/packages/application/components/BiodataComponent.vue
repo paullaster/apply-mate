@@ -18,7 +18,7 @@
                 </v-list-item>
                 <v-list-item>
                     <v-list-item-title>County of origin</v-list-item-title>
-                    <v-list-item-subtitle>{{ item?.countyOfOrigin}}</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{ counties.find(c => c.CountyNo === item?.countyOfOrigin)?.countyName}}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                     <v-list-item-title>Gender</v-list-item-title>
@@ -67,10 +67,16 @@
   </template>
   
   <script setup>
-  import DateUtil from "@/util/DateUtil";
+  import { useSetupStore } from "@/stores";
+import DateUtil from "@/util/DateUtil";
+  import { storeToRefs } from "pinia";
   defineProps({
     item: Object,
   });
+
+// STORE
+  const setupStore = useSetupStore();
+  const { counties } = storeToRefs(setupStore);
 </script>
 
 <style scoped>

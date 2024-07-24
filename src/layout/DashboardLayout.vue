@@ -1,9 +1,9 @@
 <template>
-  <v-app style="width: 90dvw;">
+  <v-app style="width: 100dvw; padding-inline: .8rem;">
     <SideBarComponent />
     <TopbarComponentVue />
     <v-main >
-      <v-container>
+      <v-container style="width: 100%; padding-inline: 0 !important;">
         <router-view></router-view>
       </v-container>
     </v-main>
@@ -13,11 +13,13 @@
   <script setup>
 import TopbarComponentVue from '@/components/TopbarComponent.vue'
 import SideBarComponent from '@/components/SideBarComponent.vue'
-import { useDashboard } from '@/stores'
+import { useDashboard, useSetupStore } from '@/stores'
 import links from '@/packages/Dashboard/links'
 
 // STORE
-const dashboardStore = useDashboard()
+const dashboardStore = useDashboard();
+const setupStore = useSetupStore();
+setupStore.getCouties()
 
 
 
