@@ -10,7 +10,7 @@
                     </v-toolbar>
                 </v-card-title>
                 <v-card-text>
-                  <iframe :src="`${ASSETSURL}${documentViewerDialog.document?.url}`" width="100%" height="900px" :title="documentViewerDialog?.document?.name"></iframe>
+                  <iframe :src="documentViewerDialog.document?.link" width="100%" height="900px" :title="documentViewerDialog?.document?.name"></iframe>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -19,9 +19,7 @@
 
 <script setup>
 import { useGlobalStore } from '@/stores';
-import { ASSETSURL } from '@/environment';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
 
 
 

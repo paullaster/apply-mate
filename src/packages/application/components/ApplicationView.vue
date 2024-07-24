@@ -26,11 +26,7 @@
                   <v-col cols="12" lg="2" md="12" sm="12">Name:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
                     <v-chip>{{
-                      applicant.Biodatum?.firstName +
-                      ' ' +
-                      applicant.Biodatum?.middleName +
-                      ' ' +
-                      applicant.Biodatum?.lastName
+                      applicant?.fullName
                     }}</v-chip>
                   </v-col>
                 </v-row>
@@ -39,7 +35,7 @@
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Date of Birth:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                    <v-chip>{{ DateUtil.toDate(applicant.Biodatum?.dob) }}</v-chip>
+                    <v-chip>{{ applicant?.age }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
@@ -48,7 +44,7 @@
                   <v-col cols="12" lg="2" md="12" sm="12">Gender:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
                     <v-chip>
-                      {{ applicant.Biodatum?.gender }}
+                      {{ applicant?.gender }}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -59,7 +55,7 @@
                     Email:
                   </v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                    <v-chip>{{ applicant.Biodatum?.email }}</v-chip>
+                    <v-chip>{{ applicant?.eMail }}</v-chip>
                   </v-col>
                 </v-row>
               </div>
@@ -67,7 +63,7 @@
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Phone:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12"><v-chip>
-                    {{ applicant.Biodatum?.phoneNumber }}
+                    {{ applicant?.phone }}
                   </v-chip></v-col>
                 </v-row></div>
               <!-- Add more fields as needed -->
@@ -82,7 +78,7 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12"><v-chip>County of residence:</v-chip></v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      {{ counties.find(c => c.CountyNo === applicant.Biodatum?.Address?.countyOfResidence)?.countyName }}
+                      {{ counties.find(c => c.CountyNo === applicant?.countyOfResidence)?.countyName }}
                   </v-col>
                 </v-row>
                  </div>
@@ -90,7 +86,7 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Constituency:</v-chip></v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant.Biodatum?.Address?.constituency }}
+                      {{ applicant?.constituency }}
                   </v-col>
                 </v-row>
                  </div>
@@ -100,7 +96,7 @@
                     City:
                   </v-chip></v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      {{ applicant.Biodatum?.Address?.city }}
+                      {{ applicant?.city }}
                   </v-col>
                 </v-row>
                  </div>
@@ -108,7 +104,7 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Estate:</v-chip></v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant.Biodatum?.Address?.estate }}
+                      {{ applicant?.estate }}
                   </v-col>
                 </v-row>
                  </div>
@@ -116,7 +112,7 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Apartment/Flat/Village:</v-chip></v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant.Biodatum?.Address?.village }}
+                      {{ applicant?.village }}
                   </v-col>
                 </v-row>
                  </div>
@@ -140,49 +136,49 @@
           <v-col cols="12" lg="9" md="12" sm="12" style="width: 100%; padding-inline: 0 !important;">
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="Biodatum">
-                <BiodataComponent :item="applicant.Biodatum" />
+                <BiodataComponent :item="applicant?.biodata" />
               </v-tabs-window-item>
               <v-tabs-window-item value="ProfessionalBodies">
                 <v-data-table
                   :headers="professionalBodiesHeaders"
-                  :items="applicant.Biodatum?.ProfessionalBodies"
+                  :items="applicant?.professionalBody"
                 >
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="Education">
-                <v-data-table :headers="educationHeaders" :items="applicant.Biodatum?.Education">
+                <v-data-table :headers="educationHeaders" :items="applicant?.education">
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="WorkExperience">
                 <v-data-table
                   :headers="workExperienceHeaders"
-                  :items="[applicant.Biodatum?.WorkExperience]"
+                  :items="[applicant?.experience]"
                 >
-                  <template v-slot:[`item.companyName`]="{ item }">
-                    <span>{{ item.companyName.toUpperCase() }}</span>
+                  <template v-slot:[`item.nameOfFirm`]="{ item }">
+                    <span>{{ item.nameOfFirm.toUpperCase() }}</span>
                   </template>
-                  <template v-slot:[`item.jobTitle`]="{ item }">
-                    <span>{{ item.jobTitle.toUpperCase() }}</span>
+                  <template v-slot:[`item.positionHeld`]="{ item }">
+                    <span>{{ item.positionHeld.toUpperCase() }}</span>
                   </template>
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="Essay">
-                <EssayView :Essay="applicant.Biodatum?.Essay" />
+                <EssayView :Essay="applicant.biodata?.essay" />
               </v-tabs-window-item>
               <v-tabs-window-item value="Attachments">
                 <v-data-table
                   :headers="attachmentsHeaders"
-                  :items="applicant.Biodatum?.Attachments"
+                  :items="applicant?.applicationAttachments"
                 >
                   <template v-slot:[`item.name`]="{ item }">
                     <span>{{ item.name.toUpperCase() }}</span>
                   </template>
                   <template v-slot:[`item.attachmentType`]="{ item }">
-                    <span>{{ item.url?.split('.')[1].toUpperCase() }}</span>
+                    <span>{{ item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() }}</span>
                   </template>
                   <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
-                      @click="() => downloadFile(item.url, item.name)"
+                      @click="() => downloadFile(item.link, item.name)"
                       color="secondary"
                       class="mr-3 mb-3"
                     >
@@ -209,7 +205,6 @@
 import { useApplication, useSetupStore, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import DateUtil from '@/util/DateUtil'
 import { ref } from 'vue'
 import EssayView from './EssayView.vue'
 import BiodataComponent from './BiodataComponent.vue'
@@ -283,15 +278,15 @@ const attachmentsHeaders = [
 const workExperienceHeaders = [
   {
     title: 'Company',
-    value: 'companyName'
+    value: 'nameOfFirm'
   },
   {
     title: 'Position',
-    value: 'jobTitle'
+    value: 'positionHeld'
   },
   {
     title: 'Job Description',
-    value: 'jobDescription'
+    value: 'responsibilitiesDescription'
   }
 ]
 

@@ -21,7 +21,7 @@ export const useApplication = defineStore('application', {
             })
             .then((response) => {
                 this.$patch({
-                    applications: response.data.rows,
+                    applications: response.data.value,
                 });
             })
             .catch((error) => {

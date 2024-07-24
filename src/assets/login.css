@@ -19,7 +19,7 @@
             grid-template-columns: 50% 50%;
             & .auth-image {
                 background-image: url(./images/login_bg_img.jpeg);
-                background-size: contain;
+                background-size: cover;
                 background-repeat: no-repeat;
                 min-width: 100%;
                 min-height: 100%;
