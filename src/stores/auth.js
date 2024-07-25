@@ -32,11 +32,12 @@ export const useAuth = defineStore("auth", {
                 useToast().error(error.message);
             }
         },
-        logout() {
+        async logout() {
             try {
                 this.$patch({
                     user: {},
                 });
+                await AuthService.logout();
             } catch (error) {
                 useToast().error(error.message);
             }

@@ -1,5 +1,14 @@
 <template>
-  <v-navigation-drawer app class="align-center">
+  <v-navigation-drawer app class="align-center" :color="ColorHelper.colorsHelper('primary')">
+    <div>
+      <v-avatar class="avatar mr-2" color="orange" size="60">
+      <span class="white--text text-h5">{{
+     ` ${user?.name.split(" ")[0][0]}${user?.name.split(" ")[0][0]}`
+    }}</span>
+    </v-avatar>
+    <span>{{ user?.role?.toUpperCase() }}</span>
+    <span class="sidebar-active-spot"></span>
+    </div>
     <v-list dense>
       <v-list-item
         v-for="(item, index) in links"
@@ -15,14 +24,19 @@
         <v-list-item-title v-text="item.title"></v-list-item-title>
       </v-list-item>
     </v-list>
+    <v-btn variant="text logout-btn-position" @click="async() => await authStore.logout()" :color="ColorHelper.colorsHelper('light')">
+      <v-icon class="mr-2">mdi-logout</v-icon>
+      <span>Logout</span>
+    </v-btn>
   </v-navigation-drawer>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useDashboard } from '@/stores'
+import { useDashboard, useAuth } from '@/stores'
 import { ref } from 'vue'
+import ColorHelper from '@/util/ColorHelper';
 
 // REFS
 const selectedTab = ref(0)
@@ -32,6 +46,8 @@ const router = useRouter()
 
 // STORE
 const dashboardStore = useDashboard()
+const authStore = useAuth()
+const { user } = storeToRefs(authStore);
 
 const { links } = storeToRefs(dashboardStore)
 const navigateTo = (route) => {
@@ -44,5 +60,32 @@ const navigateTo = (route) => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.avatar {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  position: relative
+}
+.logout-btn-position {
+  position: absolute;
+  right:25%;
+  bottom: 1.2rem;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.sidebar-active-spot {
+    display: block;
+    position: absolute;
+    top: 8.8%;
+    left: 30%;
+    width: .8rem !important;
+    height: .8rem !important;
+    background-color:#00c853;
+    border-radius: 100%;
+
 }
 </style>

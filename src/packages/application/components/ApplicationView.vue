@@ -76,43 +76,43 @@
             <v-card-text>
               <div>
                 <v-row>
-                  <v-col cols="12" lg="4" md="12" sm="12"><v-chip>County of residence:</v-chip></v-col>
+                  <v-col cols="12" lg="4" md="12" sm="12">County of residence:</v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      {{ counties.find(c => c.CountyNo === applicant?.countyOfResidence)?.countyName }}
+                      <v-chip>{{ counties.find(c => c.CountyNo === applicant?.countyOfResidence)?.countyName }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
                  <div>
                 <v-row>
-                  <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Constituency:</v-chip></v-col>
+                  <v-col cols="12" lg="4" md="12" sm="12">Constituency:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant?.constituency }}
+                      <v-chip>{{ applicant?.constituency }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
                  <div>
                 <v-row>
-                  <v-col cols="12" lg="4" md="12" sm="12"><v-chip>
+                  <v-col cols="12" lg="4" md="12" sm="12">
                     City:
-                  </v-chip></v-col>
+                  </v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      {{ applicant?.city }}
+                     <v-chip> {{ applicant?.city }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
                  <div>
                 <v-row>
-                  <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Estate:</v-chip></v-col>
+                  <v-col cols="12" lg="4" md="12" sm="12">Estate:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant?.estate }}
+                      <v-chip>{{ applicant?.estate }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
                  <div>
                 <v-row>
-                  <v-col cols="12" lg="4" md="12" sm="12"><v-chip>Apartment/Flat/Village:</v-chip></v-col>
+                  <v-col cols="12" lg="4" md="12" sm="12">Apartment/Flat/Village:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      {{ applicant?.village }}
+                      <v-chip>{{ applicant?.village }}</v-chip>
                   </v-col>
                 </v-row>
                  </div>
@@ -147,6 +147,12 @@
               </v-tabs-window-item>
               <v-tabs-window-item value="Education">
                 <v-data-table :headers="educationHeaders" :items="applicant?.education">
+                  <template v-slot:[`item.startDate`]="{ item }">
+                    <span>{{ new Date(item.startDate).getFullYear() }}</span>
+                  </template>
+                  <template v-slot:[`item.graduationDate`]="{ item }">
+                    <span>{{ new Date(item.graduationDate).getFullYear() }}</span>
+                  </template>
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="WorkExperience">
@@ -155,10 +161,10 @@
                   :items="[applicant?.experience]"
                 >
                   <template v-slot:[`item.nameOfFirm`]="{ item }">
-                    <span>{{ item.nameOfFirm.toUpperCase() }}</span>
+                    <span>{{ item?.nameOfFirm?.toUpperCase() }}</span>
                   </template>
                   <template v-slot:[`item.positionHeld`]="{ item }">
-                    <span>{{ item.positionHeld.toUpperCase() }}</span>
+                    <span>{{ item?.positionHeld?.toUpperCase() }}</span>
                   </template>
                 </v-data-table>
               </v-tabs-window-item>
@@ -185,7 +191,7 @@
                       <v-icon>mdi-cloud-download</v-icon>
                       <span>Download</span>
                     </v-btn>
-                    <v-btn @click="viewFile(item)" color="primary" class="mr-3 mb-3">
+                    <v-btn @click="viewFile(item)" color="primary" class="mr-3 mb-3" v-if="item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() === 'PDF'">
                       <v-icon>mdi-eye-circle</v-icon>
                       <span>View</span>
                     </v-btn>
@@ -205,7 +211,7 @@
 import { useApplication, useSetupStore, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import EssayView from './EssayView.vue'
 import BiodataComponent from './BiodataComponent.vue'
 import ViewDocument from '@/components/ViewDocument.vue'
@@ -222,15 +228,28 @@ const tabs = [
   { name: 'Attachments', text: 'Attachments' }
 ]
 
+// ROUTES
+const route = useRoute()
+const router = useRouter()
+const applicantId = ref(route?.params?.id || null);
+
+// STORE
+const applicationStore = useApplication();
+const setupStore = useSetupStore();
+const globalStore = useGlobalStore();
+applicantId.value && applicationStore.getApplicant(applicantId.value)
+const { applicant, applications } = storeToRefs(applicationStore);
+const {counties } = storeToRefs(setupStore);
+
 // VARS
 const educationHeaders = [
   {
     title: 'Level',
-    value: 'educationLevel'
+    value: 'level'
   },
   {
     title: 'Degree',
-    value: 'degree'
+    value: 'qualificationDescription'
   },
   {
     title: 'Institution',
@@ -238,11 +257,11 @@ const educationHeaders = [
   },
   {
     title: 'Year of start',
-    value: 'yearOfStart'
+    value: 'startDate'
   },
   {
     title: 'Year of graduation',
-    value: 'yearOfGraduation'
+    value: 'graduationDate'
   }
 ]
 const professionalBodiesHeaders = [
@@ -290,19 +309,45 @@ const workExperienceHeaders = [
   }
 ]
 
-// ROUTES
-const route = useRoute()
-const router = useRouter()
-const applicantId = route?.params?.id || null
+// COMPUTED
 
-// STORE
-const applicationStore = useApplication();
-const setupStore = useSetupStore();
-const globalStore = useGlobalStore();
-applicantId && applicationStore.getApplicant(applicantId)
+
+// WATCHERS
+watch(
+  () => applicantId,
+  async (id) => {
+    if (id) {
+      await applicationStore.getApplicant(id)
+    }
+  }
+)
+
+// HOOKS
+onMounted(() => applicationStore.getApplications());
+
 
 
 // COMPONENT METHODS
+function downloadFile(link, name, type="PDF") {
+  try {
+    switch (type) {
+      case 'PDF':
+        link = `${link}?type=preview`;
+        break;
+      default:
+        link = `${link}?type=download`;
+        break;
+    }
+    const a = document.createElement('a');
+    a.href = link;
+    a.target = '_blank';
+    a.download = name;
+    a.click();
+  } catch (error) {
+    useToast().error(error.message);
+  }
+}
+
 function viewFile(item) {
   try {
     const dialog = {
@@ -314,6 +359,4 @@ function viewFile(item) {
     useToast().error(error.message);
   }
 }
-const { applicant } = storeToRefs(applicationStore);
-const {counties } = storeToRefs(setupStore);
 </script>

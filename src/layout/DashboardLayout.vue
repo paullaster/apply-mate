@@ -13,12 +13,18 @@
   <script setup>
 import TopbarComponentVue from '@/components/TopbarComponent.vue'
 import SideBarComponent from '@/components/SideBarComponent.vue'
-import { useDashboard, useSetupStore } from '@/stores'
+import { useDashboard, useSetupStore, useAuth } from '@/stores'
 import links from '@/packages/Dashboard/links'
+import { watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 // STORE
 const dashboardStore = useDashboard();
 const setupStore = useSetupStore();
+const authStore = useAuth();
+
+const { user } = storeToRefs(authStore)
+
 setupStore.getCouties();
 setupStore.getCategories();
 
@@ -26,6 +32,19 @@ setupStore.getCategories();
 
 // STORE ACTIONS
 dashboardStore.addLinks(links);
+
+
+// ASYNC TIMERS
+setInterval(() =>{
+  const now = Date.now();
+  const userExp = user.value?.exp * 1000;
+  if (userExp && userExp <= now) {
+    authStore.logout();
+  }else {
+    console.log(userExp && userExp <= now)
+    dashboardStore.updateUserStatus(user.value);
+  }
+}, 60000)
 </script>
   
   <style>

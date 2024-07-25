@@ -62,7 +62,7 @@ class AuthService {
         this.#user = null;
         WebStorage.RemoveFromStorage('local', this.tokenResourcename);
         WebStorage.RemoveFromStorage('local', this.userResourcename);
-        window.location.reload()  // You may also want to remove token from cookies.
+        window.location.reload(true)  // You may also want to remove token from cookies.
     }
 }
 

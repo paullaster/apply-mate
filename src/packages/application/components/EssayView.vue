@@ -1,30 +1,40 @@
 <template>
     <v-card flat>
-        <h2> {{ Essay.heading }}</h2>
+        <h2> Housing not only provides shelter to Kenyans, but also is a great source of employment for citizens and generates demand for manufacturing</h2>
       <v-card-text>
         <v-textarea
           :readonly="true"
           :auto-grow="true"
           outlined
           class="long-text-editor"
-          :value="Essay.content"
+          :value="Essay"
+          :rows="essayRows"
         >
         </v-textarea>
       </v-card-text>
     </v-card>
   </template>
-   <!-- :rows="initialLines" -->
   <script setup>
-  defineProps({
+  import { watch, ref } from 'vue';
+  const props = defineProps({
     Essay: {
-      type: Object,
-      required: true,
-    },
-    initialLines: {
-      type: Number,
-      default: 10,
+      type: String,
+      default: null,
+
     },
   })
+
+  const essayRows = ref(50);
+
+  watch(
+    () => props.Essay,
+    (essay) => {
+    if (essay) {
+      console.log(essay);
+      essayRows.value = props.Essay?.split('\n').length
+    }
+  }
+)
   </script>
   
   <style scoped>
