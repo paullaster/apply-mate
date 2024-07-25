@@ -1,6 +1,7 @@
 @import './base.css';
 @import './gender.css';
 @import './login.css';
+@import './application_view.css';
 
 #app {
   margin: 0 auto;

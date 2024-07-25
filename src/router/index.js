@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: { name: 'apply'},
+      redirect: { name: 'auth'},
       component: LandingView,
       children: [
         {

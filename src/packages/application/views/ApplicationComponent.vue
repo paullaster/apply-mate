@@ -24,7 +24,7 @@
             </template>
             <template v-slot:[`item.actions`] ="{item}">
               <v-btn
-              color="primary"
+              :color="ColorHelper.colorsHelper('primary')"
               @click="viewApplication(item)"
               >
                 <v-icon class="mr-2">mdi-file-eye</v-icon>
@@ -43,6 +43,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import DateUtil from '@/util/DateUtil';
+import ColorHelper from '@/util/ColorHelper';
 
 
 

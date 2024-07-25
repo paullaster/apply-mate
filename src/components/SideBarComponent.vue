@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer app class="align-center" :color="ColorHelper.colorsHelper('primary')">
     <div>
-      <v-avatar class="avatar mr-2" color="orange" size="60">
+      <v-avatar class="avatar mr-2" :color="ColorHelper.colorsHelper(user?.role === 'lead' ? 'accent' : user?.role)" size="60">
       <span class="white--text text-h5">{{
      ` ${user?.name.split(" ")[0][0]}${user?.name.split(" ")[0][0]}`
     }}</span>

@@ -9,7 +9,7 @@
         </v-toolbar-items>
         <v-toolbar-title class="headline">Applicant Details</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" variant="flat" class="mr-2">
+        <v-btn :color="ColorHelper.colorsHelper('primary')" variant="flat" class="mr-2">
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
           accept application
         </v-btn>
@@ -17,6 +17,22 @@
     </v-card-title>
     <v-card-text>
       <v-row>
+        <v-col cols="12" class="col-navigation">
+          <div class="navigation-container">
+            <div>
+              <v-btn variant="plain" >
+                <v-icon>mdi-skip-previous</v-icon>
+                <span>Previous</span>
+              </v-btn>
+            </div>
+            <div>
+              <v-btn variant="plain">
+                <span>NEXT</span>
+                <v-icon>mdi-skip-next</v-icon>
+              </v-btn>
+            </div>
+          </div>
+        </v-col>
         <v-col cols="12" md="6">
           <v-card elevation="1">
             <v-card-title>Personal Information</v-card-title>
@@ -33,7 +49,7 @@
               </div>
               <div>
                 <v-row>
-                  <v-col cols="12" lg="2" md="12" sm="12">Date of Birth:</v-col>
+                  <v-col cols="12" lg="2" md="12" sm="12">Age:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
                     <v-chip>{{ applicant?.age }}</v-chip>
                   </v-col>
@@ -185,13 +201,13 @@
                   <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
                       @click="() => downloadFile(item.link, item.name)"
-                      color="secondary"
+                      :color="ColorHelper.colorsHelper('secondary')"
                       class="mr-3 mb-3"
                     >
                       <v-icon>mdi-cloud-download</v-icon>
                       <span>Download</span>
                     </v-btn>
-                    <v-btn @click="viewFile(item)" color="primary" class="mr-3 mb-3" v-if="item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() === 'PDF'">
+                    <v-btn @click="viewFile(item)" :color="ColorHelper.colorsHelper('primary')" class="mr-3 mb-3" v-if="item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() === 'PDF'">
                       <v-icon>mdi-eye-circle</v-icon>
                       <span>View</span>
                     </v-btn>
@@ -216,6 +232,7 @@ import EssayView from './EssayView.vue'
 import BiodataComponent from './BiodataComponent.vue'
 import ViewDocument from '@/components/ViewDocument.vue'
 import { useToast } from 'vue-toastification'
+import ColorHelper from '@/util/ColorHelper'
 
 // REFS
 const tab = ref()
@@ -360,3 +377,8 @@ function viewFile(item) {
   }
 }
 </script>
+<style scoped>
+.col-navigation {
+  padding-inline: 0px !important;
+}
+</style>
