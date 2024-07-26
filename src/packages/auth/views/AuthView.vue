@@ -1,8 +1,8 @@
 <template>
   <main class="auth">
-    <section class="auth-image" v-if="lgAndUp"></section>
+    <section class="auth-image" v-if="lgAndUp" ></section>
     <section :class="lgAndUp ? '' : 'auth-mobile'">
-      <v-card :class="lgAndUp ? 'my-4 mx-4' : 'py-4'" :width="lgAndUp ? '60%' : '90%'" flat>
+      <v-card :class="lgAndUp ? 'my-4 mx-4' : 'py-4'" :width="lgAndUp ? '60%' : '90%'" flat >
         <LoginView v-if="route.name === 'login'"/>
         <ActivateAccount v-if="route.name === 'activate'"/>
         <ForgotPassword v-if="route.name === 'forgot-password'"/>

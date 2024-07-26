@@ -48,5 +48,12 @@ export const useApplication = defineStore('application', {
                 useToast().error(error.message);
             }
         },
+        async acceptApplicant(payload) {
+            return await _request.axiosRequest({
+                url: `/accept/application`,
+                method: 'POST',
+                data: payload,
+            })
+        },
     },
 })

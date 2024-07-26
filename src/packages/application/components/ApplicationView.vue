@@ -1,15 +1,18 @@
 <template>
-  <v-card elevation="0" style="width:100%; padding-inline: 0 !important;">
+  <v-card elevation="0" style="width: 100%; padding-inline: 0 !important">
     <v-card-title>
       <v-toolbar>
         <v-toolbar-items>
-          <v-btn icon @click="() => router.back()">
+          <v-btn icon @click="() => router.push({ name: 'applications' })">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-toolbar-items>
         <v-toolbar-title class="headline">Applicant Details</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn :color="ColorHelper.colorsHelper('primary')" variant="flat" class="mr-2">
+        <span>
+          Status: <v-chip class="px-4 mr-4" :color="ColorHelper.colorsHelper(`status${applicant?.status?.trim()}`)">{{  applicant?.status }}</v-chip>
+        </span>
+        <v-btn :color="ColorHelper.colorsHelper('primary')" variant="flat" class="mr-2" :disabled="applicant?.status?.trim() !== 'New'" @click="acceptApplication" >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
           accept application
         </v-btn>
@@ -18,15 +21,23 @@
     <v-card-text>
       <v-row>
         <v-col cols="12" class="col-navigation">
-          <div class="navigation-container">
+          <div class="navigation-container" :key="uniqueId">
             <div>
-              <v-btn variant="plain" >
+              <v-btn
+                variant="plain"
+                @click="() => navigateApplication('prev')"
+                :disabled="!currentIndex || currentIndex === 0"
+              >
                 <v-icon>mdi-skip-previous</v-icon>
                 <span>Previous</span>
               </v-btn>
             </div>
             <div>
-              <v-btn variant="plain">
+              <v-btn
+                variant="plain"
+                @click="() => navigateApplication('next')"
+                :disabled="currentIndex === null  || ((applicationsSize - currentIndex) === 1)"
+              >
                 <span>NEXT</span>
                 <v-icon>mdi-skip-next</v-icon>
               </v-btn>
@@ -41,9 +52,7 @@
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Name:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                    <v-chip>{{
-                      applicant?.fullName
-                    }}</v-chip>
+                    <v-chip>{{ applicant?.fullName }}</v-chip>
                   </v-col>
                 </v-row>
               </div>
@@ -54,7 +63,7 @@
                     <v-chip>{{ applicant?.age }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
+              </div>
               <div>
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Gender:</v-col>
@@ -64,12 +73,10 @@
                     </v-chip>
                   </v-col>
                 </v-row>
-                </div>
+              </div>
               <div>
                 <v-row>
-                  <v-col cols="12" lg="2" md="12" sm="12">
-                    Email:
-                  </v-col>
+                  <v-col cols="12" lg="2" md="12" sm="12"> Email: </v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
                     <v-chip>{{ applicant?.eMail }}</v-chip>
                   </v-col>
@@ -78,10 +85,13 @@
               <div>
                 <v-row>
                   <v-col cols="12" lg="2" md="12" sm="12">Phone:</v-col>
-                  <v-col cols="12" lg="6" md="12" sm="12"><v-chip>
-                    {{ applicant?.phone }}
-                  </v-chip></v-col>
-                </v-row></div>
+                  <v-col cols="12" lg="6" md="12" sm="12"
+                    ><v-chip>
+                      {{ applicant?.phone }}
+                    </v-chip></v-col
+                  >
+                </v-row>
+              </div>
               <!-- Add more fields as needed -->
             </v-card-text>
           </v-card>
@@ -94,52 +104,50 @@
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12">County of residence:</v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                      <v-chip>{{ counties.find(c => c.CountyNo === applicant?.countyOfResidence)?.countyName }}</v-chip>
+                    <v-chip>{{
+                      counties.find((c) => c.CountyNo === applicant?.countyOfResidence)?.countyName
+                    }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
-                 <div>
+              </div>
+              <div>
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12">Constituency:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      <v-chip>{{ applicant?.constituency }}</v-chip>
+                    <v-chip>{{ applicant?.constituency }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
-                 <div>
+              </div>
+              <div>
                 <v-row>
+                  <v-col cols="12" lg="4" md="12" sm="12"> City: </v-col>
                   <v-col cols="12" lg="4" md="12" sm="12">
-                    City:
-                  </v-col>
-                  <v-col cols="12" lg="4" md="12" sm="12">
-                     <v-chip> {{ applicant?.city }}</v-chip>
+                    <v-chip> {{ applicant?.city }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
-                 <div>
+              </div>
+              <div>
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12">Estate:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      <v-chip>{{ applicant?.estate }}</v-chip>
+                    <v-chip>{{ applicant?.estate }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
-                 <div>
+              </div>
+              <div>
                 <v-row>
                   <v-col cols="12" lg="4" md="12" sm="12">Apartment/Flat/Village:</v-col>
                   <v-col cols="12" lg="6" md="12" sm="12">
-                      <v-chip>{{ applicant?.village }}</v-chip>
+                    <v-chip>{{ applicant?.village }}</v-chip>
                   </v-col>
                 </v-row>
-                 </div>
-                 <div>
-                
-                 </div>
+              </div>
+              <div></div>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
-      <v-container fluid style="width: 100%; padding-inline: 0 !important;">
+      <v-container fluid style="width: 100%; padding-inline: 0 !important">
         <v-row>
           <!-- Vertical Tabs -->
           <v-col cols="12" lg="3" md="12" sm="12">
@@ -149,7 +157,7 @@
           </v-col>
           <v-divider vertical></v-divider>
           <!-- Tab Content -->
-          <v-col cols="12" lg="9" md="12" sm="12" style="width: 100%; padding-inline: 0 !important;">
+          <v-col cols="12" lg="9" md="12" sm="12" style="width: 100%; padding-inline: 0 !important">
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="Biodatum">
                 <BiodataComponent :item="applicant?.biodata" />
@@ -172,10 +180,7 @@
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="WorkExperience">
-                <v-data-table
-                  :headers="workExperienceHeaders"
-                  :items="[applicant?.experience]"
-                >
+                <v-data-table :headers="workExperienceHeaders" :items="[applicant?.experience]">
                   <template v-slot:[`item.nameOfFirm`]="{ item }">
                     <span>{{ item?.nameOfFirm?.toUpperCase() }}</span>
                   </template>
@@ -196,7 +201,9 @@
                     <span>{{ item.name.toUpperCase() }}</span>
                   </template>
                   <template v-slot:[`item.attachmentType`]="{ item }">
-                    <span>{{ item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() }}</span>
+                    <span>{{
+                      item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase()
+                    }}</span>
                   </template>
                   <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
@@ -207,7 +214,15 @@
                       <v-icon>mdi-cloud-download</v-icon>
                       <span>Download</span>
                     </v-btn>
-                    <v-btn @click="viewFile(item)" :color="ColorHelper.colorsHelper('primary')" class="mr-3 mb-3" v-if="item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() === 'PDF'">
+                    <v-btn
+                      @click="viewFile(item)"
+                      :color="ColorHelper.colorsHelper('primary')"
+                      class="mr-3 mb-3"
+                      v-if="
+                        item.link?.split('.')[item.link?.split('.').length - 1].toUpperCase() ===
+                        'PDF'
+                      "
+                    >
                       <v-icon>mdi-eye-circle</v-icon>
                       <span>View</span>
                     </v-btn>
@@ -248,17 +263,23 @@ const tabs = [
 // ROUTES
 const route = useRoute()
 const router = useRouter()
-const applicantId = ref(route?.params?.id || null);
+const applicantId = ref(route?.params?.id || null)
 
 // STORE
-const applicationStore = useApplication();
-const setupStore = useSetupStore();
-const globalStore = useGlobalStore();
+const applicationStore = useApplication()
+const setupStore = useSetupStore()
+const globalStore = useGlobalStore()
 applicantId.value && applicationStore.getApplicant(applicantId.value)
-const { applicant, applications } = storeToRefs(applicationStore);
-const {counties } = storeToRefs(setupStore);
+const { applicant, applications } = storeToRefs(applicationStore)
+const { counties } = storeToRefs(setupStore)
 
 // VARS
+const applicationsSize = applications.value?.length
+const currentIndex = ref(null)
+const uniqueId = ref(10002)
+
+const customError = "Sorry, We experienced an error!, Please try again later";
+
 const educationHeaders = [
   {
     title: 'Level',
@@ -329,9 +350,23 @@ const workExperienceHeaders = [
 // COMPUTED
 
 
-// WATCHERS
+// WATCH EFFECTS:
 watch(
-  () => applicantId,
+  () => currentIndex.value,
+  (index) => {
+    uniqueId.value = index
+  }
+)
+watch(
+  () => route.params.id,
+  async (id) => {
+    if (id) {
+      applicantId.value = id
+    }
+  }
+)
+watch(
+  () => applicantId.value,
   async (id) => {
     if (id) {
       await applicationStore.getApplicant(id)
@@ -339,29 +374,67 @@ watch(
   }
 )
 
+watch(
+  () => [applications.value, applicantId.value],
+  () => {
+    if (applicantId.value && applications.value && applications.value.length > 0) {
+      const findIndex = applications.value.findIndex((app) => app.id === atob(applicantId.value))
+      if (findIndex !== -1) {
+        currentIndex.value = findIndex
+      } else {
+        router.push({ name: 'applications' })
+      }
+    }
+  },
+  { immediate: true }
+)
+
 // HOOKS
-onMounted(() => applicationStore.getApplications());
-
-
+onMounted(() => applicationStore.getApplications())
 
 // COMPONENT METHODS
-function downloadFile(link, name, type="PDF") {
+function navigateApplication(type) {
+  try {
+    switch (type) {
+      case 'prev':
+        applicationStore.$patch({
+          applicant: currentIndex.value && applications.value[(currentIndex.value - 1)]
+        })
+        break;
+      case 'next':
+        applicationStore.$patch({
+          applicant: currentIndex.value !== null && applications.value[(currentIndex.value + 1)]
+        })
+        break;
+      default:
+        break
+    }
+  } catch (error) {
+    useToast().error(error.message)
+  } finally {
+    router.push({
+      name: 'application',
+      params: { id: btoa(applicant.value?.id) }
+    })
+  }
+}
+function downloadFile(link, name, type = 'PDF') {
   try {
     switch (type) {
       case 'PDF':
-        link = `${link}?type=preview`;
-        break;
+        link = `${link}?type=preview`
+        break
       default:
-        link = `${link}?type=download`;
-        break;
+        link = `${link}?type=download`
+        break
     }
-    const a = document.createElement('a');
-    a.href = link;
-    a.target = '_blank';
-    a.download = name;
-    a.click();
+    const a = document.createElement('a')
+    a.href = link
+    a.target = '_blank'
+    a.download = name
+    a.click()
   } catch (error) {
-    useToast().error(error.message);
+    useToast().error(error.message)
   }
 }
 
@@ -370,12 +443,40 @@ function viewFile(item) {
     const dialog = {
       status: true,
       document: item
-    };
-    globalStore.setDocumentViewerDialog(dialog); return;
+    }
+    globalStore.setDocumentViewerDialog(dialog)
+    return
   } catch (error) {
-    useToast().error(error.message);
+    useToast().error(error.message)
   }
 }
+
+async function acceptApplication() {
+  try {
+    if (applicant.value?.status.trim() === 'New') {
+      const payload = {
+        no: applicant.value.no,
+      }
+      if (!payload['no']) {
+        useToast().error(`Sorry!, We can't process this application at this time, PLease try again later!`);
+        return
+      }
+      applicationStore.acceptApplicant(payload)
+      .then((res) => {
+        useToast().success(res.message)
+        navigateApplication('next')
+      })
+      .catch((error) => {
+        useToast().error(error?.response?.data?.message || error.message || customError);
+      })
+    } else {
+      useToast().error(`This application is already ${applicant.value?.status}`)
+    }
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
+
 </script>
 <style scoped>
 .col-navigation {

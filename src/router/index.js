@@ -51,11 +51,21 @@ const router = createRouter({
           component: () => import('@/packages/auth/components/SetPassword.vue'),
         }
       ],
+      meta: {
+        title: 'Authentication'
+      },
+      beforeEnter: (to, from, next) => {
+        if (AuthService.isAuthenticated()) {
+          next({ name: 'userLayout', params: {user: btoa(AuthService.getUser()?.id)} })
+        }else {
+          next();
+        }
+      }
     },
     {
       path: '/:user',
       name: 'userLayout',
-      redirect: { name: 'dashboard'},
+      redirect: { name: 'applications'},
       component: () => import("@/layout/DashboardLayout.vue"),
       children: [
         {
