@@ -9,6 +9,7 @@ import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
+app.provide('customError', 'Sorry, We experienced an error!, Please try again later')
 
 const toastOptions = {
     position: "top-right",

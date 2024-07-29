@@ -9,12 +9,32 @@
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
         </v-btn>
+        <v-btn
+          v-if="selected.length > 0"
+          @click="batchAcceptApplications"
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="outlined"
+          class="mr-4"
+        >
+          <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
+          <span>accept applications</span>
+        </v-btn>
       </v-toolbar>
     </v-card-title>
     <v-card-text>
-      <v-data-table :headers="headers" :items="applications">
+      <v-data-table
+        :headers="headers"
+        :items="applications"
+        :item-value="id"
+        return-object
+        items-selectable="selectable"
+        select-strategy="page"
+        v-model="selected"
+        items-per-page="10"
+        show-select
+      >
         <template v-slot:[`item.gender`]="{ item }">
-          <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)">{{
+          <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)" elavation="0">{{
             item.gender
           }}</v-chip>
         </template>
@@ -38,18 +58,12 @@
           }}</v-chip>
         </template>
         <template v-slot:[`item.countyOfOrigin`]="{ item }">
-          <v-chip 
-          :color="
-          ColorHelper.colorsHelper(`county${item.countyOfOrigin}`) ?? `#5867DD`
-          "
-          >{{
+          <v-chip :color="ColorHelper.colorsHelper(`county${item.countyOfOrigin}`) ?? `#5867DD`">{{
             counties?.find((c) => c?.CountyNo?.trim() === item?.countyOfOrigin?.trim())?.countyName
           }}</v-chip>
         </template>
         <template v-slot:[`item.category`]="{ item }">
-          <v-chip 
-          :color="categoryColors[item?.category]"
-          >{{
+          <v-chip :color="categoryColors[item?.category]">{{
             categories?.find((c) => c?.code?.trim() === item?.category?.trim())?.description
           }}</v-chip>
         </template>
@@ -73,11 +87,14 @@
 <script setup>
 import { useApplication, useSetupStore, useAuth } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
+
+// INJECT STATE
+const customError = inject('customError')
 
 // ROUTES
 const router = useRouter()
@@ -98,7 +115,7 @@ const headers = [
 // STORE
 const applicationStore = useApplication()
 const setupStore = useSetupStore()
-const authStore = useAuth();
+const authStore = useAuth()
 
 // STATE & GETTERS
 const { applications } = storeToRefs(applicationStore)
@@ -106,21 +123,24 @@ const { counties, categories } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
-const categoryColors = ref({'default': '#F5F5F5'});
-
+const categoryColors = ref({ default: '#F5F5F5' })
 
 // HOOKS
 onMounted(() => {
-  categoryColors.value = Object.keys(user.value).length && ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
-});
+  categoryColors.value =
+    Object.keys(user.value).length &&
+    ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
+})
 
 // WATCH
 watch(
   () => user.value.id,
   () => {
-    categoryColors.value = ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
+    categoryColors.value = ColorHelper.createRandonColor(
+      Array.from(new Set(user.value?.categoriesFilter?.split('|')))
+    )
   }
-);
+)
 
 // METHODS
 function viewApplication(item) {
@@ -131,6 +151,30 @@ function viewApplication(item) {
   }
 }
 
+function batchAcceptApplications() {
+  try {
+    if (!selected.value.length) {
+      useToast().error('No applications selected')
+      return
+    }
+    const applicationsAcceptable = selected.value.filter((app) => app.status === 'New')
+    if (!applicationsAcceptable.length) {
+      return
+    }
+    applicationStore
+      .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
+      .then((res) => {
+        useToast().success(res?.message)
+        selected.value = []
+        applicationStore.getApplications({ offset: 1, limit: 10 })
+      })
+      .catch((error) => {
+        useToast().error(error?.response?.data?.message || error.message || customError)
+      })
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
 // STORE ACTIONS
 applicationStore.getApplications({ offset: 1, limit: 10 })
 setupStore.getCouties()

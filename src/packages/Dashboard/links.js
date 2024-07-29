@@ -13,6 +13,13 @@ export default [
         order: 2,
         hasSubs: false,
         icon: "mdi-file-multiple",
-        title: "applications",
+        title: "Applications",
+    },
+    {
+        path: `/${btoa(AuthService.getUser().id)}/onboarded`,
+        order: 2,
+        hasSubs: false,
+        icon: "mdi-email-seal",
+        title: "Onboarded",
     }
 ];

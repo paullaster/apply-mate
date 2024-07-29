@@ -242,7 +242,7 @@
 import { useApplication, useSetupStore, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, inject } from 'vue'
 import EssayView from './EssayView.vue'
 import BiodataComponent from './BiodataComponent.vue'
 import ViewDocument from '@/components/ViewDocument.vue'
@@ -278,7 +278,8 @@ const applicationsSize = applications.value?.length
 const currentIndex = ref(null)
 const uniqueId = ref(10002)
 
-const customError = "Sorry, We experienced an error!, Please try again later";
+// INJECT STATE
+const customError = inject('customError');
 
 const educationHeaders = [
   {

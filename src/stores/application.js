@@ -55,5 +55,12 @@ export const useApplication = defineStore('application', {
                 data: payload,
             })
         },
+        async batchAcceptApplications(payload) {
+            return await _request.axiosRequest({
+                url: `/batch/accept/applications`,
+                method: 'POST',
+                data: payload,
+            })
+        },
     },
 })

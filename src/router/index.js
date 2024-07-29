@@ -97,7 +97,17 @@ const router = createRouter({
           meta: {
             title: 'Application'
           }
-        }
+        },
+        {
+          path: 'onboarded',
+          name: 'onboarded',
+          components: {
+            default: () => import("@/packages/application/components/OnboardedApplicationComponent.vue"),
+          },
+          meta: {
+            title: 'Onboarded Applications'
+          }
+        },
       ],
       meta: {
         requiresAuth: true,
