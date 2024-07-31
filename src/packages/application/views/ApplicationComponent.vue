@@ -5,12 +5,12 @@
         <v-app-bar-nav-icon @click="drawer = !drawer" />
         <v-toolbar-title>Applications</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn variant="outlined" class="mr-4">
+        <v-btn variant="outlined" class="mr-4" @click="()=>globalStore.setSearchdialog(true)">
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
         </v-btn>
         <v-btn
-          v-if="selected.length > 0"
+          :disabled="!selected.length"
           @click="batchAcceptApplications"
           :color="ColorHelper.colorsHelper('primary')"
           variant="outlined"
@@ -82,16 +82,19 @@
       </v-data-table>
     </v-card-text>
   </v-card>
+  <SearchComponent :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"/>
 </template>
 
 <script setup>
-import { useApplication, useSetupStore, useAuth } from '@/stores'
+import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { inject, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
+import SearchComponent from '@/components/SearchComponent.vue'
+
 
 // INJECT STATE
 const customError = inject('customError')
@@ -116,6 +119,7 @@ const headers = [
 const applicationStore = useApplication()
 const setupStore = useSetupStore()
 const authStore = useAuth()
+const globalStore = useGlobalStore()
 
 // STATE & GETTERS
 const { applications } = storeToRefs(applicationStore)

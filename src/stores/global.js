@@ -5,6 +5,14 @@ export const useGlobalStore = defineStore('global', {
     state: () => ({
         loading: false,
         documentViewerDialog: {},
+        searchDialog: false,
+        searchQuery: {
+            searchText: '',
+            searchStatus: '',
+            searchGender: '',
+            searchApplicationCategory: '',
+            searchCounty: '',
+        }
     }),
     getters: {
         globalStateGetter: (state) => (key) => state[key],
@@ -13,6 +21,15 @@ export const useGlobalStore = defineStore('global', {
         setLoading(payload) {
             try {
                 this.$patch({ loading: payload });
+            } catch (error) {
+                useToast().success(error.message);
+            }
+        },
+        setSearchdialog(payload) {
+            try {
+                this.$patch({
+                    searchDialog: payload,
+                })
             } catch (error) {
                 useToast().success(error.message);
             }
