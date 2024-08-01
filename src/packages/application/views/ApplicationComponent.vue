@@ -169,7 +169,6 @@ function batchAcceptApplications() {
       .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
       .then((res) => {
         useToast().success(res?.message)
-        selected.value = []
         applicationStore.getApplications({ offset: 1, limit: 10 })
       })
       .catch((error) => {
@@ -177,6 +176,8 @@ function batchAcceptApplications() {
       })
   } catch (error) {
     useToast().error(error.message)
+  }finally {
+    selected.value = []
   }
 }
 // STORE ACTIONS
