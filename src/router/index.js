@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingView from '@/packages/Lading/views/LadingView.vue';
-import ApplyView from '@/packages/Lading/components/ApplyComponent.vue';
+import HomeViewComponent from '@/packages/Lading/components/HomeViewComponent.vue';
 import AuthService from '@/packages/auth/AuthService';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,13 +8,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: { name: 'auth'},
       component: LandingView,
       children: [
         {
+          path: '',
+          components: { default: HomeViewComponent },
+          meta: {
+            title: 'Home',
+          },
+        },
+        {
           path: 'apply',
           name: 'apply',
-          components: { default: ApplyView },
+          components: { default: ()=> import('@/packages/Lading/components/ApplyComponent.vue')},
           meta: {
             title: 'Apply',
           },
