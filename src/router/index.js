@@ -131,11 +131,16 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const { requiresAuth } = to.meta;
-  if (requiresAuth &&!AuthService.isAuthenticated()) {
+  if (requiresAuth && !AuthService.isAuthenticated()) {
     next({ name: 'login' });
   } else {
     next();
   }
+})
+router.beforeResolve( async (to) => {
+    if (to.meta.requiresAuth) {
+        return AuthService.isAuthenticated() ? true : false;
+    }
 })
 
 export default router
