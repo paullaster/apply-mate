@@ -8,10 +8,11 @@ export const useGlobalStore = defineStore('global', {
         searchDialog: false,
         searchQuery: {
             searchText: '',
-            searchStatus: '',
-            searchGender: '',
-            searchApplicationCategory: '',
-            searchCounty: '',
+            status: '',
+            age: 0,
+            gender: '',
+            category: '',
+            countyOfOrigin: '',
         }
     }),
     getters: {
@@ -27,6 +28,9 @@ export const useGlobalStore = defineStore('global', {
         },
         setSearchdialog(payload) {
             try {
+                this.$patch({
+                    searchQuery: {},
+                });
                 this.$patch({
                     searchDialog: payload,
                 })

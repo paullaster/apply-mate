@@ -3,14 +3,14 @@
     <v-card-title>
       <v-toolbar>
         <v-app-bar-nav-icon @click="drawer = !drawer" />
-        <v-toolbar-title>Applications</v-toolbar-title>
+        <v-toolbar-title>Approved Applications</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn variant="outlined" class="mr-4" @click="()=>globalStore.setSearchdialog(true)">
+        <v-btn variant="outlined" class="mr-4">
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
         </v-btn>
         <v-btn
-          :disabled="!selected.length"
+          v-if="selected.length > 0"
           @click="batchAcceptApplications"
           :color="ColorHelper.colorsHelper('primary')"
           variant="outlined"
@@ -82,19 +82,16 @@
       </v-data-table>
     </v-card-text>
   </v-card>
-  <SearchComponent :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"/>
 </template>
-
-<script setup>
-import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
+  
+  <script setup>
+import { useApplication, useSetupStore, useAuth } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { inject, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
-import SearchComponent from '@/components/SearchComponent.vue'
-
 
 // INJECT STATE
 const customError = inject('customError')
@@ -119,12 +116,10 @@ const headers = [
 const applicationStore = useApplication()
 const setupStore = useSetupStore()
 const authStore = useAuth()
-const globalStore = useGlobalStore()
 
 // STATE & GETTERS
 const { applications } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { searchQuery } = storeToRefs(globalStore);
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
@@ -133,8 +128,8 @@ const categoryColors = ref({ default: '#F5F5F5' })
 // HOOKS
 onMounted(() => {
   applicationStore.$patch({
-    applications: [],
-  });
+    applications: []
+  })
   categoryColors.value =
     Object.keys(user.value).length &&
     ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
@@ -148,52 +143,6 @@ watch(
       Array.from(new Set(user.value?.categoriesFilter?.split('|')))
     )
   }
-)
-
-watch(
-  () => searchQuery.value,
-  (val) => {
-
-    const reverseedObject  = Object.keys(val).reverse();
-    console.log("RUN WATCH ", reverseedObject);
-    let searchString = null;
-    let filteredApplications = [];
-    for ( const [index, prop] of reverseedObject.entries() ) {
-      if (index === 0) {
-        filteredApplications = [...applications.value]
-      }
-      console.log(index);
-      if(val[prop] === '' || val[prop] === 0 || val[prop] === null || val[prop] === undefined) {
-        continue;
-      }
-      if( prop === 'searchText') {
-        searchString = val[prop];
-        continue;
-      }
-      console.log(filteredApplications)
-      console.log("prop: ", prop, "value: ", val[prop]);
-      filteredApplications = filteredApplications.filter((application) => {
-        if (prop === 'age') {
-          return Number(application[prop]) <= Number(val[prop])
-        }
-        return application[prop]
-         .toString()
-         .toLowerCase()
-         .includes(val[prop].toString().toLowerCase())
-      })
-    }
-    if (!searchString) {
-      filteredApplications = filteredApplications.filter((app) => {
-        return (app['fullName'].toLowerCase(). includes(searchString.toLowerCase()) ||
-        app['no'].toLowerCase().includes(searchString.toLowerCase()) 
-      )
-    })
-    }
-    applicationStore.$patch({
-      'applications': filteredApplications
-    });
-  },
-  { deep: true }
 )
 
 // METHODS
@@ -219,6 +168,7 @@ function batchAcceptApplications() {
       .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
       .then((res) => {
         useToast().success(res?.message)
+        selected.value = []
         applicationStore.getApplications({ offset: 1, limit: 10 })
       })
       .catch((error) => {
@@ -226,14 +176,12 @@ function batchAcceptApplications() {
       })
   } catch (error) {
     useToast().error(error.message)
-  }finally {
-    selected.value = []
   }
 }
 // STORE ACTIONS
-applicationStore.getApplications({ offset: 1, limit: 10 })
+applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
 setupStore.getCouties()
 </script>
-
-<style lang="scss" scoped>
+  
+  <style lang="scss" scoped>
 </style>

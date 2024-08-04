@@ -17,9 +17,16 @@ export default [
     },
     {
         path: `/${btoa(AuthService.getUser().id)}/onboarded`,
-        order: 2,
+        order: 3,
         hasSubs: false,
         icon: "mdi-email-seal",
         title: "Onboarded",
+    },
+    {
+        path: `/${btoa(AuthService.getUser().id)}/approved`,
+        order: 4,
+        hasSubs: false,
+        icon: "mdi-check-decagram",
+        title: "Approved",
     }
 ];

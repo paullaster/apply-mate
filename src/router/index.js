@@ -102,10 +102,20 @@ const router = createRouter({
           path: 'onboarded',
           name: 'onboarded',
           components: {
-            default: () => import("@/packages/application/components/OnboardedApplicationComponent.vue"),
+            default: () => import("@/packages/application/views/OnboardedApplicationComponent.vue"),
           },
           meta: {
             title: 'Onboarded Applications'
+          }
+        },
+        {
+          path: 'approved',
+          name: 'approved',
+          components: {
+            default: () => import("@/packages/application/views/ApprovedApplications.vue"),
+          },
+          meta: {
+            title: 'Approved Applications'
           }
         },
       ],

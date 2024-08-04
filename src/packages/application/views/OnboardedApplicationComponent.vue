@@ -127,6 +127,9 @@
   
   // HOOKS
   onMounted(() => {
+    applicationStore.$patch({
+    applications: [],
+  });
     categoryColors.value =
       Object.keys(user.value).length &&
       ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
@@ -176,7 +179,7 @@
     }
   }
   // STORE ACTIONS
-  applicationStore.getApplications({ offset: 1, limit: 10 })
+  applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
   setupStore.getCouties()
   </script>
   
