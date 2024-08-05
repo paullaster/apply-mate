@@ -209,24 +209,29 @@ function viewApplication(item) {
 
 function batchAcceptApplications() {
   try {
+    globalStore.setLoader(true);
     if (!selected.value.length) {
       useToast().error('No applications selected')
-      return
+      return globalStore.setLoader(false);
     }
     const applicationsAcceptable = selected.value.filter((app) => app.status === 'New')
     if (!applicationsAcceptable.length) {
-      return
+      return globalStore.setLoader(false);
     }
+    
     applicationStore
       .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
       .then((res) => {
         useToast().success(res?.message)
+        globalStore.setLoader(false);
         applicationStore.getApplications({ offset: 1, limit: 10 })
       })
       .catch((error) => {
+        globalStore.setLoader(false);
         useToast().error(error?.response?.data?.message || error.message || customError)
       })
   } catch (error) {
+    globalStore.setLoader(false);
     useToast().error(error.message)
   }finally {
     selected.value = []

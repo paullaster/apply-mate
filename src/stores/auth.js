@@ -33,11 +33,13 @@ export const useAuth = defineStore("auth", {
         },
         async logout() {
             try {
+                this.setLoader(true);
                 this.$patch({
                     user: {},
                 });
                 await AuthService.logout();
             } catch (error) {
+                this.setLoader(false);
                 useToast().error(error.message);
             }
         },
@@ -50,7 +52,6 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                     .then(async (response) => {
-                        useToast().success(response.message);
                         AuthService.login(response.data).then(async(user) => {
                             await this.setUser(user);
                             router.push({
@@ -58,15 +59,17 @@ export const useAuth = defineStore("auth", {
                                 params: { user: btoa(user.id) },
                             });
                         })
+                        this.setLoader(false);
+                        useToast().success(response.message);
                     })
                     .catch(async (error) => {
+                        this.setLoader(false);
                         useToast().error(error?.response?.data?.message || error.message || customError);
 
                     });
             } catch (error) {
-                useToast().error(error.message);
-            } finally {
                 this.setLoader(false);
+                useToast().error(error.message);
             }
         },
         async activateConsoltium(payload) {
@@ -78,15 +81,16 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                     .then(async (response) => {
+                        this.setLoader(false);
                         useToast().success(response.message);
                     })
                     .catch(async (error) => {
+                        this.setLoader(false);
                         useToast().error(error?.response?.data?.message || error.message || customError);
                     });
             } catch (error) {
-                useToast().error(error.message);
-            } finally {
                 this.setLoader(false);
+                useToast().error(error.message);
             }
         },
         async resetPassword(payload) {
@@ -98,15 +102,16 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                     .then(async (response) => {
+                        this.setLoader(false);
                         useToast().success(response.message);
                     })
                     .catch(async (error) => {
+                        this.setLoader(false);
                         useToast().error(error?.response?.data?.message || error.message || customError);
                     });
             } catch (error) {
-                useToast().error(error.message);
-            } finally {
                 this.setLoader(false);
+                useToast().error(error.message);
             }
         },
         async setPassword(payload) {
@@ -118,7 +123,6 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                     .then(async (response) => {
-                        useToast().success(response.message);
                         const { token, password } = payload;
                         const user = JSON.parse(atob(token.split(".")[1]));
                         console.log(user);
@@ -126,15 +130,16 @@ export const useAuth = defineStore("auth", {
                             email: user.email,
                             password: password
                         }
+                        this.setLoader(false);
+                        useToast().success(response.message);
                         this.login(loginCredentials);
                     })
                     .catch(async (error) => {
+                        this.setLoader(false);
                         useToast().error(error?.response?.data?.message || error.message || customError);
                     });
             } catch (error) {
                 useToast().error(error.message);
-            } finally {
-                this.setLoader(false);
             }
         }
     },

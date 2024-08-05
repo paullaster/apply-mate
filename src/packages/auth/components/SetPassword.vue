@@ -7,6 +7,7 @@
           <v-text-field 
           label="password" 
           type="password" 
+          variant="outlined"
           v-model="formData.password"
           :rules="rules.password"
           ></v-text-field>
@@ -15,13 +16,14 @@
           <v-text-field 
           label="confirm password" 
           type="password" 
+          variant="outlined"
           v-model="formData.confirmPassword"
           :rules="rules.confirmPassword"
           >
           </v-text-field>
         </v-col>
         <v-col>
-          <v-btn flat @click="setPassword">
+          <v-btn flat @click="setPassword" :color="ColorHelper.colorsHelper('primary')">
             <v-icon class="mr-3">mdi-onepassword</v-icon>
             <span>set password</span>
           </v-btn>
@@ -36,6 +38,7 @@ import { ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useAuth } from '@/stores';
 import { useRoute } from 'vue-router';
+import ColorHelper from '@/util/ColorHelper';
 
 // ROUTES
 const route = useRoute();

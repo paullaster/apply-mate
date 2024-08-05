@@ -21,6 +21,7 @@ export const useGlobalStore = defineStore('global', {
     actions: {
         setLoader(payload) {
             try {
+                console.log("loading state", payload)
                 this.$patch({ loading: payload });
             } catch (error) {
                 useToast().success(error.message);

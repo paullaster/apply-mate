@@ -32,18 +32,20 @@ export const useApplication = defineStore('application', {
                 this.$patch({
                     applications: response.data.value,
                 });
+                this.setLoader(false);
             })
             .catch((error) => {
+                this.setLoader(false);
                 useToast().error(error.message);
             });
            } catch (error) {
-            useToast().error(error.message);
-           }finally {
             this.setLoader(false);
+            useToast().error(error.message);
            }
         },
         async getApplicant(id) {
             try {
+                this.setLoader(true);
                _request.axiosRequest({
                 url: `${constants.applicant}/${atob(id)}`,
                })
@@ -51,11 +53,14 @@ export const useApplication = defineStore('application', {
                 this.$patch({
                     applicant: res.data,
                 });
+                this.setLoader(false);
                })
                .catch(error => {
+                this.setLoader(false);
                 useToast().error(error.message);
                });
             } catch (error) {
+                this.setLoader(false);
                 useToast().error(error.message);
             }
         },

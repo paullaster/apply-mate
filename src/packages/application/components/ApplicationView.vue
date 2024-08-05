@@ -421,6 +421,7 @@ function navigateApplication(type) {
 }
 function downloadFile(link, name, type = 'PDF') {
   try {
+    globalStore.setLoader(true);
     switch (type) {
       case 'PDF':
         link = `${link}?type=preview`
@@ -434,7 +435,9 @@ function downloadFile(link, name, type = 'PDF') {
     a.target = '_blank'
     a.download = name
     a.click()
+    globalStore.setLoader(false);
   } catch (error) {
+    globalStore.setLoader(false);
     useToast().error(error.message)
   }
 }
@@ -454,26 +457,32 @@ function viewFile(item) {
 
 async function acceptApplication() {
   try {
+    globalStore.setLoader(true);
     if (applicant.value?.status.trim() === 'New') {
       const payload = {
         no: applicant.value.no,
       }
       if (!payload['no']) {
+        globalStore.setLoader(false);
         useToast().error(`Sorry!, We can't process this application at this time, PLease try again later!`);
         return
       }
       applicationStore.acceptApplicant(payload)
       .then((res) => {
+        globalStore.setLoader(false);
         useToast().success(res.message)
         navigateApplication('next')
       })
       .catch((error) => {
+        globalStore.setLoader(false);
         useToast().error(error?.response?.data?.message || error.message || customError);
       })
     } else {
+      globalStore.setLoader(false);
       useToast().error(`This application is already ${applicant.value?.status}`)
     }
   } catch (error) {
+    globalStore.setLoader(false);
     useToast().error(error.message)
   }
 }

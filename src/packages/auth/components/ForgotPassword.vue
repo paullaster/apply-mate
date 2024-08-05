@@ -17,6 +17,7 @@
                 <v-text-field
                 type="email"
                 label="email"
+                variant="outlined"
                 v-model="formData.email"
                 :rules="rules.email"
                 >

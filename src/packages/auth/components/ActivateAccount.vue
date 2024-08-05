@@ -15,9 +15,10 @@
           <v-text-field
             label="email"
             type="email"
+            variant="outlined"
             v-model="formData.email"
             :rules="rules.email"
-            hint="Enter consoltium email address"
+            hint="Enter consortium email address"
           >
           </v-text-field>
         </v-col>

@@ -138,7 +138,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'Home';
-  // useGlobalStore().setLoader(true);
+  useGlobalStore().setLoader(true);
   const { requiresAuth } = to.meta;
   if (requiresAuth && !AuthService.isAuthenticated()) {
     next({ name: 'login' });
@@ -150,6 +150,10 @@ router.beforeResolve( async (to) => {
     if (to.meta.requiresAuth) {
         return AuthService.isAuthenticated() ? true : false;
     }
+})
+
+router.afterEach( () => {
+  useGlobalStore().setLoader(false);
 })
 
 export default router

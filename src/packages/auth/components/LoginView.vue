@@ -7,6 +7,7 @@
           <v-text-field 
           label="email" 
           type="email" 
+          variant="outlined"
           v-model="formData.email"
           :rules="rules.email"
           ></v-text-field>
@@ -15,6 +16,7 @@
           <v-text-field 
           label="password" 
           type="password" 
+          variant="outlined"
           v-model="formData.password"
           :rules="rules.password"
           >
