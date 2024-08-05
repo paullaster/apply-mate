@@ -23,7 +23,7 @@
           </v-text-field>
         </v-col>
         <v-col cols="12">
-          <v-btn variant="outlined" :color="ColorHelper.colorsHelper('primary')" @click="activate">
+          <v-btn variant="flat" :color="ColorHelper.colorsHelper('primary')" @click="activate">
             <v-icon class="mr-3">mdi-lock-open-outline</v-icon>
             <span>activate now</span>
           </v-btn>

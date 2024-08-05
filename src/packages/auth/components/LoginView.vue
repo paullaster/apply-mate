@@ -23,7 +23,7 @@
           </v-text-field>
         </v-col>
         <v-col>
-          <v-btn @click="login" variant="outlined" :color="ColorHelper.colorsHelper('primary')">
+          <v-btn @click="login" variant="flat" :color="ColorHelper.colorsHelper('primary')">
             <v-icon class="mr-3">mdi-lock</v-icon>
             <span>Login</span>
           </v-btn>

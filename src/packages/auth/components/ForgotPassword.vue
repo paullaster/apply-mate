@@ -25,7 +25,7 @@
                 </v-text-field>
             </v-col>
             <v-col cols="12">
-                <v-btn  variant="outlined" :color="ColorHelper.colorsHelper('primary')" @click="resetPassword">
+                <v-btn  variant="flat" :color="ColorHelper.colorsHelper('primary')" @click="resetPassword">
                     <span>request reset link</span>
                     <v-icon class="ml-3">mdi-arrow-right-thin</v-icon>
                 </v-btn>
