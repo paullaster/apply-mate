@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { _request } from "@/service";
 import { useToast } from "vue-toastification";
 import constants from "./constants";
+import { useGlobalStore } from "./global";
 
 
 export const useApplication = defineStore('application', {
@@ -13,8 +14,16 @@ export const useApplication = defineStore('application', {
         applicationGetter: (state) => (key) => state[key],
     },
     actions: {
+        setLoader(payload) {
+            try {
+                useGlobalStore().setLoader(payload);
+            } catch (error) {
+                useToast().error(error.message);
+            }
+        },
         getApplications(params = {}) {
            try {
+            this.setLoader(true);
             _request.axiosRequest({
                 url: constants.application,
                 params,
@@ -29,6 +38,8 @@ export const useApplication = defineStore('application', {
             });
            } catch (error) {
             useToast().error(error.message);
+           }finally {
+            this.setLoader(false);
            }
         },
         async getApplicant(id) {

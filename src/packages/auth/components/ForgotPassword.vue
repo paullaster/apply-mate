@@ -24,7 +24,7 @@
                 </v-text-field>
             </v-col>
             <v-col cols="12">
-                <v-btn text flat  @click="resetPassword">
+                <v-btn  variant="outlined" :color="ColorHelper.colorsHelper('primary')" @click="resetPassword">
                     <span>request reset link</span>
                     <v-icon class="ml-3">mdi-arrow-right-thin</v-icon>
                 </v-btn>
@@ -39,6 +39,7 @@ import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useAuth } from "@/stores";
+import ColorHelper from "@/util/ColorHelper";
 
 
 // VARS

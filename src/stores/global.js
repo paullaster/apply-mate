@@ -8,18 +8,18 @@ export const useGlobalStore = defineStore('global', {
         searchDialog: false,
         searchQuery: {
             searchText: '',
-            status: '',
-            age: 0,
-            gender: '',
-            category: '',
-            countyOfOrigin: '',
+            // status: '',
+            // age: 0,
+            // gender: '',
+            // category: '',
+            // countyOfOrigin: '',
         }
     }),
     getters: {
         globalStateGetter: (state) => (key) => state[key],
     },
     actions: {
-        setLoading(payload) {
+        setLoader(payload) {
             try {
                 this.$patch({ loading: payload });
             } catch (error) {

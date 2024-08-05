@@ -32,6 +32,7 @@
           v-model="selected"
           items-per-page="10"
           show-select
+          :loading="!applications.length"
         >
           <template v-slot:[`item.gender`]="{ item }">
             <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)" elavation="0">{{

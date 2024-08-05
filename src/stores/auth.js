@@ -3,6 +3,7 @@ import { useToast } from "vue-toastification";
 import { _request } from "@/service";
 import AuthService from "@/packages/auth/AuthService";
 import router from "@/router";
+import { useGlobalStore } from "./global";
 
 
 const customError = "Sorry, We experienced an error!, Please try again later";
@@ -14,11 +15,9 @@ export const useAuth = defineStore("auth", {
         authGetter: (state) => (key) => state[key],
     },
     actions: {
-        async setLoader(payload) {
+        setLoader(payload) {
             try {
-                this.$patch({
-                    [payload.key]: payload.value,
-                });
+                useGlobalStore().setLoader(payload);
             } catch (error) {
                 useToast().error(error.message);
             }
@@ -44,7 +43,7 @@ export const useAuth = defineStore("auth", {
         },
         async login(payload) {
             try {
-                this.setLoader({ loading: true, root: true });
+                this.setLoader(true);
                 _request.axiosRequest({
                     url: "/auth/login",
                     method: "POST",
@@ -67,12 +66,12 @@ export const useAuth = defineStore("auth", {
             } catch (error) {
                 useToast().error(error.message);
             } finally {
-                await this.setLoader({ loading: false, root: true });
+                this.setLoader(false);
             }
         },
         async activateConsoltium(payload) {
             try {
-                this.setLoader({ loading: true, root: true });
+                this.setLoader(true);
                 _request.axiosRequest({
                     url: "/auth/activate",
                     method: "POST",
@@ -87,12 +86,12 @@ export const useAuth = defineStore("auth", {
             } catch (error) {
                 useToast().error(error.message);
             } finally {
-                await this.setLoader({ loading: false, root: true });
+                this.setLoader(false);
             }
         },
         async resetPassword(payload) {
             try {
-                this.setLoader({ loading: true, root: true });
+                this.setLoader(true);
                 _request.axiosRequest({
                     url: "/auth/forgot-password",
                     method: "POST",
@@ -107,12 +106,12 @@ export const useAuth = defineStore("auth", {
             } catch (error) {
                 useToast().error(error.message);
             } finally {
-                await this.setLoader({ loading: false, root: true });
+                this.setLoader(false);
             }
         },
         async setPassword(payload) {
             try {
-                this.setLoader({ loading: true, root: true });
+                this.setLoader(true);
                 _request.axiosRequest({
                     url: "/auth/set-password",
                     method: "POST",
@@ -135,7 +134,7 @@ export const useAuth = defineStore("auth", {
             } catch (error) {
                 useToast().error(error.message);
             } finally {
-                await this.setLoader({ loading: false, root: true });
+                this.setLoader(false);
             }
         }
     },

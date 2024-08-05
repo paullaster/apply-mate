@@ -21,7 +21,7 @@
           </v-text-field>
         </v-col>
         <v-col>
-          <v-btn flat @click="login">
+          <v-btn @click="login" variant="outlined" :color="ColorHelper.colorsHelper('primary')">
             <v-icon class="mr-3">mdi-lock</v-icon>
             <span>Login</span>
           </v-btn>
@@ -41,6 +41,7 @@
 
 <script setup>
 import { useAuth } from '@/stores';
+import ColorHelper from '@/util/ColorHelper';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'

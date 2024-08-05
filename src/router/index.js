@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LandingView from '@/packages/Lading/views/LadingView.vue';
 import HomeViewComponent from '@/packages/Lading/components/HomeViewComponent.vue';
 import AuthService from '@/packages/auth/AuthService';
+import { useGlobalStore } from '@/stores';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -136,6 +137,8 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
+  document.title = to.meta.title || 'Home';
+  // useGlobalStore().setLoader(true);
   const { requiresAuth } = to.meta;
   if (requiresAuth && !AuthService.isAuthenticated()) {
     next({ name: 'login' });

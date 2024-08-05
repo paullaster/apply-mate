@@ -10,9 +10,10 @@
                 variant="outlined"
                 label="Search by application number, applicant name"
                 v-model="searchQuery.searchText"
+                @input="search"
               ></v-text-field>
             </v-col>
-            <v-col cols="12">
+            <!-- <v-col cols="12">
               <v-label>Age</v-label>
               <v-slider v-model="searchQuery.age" min="28" max="65"></v-slider>
               <v-select
@@ -53,7 +54,7 @@
               <v-btn class="my-4 mx-2">
                 Search
               </v-btn>
-            </v-col>
+            </v-col> -->
           </v-row>
         </v-card-text>
       </v-card>
@@ -62,17 +63,20 @@
 </template>
 
 <script setup>
-import { useGlobalStore, useAuth, useSetupStore } from '@/stores'
+import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+
 
 // STORE
 const globalStore = useGlobalStore()
 const authStore = useAuth()
 const setupStore = useSetupStore()
+const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 const { counties, categories } = storeToRefs(setupStore)
+const { applications } = storeToRefs(applicationStore);
 
 defineProps({
   propertiesArray: Array
@@ -98,6 +102,22 @@ const categoryList = computed(() => {
   })
   return categoryList
 })
+function search() {
+  try {
+    const filteredApplication = applications.value?.filter((app) => {
+      return (
+        app.no.toString().includes(searchQuery.value.searchText) ||
+        app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
+      );
+    })
+    applicationStore.$patch({
+      applications: filteredApplication
+    })
+    searchQuery.value.searchText === '' && applicationStore.getApplications({ offset: 1, limit: 10 })
+  } catch (error) {
+    console.error(error.message);
+  }
+}
 </script>
 
 <style scoped>
