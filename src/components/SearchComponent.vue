@@ -1,6 +1,6 @@
 <template>
   <v-row flex>
-    <v-dialog v-model="searchDialog" max-width="800px" min-height="500">
+    <v-dialog v-model="searchDialog" max-width="800px" min-height="auto">
       <v-card>
         <v-card-text>
           <v-row>
@@ -13,48 +13,6 @@
                 @input="search"
               ></v-text-field>
             </v-col>
-            <!-- <v-col cols="12">
-              <v-label>Age</v-label>
-              <v-slider v-model="searchQuery.age" min="28" max="65"></v-slider>
-              <v-select
-                label="Search by Status"
-                :items="['New', 'Onboarded']"
-                v-model="searchQuery.status"
-              ></v-select>
-            </v-col>
-            <v-col cols="12">
-              <v-label>Gender</v-label>
-              <v-select
-                label="Search by gender"
-                :items="['Male', 'Female', 'Other']"
-                v-model="searchQuery.gender"
-              ></v-select>
-            </v-col>
-            <v-col cols="12">
-              <v-label>County</v-label>
-              <v-select
-                label="Search by county"
-                :items="countyList"
-                v-model="searchQuery.category"
-                item-value="CountyNo"
-                item-title="countyName"
-              ></v-select>
-            </v-col>
-            <v-col cols="12">
-              <v-label>Category</v-label>
-              <v-select
-                label="Search by application category"
-                :items="categoryList"
-                item-value="code"
-                item-title="description"
-                v-model="searchQuery.countyOfOrigin"
-              ></v-select>
-            </v-col>
-            <v-col cols="12">
-              <v-btn class="my-4 mx-2">
-                Search
-              </v-btn>
-            </v-col> -->
           </v-row>
         </v-card-text>
       </v-card>
@@ -65,7 +23,7 @@
 <script setup>
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 
 // STORE
@@ -76,12 +34,14 @@ const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { applications } = storeToRefs(applicationStore);
+const { applications, filteredApplication } = storeToRefs(applicationStore);
 
 defineProps({
   propertiesArray: Array
 })
 
+
+// COMPONENT State
 const countyList = computed(() => {
   const countiesList = []
   user.value?.countiesFilter?.split('|').forEach((county) => {
@@ -102,6 +62,7 @@ const categoryList = computed(() => {
   })
   return categoryList
 })
+
 function search() {
   try {
     const filteredApplication = applications.value?.filter((app) => {
@@ -111,9 +72,8 @@ function search() {
       );
     })
     applicationStore.$patch({
-      applications: filteredApplication
+      filteredApplication: filteredApplication,
     })
-    searchQuery.value.searchText === '' && applicationStore.getApplications({ offset: 1, limit: 10 })
   } catch (error) {
     console.error(error.message);
   }

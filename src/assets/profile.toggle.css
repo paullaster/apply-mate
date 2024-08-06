@@ -1,0 +1,6 @@
+.profile_toggle {
+    z-index: 99999;
+    position: absolute;
+    top: 16%;
+    right: 0;
+}

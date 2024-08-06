@@ -16,6 +16,7 @@
   "dependencies": {
     "@brainspore/transport": "^0.0.8",
     "axios": "^1.7.2",
+    "echarts": "^5.5.1",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
     "pinia": "^2.1.7",

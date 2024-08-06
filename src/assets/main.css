@@ -3,6 +3,7 @@
 @import './landing.css';
 @import './login.css';
 @import './application_view.css';
+@import './profile.toggle.css';
 @import './spinner.css';
 
 #app {

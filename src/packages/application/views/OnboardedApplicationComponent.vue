@@ -32,7 +32,7 @@
           v-model="selected"
           items-per-page="10"
           show-select
-          :loading="!applications.length"
+          :loading="loading"
         >
           <template v-slot:[`item.gender`]="{ item }">
             <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)" elavation="0">{{
@@ -86,7 +86,7 @@
   </template>
   
   <script setup>
-  import { useApplication, useSetupStore, useAuth } from '@/stores'
+  import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
   import { storeToRefs } from 'pinia'
   import { inject, onMounted, ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
@@ -117,11 +117,13 @@
   const applicationStore = useApplication()
   const setupStore = useSetupStore()
   const authStore = useAuth()
+  const globalStore = useGlobalStore();
   
   // STATE & GETTERS
   const { applications } = storeToRefs(applicationStore)
   const { counties, categories } = storeToRefs(setupStore)
   const { user } = storeToRefs(authStore)
+  const { loading } = storeToRefs(globalStore);
   
   // VARIABLES OR COMPONENT STATE OR REFS
   const categoryColors = ref({ default: '#F5F5F5' })

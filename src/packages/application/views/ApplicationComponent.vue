@@ -24,7 +24,7 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="applications"
+        :items="filteredApplication.length? filteredApplication : applications"
         :item-value="id"
         return-object
         items-selectable="selectable"
@@ -32,7 +32,7 @@
         v-model="selected"
         items-per-page="10"
         show-select
-        :loading="!applications.length"
+        :loading="loading"
         search
       >
         <template v-slot:[`item.gender`]="{ item }">
@@ -124,9 +124,9 @@ const authStore = useAuth()
 const globalStore = useGlobalStore()
 
 // STATE & GETTERS
-const { applications } = storeToRefs(applicationStore)
+const { applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { searchQuery } = storeToRefs(globalStore);
+const { loading } = storeToRefs(globalStore);
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
@@ -151,52 +151,6 @@ watch(
     )
   }
 )
-
-// watch(
-//   () => searchQuery.value,
-//   (val) => {
-
-//     const reverseedObject  = Object.keys(val).reverse();
-//     console.log("RUN WATCH ", reverseedObject);
-//     let searchString = null;
-//     let filteredApplications = [];
-//     for ( const [index, prop] of reverseedObject.entries() ) {
-//       if (index === 0) {
-//         filteredApplications = [...applications.value]
-//       }
-//       console.log(index);
-//       if(val[prop] === '' || val[prop] === 0 || val[prop] === null || val[prop] === undefined) {
-//         continue;
-//       }
-//       if( prop === 'searchText') {
-//         searchString = val[prop];
-//         continue;
-//       }
-//       console.log(filteredApplications)
-//       console.log("prop: ", prop, "value: ", val[prop]);
-//       filteredApplications = filteredApplications.filter((application) => {
-//         if (prop === 'age') {
-//           return Number(application[prop]) <= Number(val[prop])
-//         }
-//         return application[prop]
-//          .toString()
-//          .toLowerCase()
-//          .includes(val[prop].toString().toLowerCase())
-//       })
-//     }
-//     if (!searchString) {
-//       filteredApplications = filteredApplications.filter((app) => {
-//         return (app['fullName'].toLowerCase(). includes(searchString.toLowerCase()) ||
-//         app['no'].toLowerCase().includes(searchString.toLowerCase()) 
-//       )
-//     })
-//     }
-//     applicationStore.$patch({
-//       'applications': filteredApplications
-//     });
-//   },
-//   { deep: true }
-// )
 
 // METHODS
 function viewApplication(item) {

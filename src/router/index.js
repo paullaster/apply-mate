@@ -137,7 +137,7 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || 'Home';
+  document.title = 'AHP | '+ to.meta.title || 'Home';
   useGlobalStore().setLoader(true);
   const { requiresAuth } = to.meta;
   if (requiresAuth && !AuthService.isAuthenticated()) {
@@ -148,7 +148,7 @@ router.beforeEach((to, from, next) => {
 })
 router.beforeResolve( async (to) => {
     if (to.meta.requiresAuth) {
-        return AuthService.isAuthenticated() ? true : false;
+        return !!AuthService.isAuthenticated();
     }
 })
 

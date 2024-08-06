@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app>
+  <v-app-bar app class="app-top-header">
     <v-btn icon :color="ColorHelper.colorsHelper('primary')">
       <v-icon>mdi-view-module</v-icon>
     </v-btn>
@@ -39,5 +39,5 @@ function isAdmin() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

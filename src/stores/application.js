@@ -9,6 +9,7 @@ export const useApplication = defineStore('application', {
     state: () => ({
         applications: [],
         applicant: {},
+        filteredApplication: [],
     }),
     getters: {
         applicationGetter: (state) => (key) => state[key],
