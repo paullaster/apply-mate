@@ -21,6 +21,7 @@
                 item-value="CountyNo"
                 label="Filter by county"
                 @update:modelValue="sortByCounty"
+                clearable
               ></v-select>
             </v-col>
             <v-col cols="12">
@@ -31,6 +32,7 @@
                 item-value="code"
                 label="Filter by category"
                 @update:modelValue="sortByCategory"
+                clearable
               ></v-select>
             </v-col>
           </v-row>
@@ -47,7 +49,7 @@
 <script setup>
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 
 
 // STORE
@@ -112,13 +114,15 @@ function search() {
 }
 function sortByCounty() {
   try {
-    const matchedApplications = filteredApplication.value.length ? 
+    const matchedApplications = filteredApplication.value.length && searchQuery.value.county ? 
     filteredApplication.value?.filter((app) => {
       return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
     })
     :
     applications.value?.filter((app) => {
-      return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
+      return searchQuery.value.county ?
+      app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase()
+      : app;
     })
     applicationStore.$patch({
       filteredApplication: matchedApplications,
@@ -129,13 +133,15 @@ function sortByCounty() {
 }
 function sortByCategory(){
   try {
-    const matchedApplications = filteredApplication.value.length ?
+    const matchedApplications = filteredApplication.value?.length  && searchQuery.value.category?
     filteredApplication.value?.filter((app) => {
       return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
     })
     :
     applications.value?.filter((app) => {
-      return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
+      return searchQuery.value.category ? 
+      app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase()
+      : app;
     })
     applicationStore.$patch({
       filteredApplication: matchedApplications,
