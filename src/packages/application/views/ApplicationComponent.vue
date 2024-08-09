@@ -5,6 +5,10 @@
         <v-app-bar-nav-icon @click="drawer = !drawer" />
         <v-toolbar-title>Applications</v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-btn variant="outlined" class="mr-4" @click="()=>applicationStore.$patch({filteredApplication:  []})" v-if="filteredApplication.length">
+          <v-icon>mdi-lock-reset</v-icon>
+          <span>Reset List</span>
+        </v-btn>
         <v-btn variant="outlined" class="mr-4" @click="()=>globalStore.setSearchdialog(true)">
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
