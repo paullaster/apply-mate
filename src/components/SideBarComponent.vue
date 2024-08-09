@@ -15,7 +15,7 @@
         :key="index"
         :value="item"
         @click="navigateTo(item.path)"
-        class="d-flex align-center"
+        class="d-flex align-center justify-start"
       >
         <template v-slot:prepend>
           <v-icon :icon="item.icon"></v-icon>
