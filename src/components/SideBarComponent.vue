@@ -3,7 +3,7 @@
     <div>
       <v-avatar class="avatar mr-2" :color="ColorHelper.colorsHelper(user?.role === 'lead' ? 'accent' : user?.role)" size="60">
       <span class="white--text text-h5">{{
-     ` ${user?.name.split(" ")[0][0]}${user?.name.split(" ")[0][0]}`
+     ` ${user?.name.split(" ")[0][0]}${user?.name.split(" ")[1][0]}`
     }}</span>
     </v-avatar>
     <span>{{ user?.role?.toUpperCase() }}</span>
