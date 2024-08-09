@@ -106,14 +106,43 @@ const router = useRouter()
 
 const selected = ref([])
 const headers = [
-  { title: 'Applicant Name', value: 'fullName' },
-  { title: 'Gender', value: 'gender' },
-  { title: 'Age', value: 'age' },
-  { title: 'Status', value: 'status' },
-  { title: 'County of Origin', value: 'countyOfOrigin' },
-  { title: 'Category', value: 'category' },
-  { title: 'Date Submitted', value: 'createdAt' },
-  { title: 'Date Modified', value: 'modifiedAt' },
+  { 
+    title: 'Applicant Name', 
+    value: 'fullName',
+    sortable: true
+  },
+  { 
+    title: 'Gender', 
+    value: 'gender', 
+    sortable: true
+  },
+  { title: 'Age',
+   value: 'age',
+    sortable: true,
+   },
+  { 
+    title: 'Status', 
+    value: 'status',
+    sortable: true
+  },
+  { 
+    title: 'County of Origin', 
+    value: 'countyOfOrigin', 
+   sortable: true
+  },
+  { 
+    title: 'Category', 
+    value: 'category', 
+   sortable: true
+  },
+  { title: 'Date Submitted', 
+  value: 'createdAt', 
+   sortable: true
+  },
+  { title: 'Date Modified', 
+  value: 'modifiedAt', 
+   sortable: true
+  },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
 
