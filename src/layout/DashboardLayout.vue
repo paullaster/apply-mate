@@ -15,7 +15,6 @@ import TopbarComponentVue from '@/components/TopbarComponent.vue'
 import SideBarComponent from '@/components/SideBarComponent.vue'
 import { useDashboard, useSetupStore, useAuth } from '@/stores'
 import links from '@/packages/Dashboard/links'
-import { watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 // STORE

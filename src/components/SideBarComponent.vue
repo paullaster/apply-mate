@@ -35,11 +35,10 @@
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useDashboard, useAuth } from '@/stores'
-import { ref } from 'vue'
 import ColorHelper from '@/util/ColorHelper';
 
 // REFS
-const selectedTab = ref(0)
+// const selectedTab = ref(0)
 
 // ROUTES
 const router = useRouter()
