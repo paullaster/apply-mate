@@ -8,6 +8,9 @@
     <span style="margin-inline: 0.8rem;">
       Role: <v-chip :color="ColorHelper.colorsHelper(user?.role)">{{ user?.role?.toUpperCase() }}</v-chip>
     </span>
+    <span style="margin-inline: 0.8rem;">
+      Title: <v-chip :color="ColorHelper.colorsHelper(user?.role)">{{ user?.title?.toUpperCase() }}</v-chip>
+    </span>
     <span v-if="mdAndUp">{{ user.name }}</span>
     <v-btn icon class="ml-2" :color="ColorHelper.colorsHelper('primary')">
       <v-icon>mdi-account-circle</v-icon>
