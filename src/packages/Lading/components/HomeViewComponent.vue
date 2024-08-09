@@ -9,21 +9,21 @@
                     <p>
                         Learn more about available  job and career opportunities at The Affordable Housing Program
                     </p>
-                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'apply'})" disabled="true" >View vacancies</v-btn>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'apply'})" disabled="true" min-width="100%" >View vacancies</v-btn>
                 </div>
                 <div class="cta-card">
                     <h2>Consortium portal</h2>
                     <p>
                         Access a comprehensive database of consortia
                     </p>
-                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'auth'})">Login</v-btn>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'auth'})" min-width="100%">Login</v-btn>
                 </div>
                 <div class="cta-card">
                     <h2>University partner</h2>
                     <p>
                         Partner with State Department of Housing and Urban Development
                     </p>
-                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn">Become a partner</v-btn>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="100%">Become a partner</v-btn>
                 </div>
             </div>
         </section>

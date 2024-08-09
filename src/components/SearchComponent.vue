@@ -13,6 +13,14 @@
                 @input="search"
               ></v-text-field>
             </v-col>
+            <v-col cols="12">
+              <v-select
+                v-model="searchQuery.county"
+                :items="countyList"
+                label="Filter by county"
+                placeholder="Select county"
+              ></v-select>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
