@@ -58,7 +58,7 @@ const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { applications } = storeToRefs(applicationStore);
+const { applications, filteredApplication } = storeToRefs(applicationStore);
 
 defineProps({
   propertiesArray: Array
@@ -89,14 +89,22 @@ const categoryList = computed(() => {
 
 function search() {
   try {
-    const filteredApplication = applications.value?.filter((app) => {
+    const matchedApplications = filteredApplication.value.length ?
+    filteredApplication.value?.filter((app) => {
+      return (
+        app.no.toString().includes(searchQuery.value.searchText) ||
+        app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
+      );
+    })
+    :
+    applications.value?.filter((app) => {
       return (
         app.no.toString().includes(searchQuery.value.searchText) ||
         app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
       );
     })
     applicationStore.$patch({
-      filteredApplication: filteredApplication,
+      filteredApplication: matchedApplications,
     })
   } catch (error) {
     console.error(error.message);
@@ -104,11 +112,16 @@ function search() {
 }
 function sortByCounty() {
   try {
-    const filteredApplication = applications.value?.filter((app) => {
+    const matchedApplications = filteredApplication.value.length ? 
+    filteredApplication.value?.filter((app) => {
+      return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
+    })
+    :
+    applications.value?.filter((app) => {
       return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
     })
     applicationStore.$patch({
-      filteredApplication: filteredApplication,
+      filteredApplication: matchedApplications,
     })
   } catch (error) {
     console.error(error.message);
@@ -116,11 +129,16 @@ function sortByCounty() {
 }
 function sortByCategory(){
   try {
-    const filteredApplication = applications.value?.filter((app) => {
+    const matchedApplications = filteredApplication.value.length ?
+    filteredApplication.value?.filter((app) => {
+      return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
+    })
+    :
+    applications.value?.filter((app) => {
       return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
     })
     applicationStore.$patch({
-      filteredApplication: filteredApplication,
+      filteredApplication: matchedApplications,
     })
   } catch (error) {
     console.error(error.message);
