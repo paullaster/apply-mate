@@ -1,6 +1,22 @@
 .profile_toggle {
-    z-index: 99999;
-    position: absolute;
-    top: 16%;
-    right: 0;
-}
+    z-index: 999999999999999999999999999999999999999999999999999999999999999999999999999999 !important;
+     background-color: rgba(235, 235, 235);
+     position: absolute !important;
+     right: 0;
+     top: 7%;
+     min-height: 25rem !important;
+     width: 20rem;
+     border-radius: 0 0 0 .8rem !important;
+     padding: 1.6rem;
+
+    .toggle-logout-btn {
+        position: absolute;
+        top: 84%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+         & > button {
+            
+         }
+    }
+   }

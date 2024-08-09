@@ -12,15 +12,15 @@
       Title: <v-chip :color="ColorHelper.colorsHelper(user?.role)">{{ user?.title?.toUpperCase() }}</v-chip>
     </span>
     <span v-if="mdAndUp">{{ user.name }}</span>
-    <v-btn icon class="ml-2" :color="ColorHelper.colorsHelper('primary')">
-      <v-icon>mdi-account-circle</v-icon>
+    <v-btn icon class="ml-2" :color="ColorHelper.colorsHelper('primary')" @click="globalStore.setProfileToggle" id="activate-toggle-btn-ctl">
+      <v-icon id="activate-toggle-btn-ctl-icon">mdi-account-circle</v-icon>
     </v-btn>
   </v-app-bar>
 </template>
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useAuth } from '@/stores';
+import { useAuth, useGlobalStore } from '@/stores';
 import AuthService from '@/packages/auth/AuthService';
 import { APPNAME } from '@/environment';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
@@ -32,6 +32,7 @@ const { mdAndUp, lgAndUp } = useDisplay();
 
 // STORES
 const authStore = useAuth();
+const globalStore = useGlobalStore();
 const {user} = storeToRefs(authStore);
 authStore.setUser(AuthService.getUser());
 
@@ -41,6 +42,3 @@ function isAdmin() {
   return user.value?.role === 'admin';
 }
 </script>
-
-<style scoped>
-</style>

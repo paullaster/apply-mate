@@ -6,6 +6,7 @@ export const useGlobalStore = defineStore('global', {
         loading: false,
         documentViewerDialog: {},
         searchDialog: false,
+        profileToggle: false,
         searchQuery: {
             searchText: '',
             county: '',
@@ -45,6 +46,22 @@ export const useGlobalStore = defineStore('global', {
         setDocumentViewerDialog(dialog) {
             try {
                 this.$patch({ documentViewerDialog: dialog });
+            } catch (error) {
+                useToast().success(error.message);
+            }
+        },
+        setProfileToggle(event) {
+            try {
+                if (event.target.id === 'activate-toggle-btn-ctl-icon' || event.target.id === 'activate-toggle-btn-ctl') {
+                    this.$patch({
+                        profileToggle:!this.profileToggle,
+                    });
+                    return;
+                }else {
+                    this.$patch({
+                        profileToggle: false,
+                    });
+                }
             } catch (error) {
                 useToast().success(error.message);
             }
