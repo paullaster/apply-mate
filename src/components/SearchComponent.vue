@@ -23,18 +23,31 @@
                 @update:modelValue="sortByCounty"
               ></v-select>
             </v-col>
+            <v-col cols="12">
+              <v-select
+                v-model="searchQuery.category"
+                :items="categoryList"
+                item-title="description"
+                item-value="code"
+                label="Filter by category"
+                @update:modelValue="sortByCategory"
+              ></v-select>
+            </v-col>
           </v-row>
         </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="searchDialog = false">Close</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
 </template>
 
 <script setup>
-import { globalEventBus } from 'vue-toastification';
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 
 // STORE
@@ -93,6 +106,18 @@ function sortByCounty() {
   try {
     const filteredApplication = applications.value?.filter((app) => {
       return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
+    })
+    applicationStore.$patch({
+      filteredApplication: filteredApplication,
+    })
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+function sortByCategory(){
+  try {
+    const filteredApplication = applications.value?.filter((app) => {
+      return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
     })
     applicationStore.$patch({
       filteredApplication: filteredApplication,
