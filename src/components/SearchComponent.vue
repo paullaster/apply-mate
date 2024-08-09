@@ -17,8 +17,10 @@
               <v-select
                 v-model="searchQuery.county"
                 :items="countyList"
+                item-title="countyName"
+                item-value="CountyNo"
                 label="Filter by county"
-                placeholder="Select county"
+                @update:modelValue="sortByCounty"
               ></v-select>
             </v-col>
           </v-row>
@@ -29,6 +31,7 @@
 </template>
 
 <script setup>
+import { globalEventBus } from 'vue-toastification';
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
@@ -42,7 +45,7 @@ const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { applications, filteredApplication } = storeToRefs(applicationStore);
+const { applications } = storeToRefs(applicationStore);
 
 defineProps({
   propertiesArray: Array
@@ -78,6 +81,18 @@ function search() {
         app.no.toString().includes(searchQuery.value.searchText) ||
         app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
       );
+    })
+    applicationStore.$patch({
+      filteredApplication: filteredApplication,
+    })
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+function sortByCounty() {
+  try {
+    const filteredApplication = applications.value?.filter((app) => {
+      return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
     })
     applicationStore.$patch({
       filteredApplication: filteredApplication,

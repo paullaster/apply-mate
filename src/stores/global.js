@@ -8,6 +8,7 @@ export const useGlobalStore = defineStore('global', {
         searchDialog: false,
         searchQuery: {
             searchText: '',
+            county: '',
         }
     }),
     getters: {

@@ -194,6 +194,10 @@ function batchAcceptApplications() {
 // STORE ACTIONS
 applicationStore.getApplications({ offset: 1, limit: 10 })
 setupStore.getCouties()
+
+
+// EVENTS
+
 </script>
 
 <style lang="scss" scoped>

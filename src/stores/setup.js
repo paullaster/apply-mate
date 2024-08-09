@@ -8,6 +8,7 @@ const customError = "Sorry, We experienced an error!, Please try again later";
 export const useSetupStore = defineStore('setup', {
     state:() => ({
         counties: [],
+        filteredCounties: [],
         categories: [],
     }),
     getters: {
