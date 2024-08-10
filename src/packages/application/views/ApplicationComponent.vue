@@ -3,7 +3,7 @@
     <v-card-title>
       <v-toolbar>
         <v-app-bar-nav-icon @click="drawer = !drawer" />
-        <v-toolbar-title>Applications</v-toolbar-title>
+        <v-toolbar-title>{{ route.query?.queue?.toUpperCase() }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
           variant="outlined"
@@ -21,12 +21,24 @@
         <v-btn
           :disabled="!selected.length"
           @click="batchAcceptApplications"
-          :color="ColorHelper.colorsHelper('primary')"
-          variant="outlined"
+          :color="ColorHelper.colorsHelper('success')"
+          variant="flat"
           class="mr-4"
+          v-if="route.query.queue === 'applications'"
         >
           <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
           <span>accept applications</span>
+        </v-btn>
+        <v-btn
+          :disabled="!selected.length"
+          @click="batchOnboardApplications"
+          :color="ColorHelper.colorsHelper('success')"
+          variant="flat"
+          class="mr-4"
+          v-if="route.query.queue === 'onboarded'"
+        >
+          <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
+          <span>Onboard Applications</span>
         </v-btn>
       </v-toolbar>
     </v-card-title>
@@ -251,6 +263,37 @@ function batchAcceptApplications() {
         useToast().success(res?.message)
         globalStore.setLoader(false)
         applicationStore.getApplications({ offset: 1, limit: 10 })
+      })
+      .catch((error) => {
+        globalStore.setLoader(false)
+        useToast().error(error?.response?.data?.message || error.message || customError)
+      })
+  } catch (error) {
+    globalStore.setLoader(false)
+    useToast().error(error.message)
+  } finally {
+    selected.value = []
+  }
+}
+
+function batchOnboardApplications(){
+  try {
+    globalStore.setLoader(true)
+    if (!selected.value.length) {
+      useToast().error('No applications selected')
+      return globalStore.setLoader(false)
+    }
+    const applicationsOnboardable = selected.value.filter((app) => app.status === 'Onboarded')
+    if (!applicationsOnboardable.length) {
+      return globalStore.setLoader(false)
+    }
+
+    applicationStore
+      .batchOnboardApplication(applicationsOnboardable.map((app) => app.no))
+      .then((res) => {
+        useToast().success(res?.message)
+        globalStore.setLoader(false)
+        applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
       })
       .catch((error) => {
         globalStore.setLoader(false)

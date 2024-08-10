@@ -79,5 +79,19 @@ export const useApplication = defineStore('application', {
                 data: payload,
             })
         },
+        async peerReviewApplication(payload) {
+            return await _request.axiosRequest({
+                url: `/peer/review/application`,
+                method: 'POST',
+                data: payload,
+            })
+        },
+        async batchOnboardApplication(payload) {
+            return await _request.axiosRequest({
+                url: `/batch/peer/review/applications`,
+                method: 'POST',
+                data: payload,
+            })
+        }
     },
 })

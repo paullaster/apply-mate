@@ -22,10 +22,22 @@
           variant="flat"
           class="mr-2"
           :disabled="applicant?.status?.trim() !== 'New'"
+          v-if="route.query.queue === 'applications'"
           @click="acceptApplication"
         >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
           accept application
+        </v-btn>
+        <v-btn
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="flat"
+          class="mr-2"
+          :disabled="user.role !== 'lead'"
+          v-if="route.query.queue === 'onboarded'"
+          @click="onboardApplication"
+        >
+          <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
+          Onboard application
         </v-btn>
       </v-toolbar>
     </v-card-title>
@@ -250,7 +262,7 @@
 </template>
 
 <script setup>
-import { useApplication, useSetupStore, useGlobalStore } from '@/stores'
+import { useApplication, useSetupStore, useGlobalStore, useAuth } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref, watch, inject } from 'vue'
@@ -280,9 +292,11 @@ const applicantId = ref(route?.params?.id || null)
 const applicationStore = useApplication()
 const setupStore = useSetupStore()
 const globalStore = useGlobalStore()
+const authStore = useAuth()
 applicantId.value && applicationStore.getApplicant(applicantId.value)
 const { applicant, applications } = storeToRefs(applicationStore)
 const { counties } = storeToRefs(setupStore)
+const { user } = storeToRefs(authStore)
 
 // VARS
 const applicationsSize = applications.value?.length
@@ -393,7 +407,23 @@ watch(
       if (findIndex !== -1) {
         currentIndex.value = findIndex
       } else {
-        router.push({ name: 'applications' })
+        const currentQueryValue = route.query?.queue
+        let routeName = ''
+        switch (currentQueryValue) {
+          case 'applications':
+            routeName = 'applications'
+            break
+          case 'onboarded':
+            routeName = 'onboarded'
+            break
+          case 'approved':
+            routeName = 'approved'
+            break
+        }
+        router.push({
+          name: routeName,
+          query: { queue: currentQueryValue }
+        })
       }
     }
   },
@@ -401,7 +431,22 @@ watch(
 )
 
 // HOOKS
-onMounted(() => applicationStore.getApplications())
+onMounted(() => {
+  switch (route.query?.queue) {
+    case 'applications':
+      applicationStore.getApplications({ offset: 1, limit: 10 })
+      break
+    case 'onboarded':
+      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      break
+    case 'approved':
+      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      break
+    default:
+      console.log('Unknown')
+      break
+  }
+})
 
 // COMPONENT METHODS
 function navigateApplication(type) {
@@ -423,9 +468,11 @@ function navigateApplication(type) {
   } catch (error) {
     useToast().error(error.message)
   } finally {
+    const currentQueryValue = route.query?.queue
     router.push({
       name: 'application',
-      params: { id: btoa(applicant.value?.id) }
+      params: { id: btoa(applicant.value?.id) },
+      query: { queue: currentQueryValue }
     })
   }
 }
@@ -481,6 +528,41 @@ async function acceptApplication() {
       }
       applicationStore
         .acceptApplicant(payload)
+        .then((res) => {
+          globalStore.setLoader(false)
+          useToast().success(res.message)
+          navigateApplication('next')
+        })
+        .catch((error) => {
+          globalStore.setLoader(false)
+          useToast().error(error?.response?.data?.message || error.message || customError)
+        })
+    } else {
+      globalStore.setLoader(false)
+      useToast().error(`This application is already ${applicant.value?.status}`)
+    }
+  } catch (error) {
+    globalStore.setLoader(false)
+    useToast().error(error.message)
+  }
+}
+
+async function onboardApplication(){
+  try {
+    globalStore.setLoader(true)
+    if (applicant.value?.status.trim() === 'Onboarded') {
+      const payload = {
+        no: applicant.value.no
+      }
+      if (!payload['no']) {
+        globalStore.setLoader(false)
+        useToast().error(
+          `Sorry!, We can't process this application at this time, PLease try again later!`
+        )
+        return
+      }
+      applicationStore
+        .peerReviewApplication(payload)
         .then((res) => {
           globalStore.setLoader(false)
           useToast().success(res.message)
