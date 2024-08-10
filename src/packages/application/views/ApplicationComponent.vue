@@ -5,11 +5,16 @@
         <v-app-bar-nav-icon @click="drawer = !drawer" />
         <v-toolbar-title>Applications</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn variant="outlined" class="mr-4" @click="()=>applicationStore.$patch({filteredApplication:  []})" v-if="filteredApplication.length">
+        <v-btn
+          variant="outlined"
+          class="mr-4"
+          @click="() => applicationStore.$patch({ filteredApplication: [] })"
+          v-if="filteredApplication.length"
+        >
           <v-icon>mdi-lock-reset</v-icon>
           <span>Reset List</span>
         </v-btn>
-        <v-btn variant="outlined" class="mr-4" @click="()=>globalStore.setSearchdialog(true)">
+        <v-btn variant="outlined" class="mr-4" @click="() => globalStore.setSearchdialog(true)">
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
         </v-btn>
@@ -28,7 +33,7 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="filteredApplication.length? filteredApplication : applications"
+        :items="filteredApplication.length ? filteredApplication : applications"
         :item-value="id"
         return-object
         items-selectable="selectable"
@@ -88,65 +93,58 @@
       </v-data-table>
     </v-card-text>
   </v-card>
-  <SearchComponent :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"/>
+  <SearchComponent
+    :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"
+  />
 </template>
 
 <script setup>
 import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { inject, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
 import SearchComponent from '@/components/SearchComponent.vue'
-
 
 // INJECT STATE
 const customError = inject('customError')
 
 // ROUTES
 const router = useRouter()
+const route = useRoute()
 
 const selected = ref([])
 const headers = [
-  { 
-    title: 'Applicant Name', 
+  {
+    title: 'Applicant Name',
     value: 'fullName',
     sortable: true
   },
-  { 
-    title: 'Gender', 
-    value: 'gender', 
+  {
+    title: 'Gender',
+    value: 'gender',
     sortable: true
   },
-  { title: 'Age',
-   value: 'age',
-    sortable: true,
-   },
-  { 
-    title: 'Status', 
+  { title: 'Age', value: 'age', sortable: true },
+  {
+    title: 'Status',
     value: 'status',
     sortable: true
   },
-  { 
-    title: 'County of Origin', 
-    value: 'countyOfOrigin', 
-   sortable: true
+  {
+    title: 'County of Origin',
+    value: 'countyOfOrigin',
+    sortable: true
   },
-  { 
-    title: 'Category', 
-    value: 'category', 
-   sortable: true
+  {
+    title: 'Category',
+    value: 'category',
+    sortable: true
   },
-  { title: 'Date Submitted', 
-  value: 'createdAt', 
-   sortable: true
-  },
-  { title: 'Date Modified', 
-  value: 'modifiedAt', 
-   sortable: true
-  },
+  { title: 'Date Submitted', value: 'createdAt', sortable: true },
+  { title: 'Date Modified', value: 'modifiedAt', sortable: true },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
 
@@ -159,7 +157,7 @@ const globalStore = useGlobalStore()
 // STATE & GETTERS
 const { applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { loading } = storeToRefs(globalStore);
+const { loading } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
@@ -168,11 +166,28 @@ const categoryColors = ref({ default: '#F5F5F5' })
 // HOOKS
 onMounted(() => {
   applicationStore.$patch({
-    applications: [],
-  });
+    applications: []
+  })
   categoryColors.value =
     Object.keys(user.value).length &&
     ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
+})
+
+onMounted(() => {
+  switch (route.name) {
+    case 'applications':
+      applicationStore.getApplications({ offset: 1, limit: 10 })
+      break
+    case 'onboarded':
+      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      break
+    case 'approved':
+      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      break
+    default:
+      console.log('Unknown')
+      break
+  }
 })
 
 // WATCH
@@ -185,10 +200,34 @@ watch(
   }
 )
 
+watch(
+  ()=>route.name,
+  (name)=> {
+    switch (name) {
+    case 'applications':
+      applicationStore.getApplications({ offset: 1, limit: 10 })
+      break
+    case 'onboarded':
+      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      break
+    case 'approved':
+      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      break
+    default:
+      console.log('Unknown')
+      break
+  }
+  }, {immediate: true}
+)
+
 // METHODS
 function viewApplication(item) {
   try {
-    router.push({ name: 'application', params: { id: btoa(item.id) } })
+    router.push({
+      name: 'application',
+      params: { id: btoa(item.id) },
+      query: { queue: route.query?.queue }
+    })
   } catch (error) {
     useToast().error(error.message)
   }
@@ -196,41 +235,38 @@ function viewApplication(item) {
 
 function batchAcceptApplications() {
   try {
-    globalStore.setLoader(true);
+    globalStore.setLoader(true)
     if (!selected.value.length) {
       useToast().error('No applications selected')
-      return globalStore.setLoader(false);
+      return globalStore.setLoader(false)
     }
     const applicationsAcceptable = selected.value.filter((app) => app.status === 'New')
     if (!applicationsAcceptable.length) {
-      return globalStore.setLoader(false);
+      return globalStore.setLoader(false)
     }
-    
+
     applicationStore
       .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
       .then((res) => {
         useToast().success(res?.message)
-        globalStore.setLoader(false);
+        globalStore.setLoader(false)
         applicationStore.getApplications({ offset: 1, limit: 10 })
       })
       .catch((error) => {
-        globalStore.setLoader(false);
+        globalStore.setLoader(false)
         useToast().error(error?.response?.data?.message || error.message || customError)
       })
   } catch (error) {
-    globalStore.setLoader(false);
+    globalStore.setLoader(false)
     useToast().error(error.message)
-  }finally {
+  } finally {
     selected.value = []
   }
 }
-// STORE ACTIONS
-applicationStore.getApplications({ offset: 1, limit: 10 })
+
 setupStore.getCouties()
 
-
 // EVENTS
-
 </script>
 
 <style lang="scss" scoped>

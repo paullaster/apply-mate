@@ -72,7 +72,7 @@ const router = createRouter({
     {
       path: '/:user',
       name: 'userLayout',
-      redirect: { name: 'applications'},
+      redirect: { name: 'applications', query: { queue: 'applications'}},
       component: () => import("@/layout/DashboardLayout.vue"),
       children: [
         {
@@ -109,7 +109,7 @@ const router = createRouter({
           path: 'onboarded',
           name: 'onboarded',
           components: {
-            default: () => import("@/packages/application/views/OnboardedApplicationComponent.vue"),
+            default: () => import("@/packages/application/views/ApplicationComponent.vue"),
           },
           meta: {
             title: 'Onboarded Applications'
@@ -119,7 +119,7 @@ const router = createRouter({
           path: 'approved',
           name: 'approved',
           components: {
-            default: () => import("@/packages/application/views/ApprovedApplications.vue"),
+            default: () => import("@/packages/application/views/ApplicationComponent.vue"),
           },
           meta: {
             title: 'Approved Applications'

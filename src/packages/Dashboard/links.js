@@ -10,7 +10,7 @@ export default [
         id: 'dashboard',
     },
     {
-        path: `/${btoa(AuthService.getUser().id)}/applications`,
+        path: `/${btoa(AuthService.getUser().id)}/applications?queue=applications`,
         order: 2,
         hasSubs: false,
         icon: "mdi-file-multiple",
@@ -18,7 +18,7 @@ export default [
         id: 'applications',
     },
     {
-        path: `/${btoa(AuthService.getUser().id)}/onboarded`,
+        path: `/${btoa(AuthService.getUser().id)}/onboarded?queue=onboarded`,
         order: 3,
         hasSubs: false,
         icon: "mdi-email-seal",
@@ -26,7 +26,7 @@ export default [
         id: 'onboarded',
     },
     {
-        path: `/${btoa(AuthService.getUser().id)}/approved`,
+        path: `/${btoa(AuthService.getUser().id)}/approved?queue=approved`,
         order: 4,
         hasSubs: false,
         icon: "mdi-check-decagram",

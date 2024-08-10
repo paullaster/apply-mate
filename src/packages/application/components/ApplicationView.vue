@@ -3,16 +3,27 @@
     <v-card-title>
       <v-toolbar>
         <v-toolbar-items>
-          <v-btn icon @click="() => router.push({ name: 'applications' })">
+          <v-btn icon @click="navigateBack">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-toolbar-items>
         <v-toolbar-title class="headline">Applicant Details</v-toolbar-title>
         <v-spacer></v-spacer>
         <span>
-          Status: <v-chip class="px-4 mr-4" :color="ColorHelper.colorsHelper(`status${applicant?.status?.trim()}`)">{{  applicant?.status }}</v-chip>
+          Status:
+          <v-chip
+            class="px-4 mr-4"
+            :color="ColorHelper.colorsHelper(`status${applicant?.status?.trim()}`)"
+            >{{ applicant?.status }}</v-chip
+          >
         </span>
-        <v-btn :color="ColorHelper.colorsHelper('primary')" variant="flat" class="mr-2" :disabled="applicant?.status?.trim() !== 'New'" @click="acceptApplication" >
+        <v-btn
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="flat"
+          class="mr-2"
+          :disabled="applicant?.status?.trim() !== 'New'"
+          @click="acceptApplication"
+        >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
           accept application
         </v-btn>
@@ -36,7 +47,7 @@
               <v-btn
                 variant="plain"
                 @click="() => navigateApplication('next')"
-                :disabled="currentIndex === null  || ((applicationsSize - currentIndex) === 1)"
+                :disabled="currentIndex === null || applicationsSize - currentIndex === 1"
               >
                 <span>NEXT</span>
                 <v-icon>mdi-skip-next</v-icon>
@@ -279,7 +290,7 @@ const currentIndex = ref(null)
 const uniqueId = ref(10002)
 
 // INJECT STATE
-const customError = inject('customError');
+const customError = inject('customError')
 
 const educationHeaders = [
   {
@@ -350,7 +361,6 @@ const workExperienceHeaders = [
 
 // COMPUTED
 
-
 // WATCH EFFECTS:
 watch(
   () => currentIndex.value,
@@ -399,14 +409,14 @@ function navigateApplication(type) {
     switch (type) {
       case 'prev':
         applicationStore.$patch({
-          applicant: currentIndex.value && applications.value[(currentIndex.value - 1)]
+          applicant: currentIndex.value && applications.value[currentIndex.value - 1]
         })
-        break;
+        break
       case 'next':
         applicationStore.$patch({
-          applicant: currentIndex.value !== null && applications.value[(currentIndex.value + 1)]
+          applicant: currentIndex.value !== null && applications.value[currentIndex.value + 1]
         })
-        break;
+        break
       default:
         break
     }
@@ -421,7 +431,7 @@ function navigateApplication(type) {
 }
 function downloadFile(link, name, type = 'PDF') {
   try {
-    globalStore.setLoader(true);
+    globalStore.setLoader(true)
     switch (type) {
       case 'PDF':
         link = `${link}?type=preview`
@@ -435,9 +445,9 @@ function downloadFile(link, name, type = 'PDF') {
     a.target = '_blank'
     a.download = name
     a.click()
-    globalStore.setLoader(false);
+    globalStore.setLoader(false)
   } catch (error) {
-    globalStore.setLoader(false);
+    globalStore.setLoader(false)
     useToast().error(error.message)
   }
 }
@@ -457,36 +467,63 @@ function viewFile(item) {
 
 async function acceptApplication() {
   try {
-    globalStore.setLoader(true);
+    globalStore.setLoader(true)
     if (applicant.value?.status.trim() === 'New') {
       const payload = {
-        no: applicant.value.no,
+        no: applicant.value.no
       }
       if (!payload['no']) {
-        globalStore.setLoader(false);
-        useToast().error(`Sorry!, We can't process this application at this time, PLease try again later!`);
+        globalStore.setLoader(false)
+        useToast().error(
+          `Sorry!, We can't process this application at this time, PLease try again later!`
+        )
         return
       }
-      applicationStore.acceptApplicant(payload)
-      .then((res) => {
-        globalStore.setLoader(false);
-        useToast().success(res.message)
-        navigateApplication('next')
-      })
-      .catch((error) => {
-        globalStore.setLoader(false);
-        useToast().error(error?.response?.data?.message || error.message || customError);
-      })
+      applicationStore
+        .acceptApplicant(payload)
+        .then((res) => {
+          globalStore.setLoader(false)
+          useToast().success(res.message)
+          navigateApplication('next')
+        })
+        .catch((error) => {
+          globalStore.setLoader(false)
+          useToast().error(error?.response?.data?.message || error.message || customError)
+        })
     } else {
-      globalStore.setLoader(false);
+      globalStore.setLoader(false)
       useToast().error(`This application is already ${applicant.value?.status}`)
     }
   } catch (error) {
-    globalStore.setLoader(false);
+    globalStore.setLoader(false)
     useToast().error(error.message)
   }
 }
 
+function navigateBack() {
+  try {
+    const currentQueryValue = route.query?.queue
+    if (!currentQueryValue) return router.back()
+    let routeName = ''
+    switch (currentQueryValue) {
+      case 'applications':
+        routeName = 'applications'
+        break
+      case 'onboarded':
+        routeName = 'onboarded'
+        break
+      case 'approved':
+        routeName = 'approved'
+        break
+    }
+    return router.push({
+      name: routeName,
+      query: { queue: currentQueryValue }
+    })
+  } catch (error) {
+    useToast().error(error.message)
+  }
+}
 </script>
 <style scoped>
 .col-navigation {
