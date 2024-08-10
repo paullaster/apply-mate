@@ -130,14 +130,23 @@ const router = createRouter({
         requiresAuth: true,
         title: 'User'
       }
-    }
+    },
+    {
+      path: '/:catchAll(.*)',
+      component: () => import('@/components/NotFoundComponent.vue'),
+      name: 'notFound',
+      meta: {
+        title: 'Not Found'
+      }
+    },
     
   ]
 })
 
 
 router.beforeEach((to, from, next) => {
-  document.title = 'AHP | '+ to.meta.title || 'Home';
+  const title = to.meta.title || 'Home';
+  document.title = 'AHP | '+ title;
   useGlobalStore().setLoader(true);
   const { requiresAuth } = to.meta;
   if (requiresAuth && !AuthService.isAuthenticated()) {
