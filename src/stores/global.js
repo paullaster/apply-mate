@@ -50,18 +50,24 @@ export const useGlobalStore = defineStore('global', {
                 useToast().success(error.message);
             }
         },
-        setProfileToggle(event) {
+        setProfileToggle() {
             try {
-                if (event.target.id === 'activate-toggle-btn-ctl-icon' || event.target.id === 'activate-toggle-btn-ctl') {
-                    this.$patch({
-                        profileToggle:!this.profileToggle,
-                    });
-                    return;
-                }else {
+                document.addEventListener('click', (e)=> {
+                    if (e.target.id === 'activate-toggle-btn-ctl-icon' || e.target.id === 'activate-toggle-btn-ctl') {
+                        this.$patch({
+                            profileToggle:!this.profileToggle,
+                        });
+                        return;
+                    }else {
+                        this.$patch({
+                            profileToggle: false,
+                        });
+                    }
+                    console.log(e.target.id)
                     this.$patch({
                         profileToggle: false,
                     });
-                }
+                })
             } catch (error) {
                 useToast().success(error.message);
             }

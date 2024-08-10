@@ -4,19 +4,16 @@
      position: absolute !important;
      right: 0;
      top: 7%;
-     min-height: 25rem !important;
-     width: 20rem;
+     min-height: 10rem !important;
+     width: 12rem;
      border-radius: 0 0 0 .8rem !important;
-     padding: 1.6rem;
+     padding: 1.6rem .16rem .8rem 0;
 
     .toggle-logout-btn {
-        position: absolute;
-        top: 84%;
-        width: 100%;
         display: flex;
         justify-content: center;
          & > button {
-            
+            width: 95%;
          }
     }
    }

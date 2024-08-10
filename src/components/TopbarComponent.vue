@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app class="app-top-header">
-    <v-btn icon :color="ColorHelper.colorsHelper('primary')">
+    <v-btn icon :color="ColorHelper.colorsHelper('primary')" @click="()=> !lgAndUp && dashboardStore.setToggleNavbar(true)">
       <v-icon>mdi-view-module</v-icon>
     </v-btn>
     <v-toolbar-title v-if="mdAndUp">{{ APPNAME }}</v-toolbar-title>
@@ -8,7 +8,7 @@
     <span style="margin-inline: 0.8rem;">
       Role: <v-chip :color="ColorHelper.colorsHelper(user?.role)">{{ user?.role?.toUpperCase() }}</v-chip>
     </span>
-    <span style="margin-inline: 0.8rem;">
+    <span style="margin-inline: 0.8rem;" v-if="mdAndUp">
       Title: <v-chip :color="ColorHelper.colorsHelper(user?.role)">{{ user?.title?.toUpperCase() }}</v-chip>
     </span>
     <span v-if="mdAndUp">{{ user.name }}</span>
@@ -20,7 +20,7 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useAuth, useGlobalStore } from '@/stores';
+import { useAuth, useDashboard, useGlobalStore } from '@/stores';
 import AuthService from '@/packages/auth/AuthService';
 import { APPNAME } from '@/environment';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
@@ -33,6 +33,7 @@ const { mdAndUp, lgAndUp } = useDisplay();
 // STORES
 const authStore = useAuth();
 const globalStore = useGlobalStore();
+const dashboardStore = useDashboard()
 const {user} = storeToRefs(authStore);
 authStore.setUser(AuthService.getUser());
 
