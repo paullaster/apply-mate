@@ -37,7 +37,7 @@
           @click="onboardApplication"
         >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
-          Onboard application
+          Approve application
         </v-btn>
       </v-toolbar>
     </v-card-title>
