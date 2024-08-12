@@ -30,7 +30,7 @@
           <span>accept applications</span>
         </v-btn>
         <v-btn
-          :disabled="!selected.length"
+          :disabled="!selected.length || user.role !== 'lead'"
           @click="batchOnboardApplications"
           :color="ColorHelper.colorsHelper('success')"
           variant="flat"
@@ -38,7 +38,7 @@
           v-if="route.query.queue === 'onboarded'"
         >
           <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
-          <span>Onboard Applications</span>
+          <span>Approve Applications</span>
         </v-btn>
       </v-toolbar>
     </v-card-title>
@@ -215,6 +215,8 @@ watch(
 watch(
   ()=>route.name,
   (name)=> {
+    globalStore.$reset();
+    applicationStore.$reset();
     switch (name) {
     case 'applications':
       applicationStore.getApplications({ offset: 1, limit: 10 })
