@@ -21,6 +21,17 @@
           :color="ColorHelper.colorsHelper('primary')"
           variant="flat"
           class="mr-2"
+          :disabled="user.role !== 'lead'"
+          @click="reopenApplication"
+          v-if="applicant?.status !== 'New'"
+        >
+          <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
+          Reopen application
+        </v-btn>
+        <v-btn
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="flat"
+          class="mr-2"
           :disabled="applicant?.status?.trim() !== 'New'"
           v-if="route.query.queue === 'applications'"
           @click="acceptApplication"
@@ -451,11 +462,13 @@ onMounted(() => {
 // COMPONENT METHODS
 function navigateApplication(type) {
   try {
-    const navigationgList = filteredApplication.value?.length ? filteredApplication.value : applications.value;
+    const navigationgList = filteredApplication.value?.length
+      ? filteredApplication.value
+      : applications.value
     switch (type) {
       case 'prev':
         applicationStore.$patch({
-          applicant: currentIndex.value && (navigationgList[currentIndex.value - 1])
+          applicant: currentIndex.value && navigationgList[currentIndex.value - 1]
         })
         break
       case 'next':
@@ -548,7 +561,7 @@ async function acceptApplication() {
   }
 }
 
-async function onboardApplication(){
+async function onboardApplication() {
   try {
     globalStore.setLoader(true)
     if (applicant.value?.status.trim() === 'Onboarded') {
@@ -583,6 +596,50 @@ async function onboardApplication(){
   }
 }
 
+function reopenApplication() {
+  try {
+    globalStore.setLoader(true)
+    if (applicant.value?.onboardedBy.trim() === user.value?.consoltium.trim()) {
+      if (applicant.value?.status.trim() === 'Onboarded') {
+        const payload = {
+          no: applicant.value.no
+        }
+        if (!payload['no']) {
+          globalStore.setLoader(false)
+          useToast().error(
+            `Sorry!, We can't process this application at this time, PLease try again later!`
+          )
+          return
+        }
+        applicationStore
+          .reverseOnboardedApplication(payload)
+          .then(async(res) => {
+            globalStore.setLoader(false)
+            useToast().success(res.message)
+            await applicationStore.getApplicant(applicantId.value)
+          })
+          .catch((error) => {
+            globalStore.setLoader(false)
+            console.log(error)
+            useToast().error(customError)
+          })
+      } else {
+        globalStore.setLoader(false)
+        useToast().error(`This application is application is ${applicant.value?.status}`)
+      }
+    } else {
+      globalStore.setLoader(false)
+      useToast().info(
+        'You can not reopen this application because it was accepted by another consortium other than yourself.'
+      )
+      return
+    }
+  } catch (error) {
+    globalStore.setLoader(false)
+    console.log(error.message)
+    useToast().error('Sorry!, We ran into an error!, Please try again later.')
+  }
+}
 function navigateBack() {
   try {
     const currentQueryValue = route.query?.queue

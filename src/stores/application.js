@@ -102,6 +102,20 @@ export const useApplication = defineStore('application', {
                     'Content-Type': 'multipart/form-data',
                 },
             })
+        },
+        async reverseOnboardedApplication(payload) {
+            return await _request.axiosRequest({
+                url: `/reverse/onboarded/application`,
+                method: 'POST',
+                data: payload,
+            })
+        },
+        async batchReverseOnboardedApplications(payload) {
+            return await _request.axiosRequest({
+                url: `/batch/reverse/onboarded/applications`,
+                method: 'POST',
+                data: payload,
+            })
         }
     },
 })

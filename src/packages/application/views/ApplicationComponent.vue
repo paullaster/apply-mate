@@ -30,6 +30,17 @@
           <span>accept applications</span>
         </v-btn>
         <v-btn
+          :disabled="!selected.length"
+          @click="batchReverseOnboardedApplications"
+          :color="ColorHelper.colorsHelper('info')"
+          variant="flat"
+          class="mr-4"
+           v-if="route.query.queue !== 'approved'"
+        >
+          <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
+          <span>Reverse Applications</span>
+        </v-btn>
+        <v-btn
           :disabled="!selected.length || user.role !== 'lead'"
           @click="batchOnboardApplications"
           :color="ColorHelper.colorsHelper('success')"
@@ -309,6 +320,41 @@ function batchOnboardApplications(){
   }
 }
 
+function batchReverseOnboardedApplications(){
+  try {
+    globalStore.setLoader(true)
+    if (!selected.value.length) {
+      useToast().error('No applications selected')
+      return globalStore.setLoader(false)
+    }
+    const applicationsReversible = selected.value.filter((app) => app.status.trim() === 'Onboarded' && app.onboardedBy.trim() === user.value.consoltium.trim())
+    if (!applicationsReversible.length) {
+      globalStore.setLoader(false)
+      useToast().info('The applications you had selected for reversal were either reversed by another consortium other than yourself or are currently not having the onboraded status. Please select again!')
+      return;
+    }
+
+    applicationStore
+      .batchReverseOnboardedApplications(applicationsReversible.map((app) => app.no))
+      .then((res) => {
+        useToast().success(res?.message)
+        globalStore.setLoader(false)
+        route.query?.queue === 'onboarded' ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true})
+        : applicationStore.getApplications({ offset: 1, limit: 10})
+      })
+      .catch((error) => {
+        console.error(error)
+        globalStore.setLoader(false)
+        useToast().error('Sorry, We could not complete this process at this time. Please try again!')
+      })
+  } catch (error) {
+    globalStore.setLoader(false)
+    console.error(error)
+    useToast().error('Sorry, We  could not complete this process. Please try again!')
+  }finally {
+    selected.value = []
+  }
+}
 setupStore.getCouties()
 
 // EVENTS
