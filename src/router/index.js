@@ -139,7 +139,14 @@ const router = createRouter({
         title: 'Not Found'
       }
     },
-    
+    {
+      path: '/upload-attachment',
+      component: () => import('@/components/RecoverAttachment.vue'),
+      name: 'uploadAttachment',
+      meta: {
+        title: 'uploadAttachment'
+      }
+    }
   ]
 })
 

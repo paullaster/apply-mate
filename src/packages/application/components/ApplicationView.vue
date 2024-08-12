@@ -294,7 +294,7 @@ const setupStore = useSetupStore()
 const globalStore = useGlobalStore()
 const authStore = useAuth()
 applicantId.value && applicationStore.getApplicant(applicantId.value)
-const { applicant, applications } = storeToRefs(applicationStore)
+const { applicant, applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
 
@@ -451,15 +451,16 @@ onMounted(() => {
 // COMPONENT METHODS
 function navigateApplication(type) {
   try {
+    const navigationgList = filteredApplication.value?.length ? filteredApplication.value : applications.value;
     switch (type) {
       case 'prev':
         applicationStore.$patch({
-          applicant: currentIndex.value && applications.value[currentIndex.value - 1]
+          applicant: currentIndex.value && (navigationgList[currentIndex.value - 1])
         })
         break
       case 'next':
         applicationStore.$patch({
-          applicant: currentIndex.value !== null && applications.value[currentIndex.value + 1]
+          applicant: currentIndex.value !== null && navigationgList[currentIndex.value + 1]
         })
         break
       default:

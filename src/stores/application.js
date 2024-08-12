@@ -92,6 +92,16 @@ export const useApplication = defineStore('application', {
                 method: 'POST',
                 data: payload,
             })
+        },
+        async recoverAttachments(payload) {
+            return await _request.axiosRequest({
+                url: `/recover/attachments`,
+                method: 'POST',
+                data: payload,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
         }
     },
 })

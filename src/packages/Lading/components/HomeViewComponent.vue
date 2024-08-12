@@ -9,7 +9,7 @@
                     <p>
                         Learn more about available  job and career opportunities at The Affordable Housing Program
                     </p>
-                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'apply'})" disabled="true" min-width="100%" >View vacancies</v-btn>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'apply'})"  min-width="100%" >View vacancies</v-btn>
                 </div>
                 <div class="cta-card">
                     <h2>Consortium portal</h2>
