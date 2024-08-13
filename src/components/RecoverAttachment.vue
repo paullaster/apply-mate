@@ -76,7 +76,6 @@ const rules = computed(() => {
     ],
     certificate_testimonials: [
       (v) => !!v || 'Certificate and testimonials are required',
-      (v) => (v && Array.from(v)[0].name.endsWith('.docx')) || 'Only .docx files are allowed'
     ]
   }
 })
