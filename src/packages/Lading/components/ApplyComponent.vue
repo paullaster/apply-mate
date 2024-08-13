@@ -550,11 +550,12 @@
           </v-card>
           <v-row>
             <v-col>
+              <!-- :disabled="!formData.declaration || submitingStatus" -->
               <v-btn
                 width="300px"
                 color="primary"
-                :disabled="!formData.declaration || submitingStatus"
                 @click="submitApplication"
+                disabled
                 >Submit</v-btn
               >
             </v-col>
