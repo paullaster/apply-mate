@@ -310,7 +310,7 @@ const { counties } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
 
 // VARS
-const applicationsSize = applications.value?.length
+const applicationsSize = filteredApplication.value.length ?? applications.value?.length
 const currentIndex = ref(null)
 const uniqueId = ref(10002)
 
@@ -414,7 +414,10 @@ watch(
   () => [applications.value, applicantId.value],
   () => {
     if (applicantId.value && applications.value && applications.value.length > 0) {
-      const findIndex = applications.value.findIndex((app) => app.id === atob(applicantId.value))
+      const currentDataSource = filteredApplication.value?.length
+      ? filteredApplication.value
+      : applications.value;
+      const findIndex = currentDataSource.findIndex((app) => app.id === atob(applicantId.value))
       if (findIndex !== -1) {
         currentIndex.value = findIndex
       } else {
