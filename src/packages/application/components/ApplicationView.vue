@@ -23,7 +23,7 @@
           class="mr-2"
           :disabled="user.role !== 'lead'"
           @click="reopenApplication"
-          v-if="applicant?.status !== 'New'"
+          v-if="applicant?.status?.trim() === 'Onboarded'"
         >
           <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
           Reopen application
@@ -33,7 +33,7 @@
           variant="flat"
           class="mr-2"
           :disabled="applicant?.status?.trim() !== 'New'"
-          v-if="route.query.queue === 'applications'"
+          v-if="route.query.queue === 'applications' && applicant?.status?.trim() === 'New'"
           @click="acceptApplication"
         >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
@@ -44,7 +44,7 @@
           variant="flat"
           class="mr-2"
           :disabled="user.role !== 'lead'"
-          v-if="route.query.queue === 'onboarded'"
+          v-if="route.query.queue === 'onboarded' && applicant?.status?.trim() === 'Onboarded'"
           @click="onboardApplication"
         >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
