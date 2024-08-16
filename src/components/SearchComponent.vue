@@ -10,7 +10,7 @@
                 variant="outlined"
                 label="Search by application number, applicant name"
                 v-model="searchQuery.searchText"
-                @input="search"
+                @update:modelValue="search"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -95,7 +95,7 @@ const categoryList = computed(() => {
 
 function search() {
   try {
-    const matchedApplications = filteredApplication.value.length ?
+    const matchedApplications = (filteredApplication.value.length && (searchQuery.value.searchText !== '' || searchQuery.value.searchText))?
     filteredApplication.value?.filter((app) => {
       return (
         app.no.toString().includes(searchQuery.value.searchText) ||

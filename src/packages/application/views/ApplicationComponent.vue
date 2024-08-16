@@ -9,7 +9,7 @@
           variant="outlined"
           class="mr-4"
           @click="() => applicationStore.$patch({ filteredApplication: [] })"
-          v-if="filteredApplication.length"
+          v-if="filteredApplication.length || isAnyQueryParam"
         >
           <v-icon>mdi-lock-reset</v-icon>
           <span>Reset List</span>
@@ -35,7 +35,7 @@
           :color="ColorHelper.colorsHelper('info')"
           variant="flat"
           class="mr-4"
-           v-if="route.query.queue !== 'approved'"
+          v-if="route.query.queue !== 'approved'"
         >
           <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
           <span>Reverse Applications</span>
@@ -56,7 +56,7 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="filteredApplication.length ? filteredApplication : applications"
+        :items="(filteredApplication.length || isAnyQueryParam) ? filteredApplication : applications"
         :item-value="id"
         return-object
         items-selectable="selectable"
@@ -180,11 +180,12 @@ const globalStore = useGlobalStore()
 // STATE & GETTERS
 const { applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
-const { loading } = storeToRefs(globalStore)
+const { loading, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
 const categoryColors = ref({ default: '#F5F5F5' })
+const isAnyQueryParam = ref(false)
 
 // HOOKS
 onMounted(() => {
@@ -224,25 +225,44 @@ watch(
 )
 
 watch(
-  ()=>route.name,
-  (name)=> {
-    globalStore.$reset();
-    applicationStore.$reset();
+  () => route.name,
+  (name) => {
+    globalStore.$reset()
+    applicationStore.$reset()
     switch (name) {
-    case 'applications':
-      applicationStore.getApplications({ offset: 1, limit: 10 })
-      break
-    case 'onboarded':
-      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
-      break
-    case 'approved':
-      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
-      break
-    default:
-      console.log('Unknown')
-      break
-  }
-  }, {immediate: true}
+      case 'applications':
+        applicationStore.getApplications({ offset: 1, limit: 10 })
+        break
+      case 'onboarded':
+        applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+        break
+      case 'approved':
+        applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+        break
+      default:
+        console.log('Unknown')
+        break
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => searchQuery.value,
+  (query) => {
+    for (const prop in query) {
+      if (query[prop] || query[prop] !== '') {
+        isAnyQueryParam.value = true
+        return
+      }else{
+        isAnyQueryParam.value = false;
+      }
+    }
+    !isAnyQueryParam.value && applicationStore.$patch({
+      'filteredApplication': []
+    });
+  },
+  { immediate: true, deep: true }
 )
 
 // METHODS
@@ -289,7 +309,7 @@ function batchAcceptApplications() {
   }
 }
 
-function batchOnboardApplications(){
+function batchOnboardApplications() {
   try {
     globalStore.setLoader(true)
     if (!selected.value.length) {
@@ -320,18 +340,23 @@ function batchOnboardApplications(){
   }
 }
 
-function batchReverseOnboardedApplications(){
+function batchReverseOnboardedApplications() {
   try {
     globalStore.setLoader(true)
     if (!selected.value.length) {
       useToast().error('No applications selected')
       return globalStore.setLoader(false)
     }
-    const applicationsReversible = selected.value.filter((app) => app.status.trim() === 'Onboarded' && app.onboardedBy.trim() === user.value.consoltium.trim())
+    const applicationsReversible = selected.value.filter(
+      (app) =>
+        app.status.trim() === 'Onboarded' && app.onboardedBy.trim() === user.value.consoltium.trim()
+    )
     if (!applicationsReversible.length) {
       globalStore.setLoader(false)
-      useToast().info('The applications you had selected for reversal were either reversed by another consortium other than yourself or are currently not having the onboraded status. Please select again!')
-      return;
+      useToast().info(
+        'The applications you had selected for reversal were either reversed by another consortium other than yourself or are currently not having the onboraded status. Please select again!'
+      )
+      return
     }
 
     applicationStore
@@ -339,19 +364,22 @@ function batchReverseOnboardedApplications(){
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        route.query?.queue === 'onboarded' ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true})
-        : applicationStore.getApplications({ offset: 1, limit: 10})
+        route.query?.queue === 'onboarded'
+          ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+          : applicationStore.getApplications({ offset: 1, limit: 10 })
       })
       .catch((error) => {
         console.error(error)
         globalStore.setLoader(false)
-        useToast().error('Sorry, We could not complete this process at this time. Please try again!')
+        useToast().error(
+          'Sorry, We could not complete this process at this time. Please try again!'
+        )
       })
   } catch (error) {
     globalStore.setLoader(false)
     console.error(error)
     useToast().error('Sorry, We  could not complete this process. Please try again!')
-  }finally {
+  } finally {
     selected.value = []
   }
 }
