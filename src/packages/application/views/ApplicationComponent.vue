@@ -8,7 +8,7 @@
         <v-btn
           variant="outlined"
           class="mr-4"
-          @click="() => (applicationStore.$patch({ 'filteredApplication': [] }), globalStore.$patch({ 'searchQuery': {} }))"
+          @click="resetApplicationList"
           v-if="filteredApplication.length || isAnyQueryParam"
         >
           <v-icon>mdi-lock-reset</v-icon>
@@ -56,7 +56,7 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="(filteredApplication.length || isAnyQueryParam) ? filteredApplication : applications"
+        :items="filteredApplication.length || isAnyQueryParam ? filteredApplication : applications"
         :item-value="id"
         return-object
         items-selectable="selectable"
@@ -254,13 +254,14 @@ watch(
       if (query[prop] || query[prop] !== '') {
         isAnyQueryParam.value = true
         return
-      }else{
-        isAnyQueryParam.value = false;
+      } else {
+        isAnyQueryParam.value = false
       }
     }
-    !isAnyQueryParam.value && applicationStore.$patch({
-      'filteredApplication': []
-    });
+    !isAnyQueryParam.value &&
+      applicationStore.$patch({
+        filteredApplication: []
+      })
   },
   { immediate: true, deep: true }
 )
@@ -381,6 +382,22 @@ function batchReverseOnboardedApplications() {
     useToast().error('Sorry, We  could not complete this process. Please try again!')
   } finally {
     selected.value = []
+  }
+}
+
+function resetApplicationList() {
+  try {
+    applicationStore.$patch({ filteredApplication: [] })
+    globalStore.$patch({
+      searchQuery: {
+        searchText: '',
+        county: '',
+        category: ''
+      }
+    });
+    isAnyQueryParam.value = false;
+  } catch (error) {
+    useToast().error('We ran into an error!')
   }
 }
 setupStore.getCouties()
