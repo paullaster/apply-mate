@@ -8,7 +8,7 @@
         <v-btn
           variant="outlined"
           class="mr-4"
-          @click="() => applicationStore.$patch({ filteredApplication: [] })"
+          @click="() => (applicationStore.$patch({ 'filteredApplication': [] }), globalStore.$patch({ 'searchQuery': {} }))"
           v-if="filteredApplication.length || isAnyQueryParam"
         >
           <v-icon>mdi-lock-reset</v-icon>
