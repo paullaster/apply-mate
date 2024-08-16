@@ -27,7 +27,7 @@
             <v-col cols="12">
               <v-select
                 v-model="searchQuery.category"
-                :items="categoryList"
+                :items="route.name === 'application' ? categoryList : categories"
                 item-title="description"
                 item-value="code"
                 label="Filter by category"
@@ -50,6 +50,10 @@
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router';
+
+// ROUTE
+const route = useRoute();
 
 
 // STORE
