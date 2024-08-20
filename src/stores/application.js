@@ -116,6 +116,20 @@ export const useApplication = defineStore('application', {
                 method: 'POST',
                 data: payload,
             })
+        },
+        async hrReviewApplication(payload) {
+            return await _request.axiosRequest({
+                url: `/hr/review/application`,
+                method: 'POST',
+                data: payload,
+            })
+        },
+        async batchHRReviewedApplication(payload) {
+            return await _request.axiosRequest({
+                url: `/batch/hr/review/applications`,
+                method: 'POST',
+                data: payload,
+            })
         }
     },
 })

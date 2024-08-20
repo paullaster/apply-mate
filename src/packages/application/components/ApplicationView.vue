@@ -32,8 +32,21 @@
           :color="ColorHelper.colorsHelper('primary')"
           variant="flat"
           class="mr-2"
+          @click="hrReviewApplication"
+          v-if="route.query.queue === 'approved' &&  user.role.toLowerCase() === 'hr'"
+        >
+          <v-icon class="mr-2"> mdi-flash</v-icon>
+          Hr Review
+        </v-btn>
+        <v-btn
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="flat"
+          class="mr-2"
           :disabled="applicant?.status?.trim() !== 'New'"
-          v-if="route.query.queue === 'applications' && applicant?.status?.trim() === 'New'"
+          v-if="
+          route.query.queue === 'applications' &&
+           applicant?.status?.trim() === 'New' &&
+           user.role.toLowerCase() !== 'hr' "
           @click="acceptApplication"
         >
           <v-icon class="mr-2">mdi-check-decagram-outline</v-icon>
@@ -433,6 +446,9 @@ watch(
           case 'approved':
             routeName = 'approved'
             break
+          case 'hrreviewed':
+            routeName = 'hrreviewed'
+            break
         }
         router.push({
           name: routeName,
@@ -455,6 +471,9 @@ onMounted(() => {
       break
     case 'approved':
       applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      break
+    case 'hrreviewed':
+      applicationStore.getApplications({ offset: 1, limit: 10, hrReviewed: true })
       break
     default:
       console.log('Unknown')
@@ -599,6 +618,41 @@ async function onboardApplication() {
   }
 }
 
+async function hrReviewApplication() {
+  try {
+    globalStore.setLoader(true)
+    if (applicant.value?.status.trim() === 'Approved') {
+      const payload = {
+        no: applicant.value.no
+      }
+      if (!payload['no']) {
+        globalStore.setLoader(false)
+        useToast().error(
+          `Sorry!, We can't process this application at this time, PLease try again later!`
+        )
+        return
+      }
+      applicationStore
+        .hrReviewApplication(payload)
+        .then((res) => {
+          globalStore.setLoader(false)
+          useToast().success(res.message)
+          navigateApplication('next')
+        })
+        .catch((error) => {
+          globalStore.setLoader(false)
+          useToast().error(error?.response?.data?.message || error.message || customError)
+        })
+    } else {
+      globalStore.setLoader(false)
+      useToast().error(`This application is already ${applicant.value?.status}`)
+    }
+  } catch (error) {
+    globalStore.setLoader(false)
+    useToast().error(error.message)
+  }
+}
+
 function reopenApplication() {
   try {
     globalStore.setLoader(true)
@@ -657,6 +711,9 @@ function navigateBack() {
         break
       case 'approved':
         routeName = 'approved'
+        break
+      case 'hrreviewed':
+        routeName = 'hrreviewed'
         break
     }
     return router.push({

@@ -32,5 +32,13 @@ export default [
         icon: "mdi-check-decagram",
         title: "Approved",
         id: 'approved',
+    },
+    {
+        path: `/${btoa(AuthService.getUser().id)}/hrreviewed?queue=hrreviewed`,
+        order: 5,
+        hasSubs: false,
+        icon: "mdi-flash-red-eye",
+        title: "HR Reviewd",
+        id: 'hr_reviewed',
     }
 ];

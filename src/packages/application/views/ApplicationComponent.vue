@@ -3,7 +3,7 @@
     <v-card-title>
       <v-toolbar>
         <v-app-bar-nav-icon @click="drawer = !drawer" />
-        <v-toolbar-title>{{ route.query?.queue?.toUpperCase() }}</v-toolbar-title>
+        <v-toolbar-title>{{ route?.meta?.title?.toUpperCase() }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
           variant="outlined"
@@ -24,7 +24,7 @@
           :color="ColorHelper.colorsHelper('success')"
           variant="flat"
           class="mr-4"
-          v-if="route.query.queue === 'applications'"
+          v-if="route.query.queue === 'applications' && user.role.toLowerCase() !== 'hr'"
         >
           <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
           <span>accept applications</span>
@@ -35,7 +35,7 @@
           :color="ColorHelper.colorsHelper('info')"
           variant="flat"
           class="mr-4"
-          v-if="route.query.queue !== 'approved'"
+          v-if="route.query.queue !== 'approved' && user.role.toLowerCase() !== 'hr'"
         >
           <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
           <span>Reverse Applications</span>
@@ -46,10 +46,21 @@
           :color="ColorHelper.colorsHelper('success')"
           variant="flat"
           class="mr-4"
-          v-if="route.query.queue === 'onboarded'"
+          v-if="route.query.queue === 'onboarded' && user.role.toLowerCase() !== 'hr'"
         >
           <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
           <span>Approve Applications</span>
+        </v-btn>
+        <v-btn
+          :disabled="!selected.length"
+          @click="batchHRReviewApplications"
+          :color="ColorHelper.colorsHelper('primary')"
+          variant="flat"
+          class="mr-4"
+          v-if="user.role.toLowerCase() === 'hr' && route.query?.queue === 'approved'"
+        >
+          <v-icon class="mr-2">mdi-flash</v-icon>
+          <span>HR Review</span>
         </v-btn>
       </v-toolbar>
     </v-card-title>
@@ -108,9 +119,22 @@
           {{ DateUtil.toDate(item.modifiedAt) }}
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn :color="ColorHelper.colorsHelper('primary')" @click="viewApplication(item)">
-            <v-icon class="mr-2">mdi-file-eye</v-icon>
-            <span>view</span>
+          <v-btn 
+          :color="ColorHelper.colorsHelper('hrbtn')" 
+          @click="(item)=>{}" 
+          class="my-2 mx-2"
+          v-if="user.role.toLowerCase() === 'hr'"
+          icon
+          elevation="0"
+          >
+            <v-icon>mdi-flash</v-icon>
+          </v-btn>
+          <v-btn elevation="0" icon :color="ColorHelper.colorsHelper('infoLight')" @click="()=>{}" class="my-2 mx-2">
+            <v-icon >mdi-comment-quote</v-icon>
+          </v-btn>
+          <v-btn  elevation="0" icon hint="view application" :color="ColorHelper.colorsHelper('viewbtn')" @click="viewApplication(item)" class="my-2 mx-2">
+            <v-icon >mdi-file-eye</v-icon>
+            <v-tooltip>View Application</v-tooltip>
           </v-btn>
         </template>
       </v-data-table>
@@ -239,6 +263,9 @@ watch(
       case 'approved':
         applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
         break
+      case 'hrreviewed':
+        applicationStore.getApplications({ offset: 1, limit: 10, hrReviewed: true })
+        break
       default:
         console.log('Unknown')
         break
@@ -328,6 +355,37 @@ function batchOnboardApplications() {
         useToast().success(res?.message)
         globalStore.setLoader(false)
         applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      })
+      .catch((error) => {
+        globalStore.setLoader(false)
+        useToast().error(error?.response?.data?.message || error.message || customError)
+      })
+  } catch (error) {
+    globalStore.setLoader(false)
+    useToast().error(error.message)
+  } finally {
+    selected.value = []
+  }
+}
+
+function batchHRReviewApplications() {
+  try {
+    globalStore.setLoader(true)
+    if (!selected.value.length) {
+      useToast().error('No applications selected')
+      return globalStore.setLoader(false)
+    }
+    const reviewableApplications = selected.value.filter((app) => app.status === 'Approved')
+    if (!reviewableApplications.length) {
+      return globalStore.setLoader(false)
+    }
+
+    applicationStore
+      .batchHRReviewedApplication(reviewableApplications.map((app) => app.no))
+      .then((res) => {
+        useToast().success(res?.message)
+        globalStore.setLoader(false)
+        applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
       })
       .catch((error) => {
         globalStore.setLoader(false)

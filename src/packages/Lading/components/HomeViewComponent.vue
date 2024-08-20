@@ -3,7 +3,7 @@
         <section>
             <h1>The Kenya Affordable Housing Program</h1>
             <p>A goverment initiative that aims to provide affordable housing for Kenyans</p>
-            <div :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
+            <!-- <div :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
                 <div class="cta-card">
                     <h2>See vacancies</h2>
                     <p>
@@ -25,7 +25,37 @@
                     </p>
                     <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="100%">Become a partner</v-btn>
                 </div>
-            </div>
+            </div> -->
+            <v-row :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
+                <v-col cols="12" lg="4" md="4" sm="12" class="cta-card">
+                    <h2>See vacancies</h2>
+                    <p>
+                        Learn more about available  job and career opportunities at The Affordable Housing Program
+                    </p>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn"   @click="()=>router.push({name: 'apply'})" disabled min-width="100%" >View vacancies</v-btn>
+                </v-col>
+                <v-col cols="12" lg="4" md="4" sm="12" class="cta-card">
+                    <h2>Consortium portal</h2>
+                    <p>
+                        Access a comprehensive database of consortia
+                    </p>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'auth'})" min-width="100%">Login</v-btn>
+                </v-col>
+                <v-col cols="12" lg="4" md="4" sm="12" class="cta-card">
+                    <h2>HR Portal</h2>
+                    <p>
+                        HR Access portal
+                    </p>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'auth'})" min-width="100%">Login</v-btn>
+                </v-col>
+                <v-col cols="12" lg="4" md="4" sm="12" class="cta-card">
+                    <h2>University partner</h2>
+                    <p>
+                        Partner with State Department of Housing and Urban Development
+                    </p>
+                    <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="100%">Become a partner</v-btn>
+                </v-col>
+            </v-row>
         </section>
     </main>
 </template>

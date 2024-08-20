@@ -92,7 +92,7 @@ const router = createRouter({
             default: () => import("@/packages/application/views/ApplicationComponent.vue"),
           },
           meta: {
-            title: 'Applications'
+            title: 'New Applications'
           }
         },
         {
@@ -123,6 +123,16 @@ const router = createRouter({
           },
           meta: {
             title: 'Approved Applications'
+          }
+        },
+        {
+          path: 'hrreviewed',
+          name: 'hrreviewed',
+          components: {
+            default: () => import("@/packages/application/views/ApplicationComponent.vue"),
+          },
+          meta: {
+            title: 'HR Reviewed Applications'
           }
         },
       ],
