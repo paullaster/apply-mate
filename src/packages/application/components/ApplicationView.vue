@@ -474,9 +474,9 @@ watch(
 
 watch(
   ()=>activeCommentable.value,
-  ()=>{
-    if(Object.keys(activeCommentable).length) {
-      globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no})
+  (commentable)=>{
+    if(Object.keys(commentable).length) {
+      globalStore.fetchFeedbackHistory({documentNo: commentable.no})
     }
   },
   {immediate: true, deep: true}

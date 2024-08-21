@@ -249,7 +249,16 @@ onMounted(() => {
 
 onMounted(()=> {
   if (user.value.role.toLowerCase() === 'hr') {
-    setupStore.getConsortia({$filter: `type eq 'Consortia'`})
+    const consortiaArray = user.value?.consortiaFilter.split('|');
+    let consortiaFilter;
+    consortiaArray.forEach((consortium) => {
+        if(!consortiaFilter) {
+          consortiaFilter = `no eq '${consortium}'`;
+        }else {
+          consortiaFilter += ` OR no eq '${consortium}'`;
+        }
+    })
+    setupStore.getConsortia({$filter: `${consortiaFilter}`})
   }
 })
 
@@ -313,9 +322,9 @@ watch(
 // METHODS
 watch(
   ()=>activeCommentable.value,
-  ()=>{
-    if(Object.keys(activeCommentable).length) {
-      globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no})
+  (commentable)=>{
+    if(Object.keys(commentable).length) {
+      globalStore.fetchFeedbackHistory({documentNo: commentable.no})
     }
   },
   {immediate: true, deep: true}
