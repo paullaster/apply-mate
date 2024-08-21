@@ -44,6 +44,27 @@ export const useApplication = defineStore('application', {
             useToast().error(error.message);
            }
         },
+        getApplicationsSync(params = {}) {
+            try {
+             _request.axiosRequest({
+                 url: constants.application,
+                 params,
+             })
+             .then((response) => {
+                 this.$patch({
+                     applications: response.data.value,
+                 });
+                 this.setLoader(false);
+             })
+             .catch((error) => {
+                 this.setLoader(false);
+                 useToast().error(error.message);
+             });
+            } catch (error) {
+             this.setLoader(false);
+             useToast().error(error.message);
+            }
+         },
         async getApplicant(id) {
             try {
                 this.setLoader(true);

@@ -38,7 +38,7 @@ export default [
         order: 5,
         hasSubs: false,
         icon: "mdi-flash-red-eye",
-        title: "HR Reviewd",
+        title: "HR Reviewed",
         id: 'hr_reviewed',
     }
 ];

@@ -39,6 +39,15 @@
           Hr Review
         </v-btn>
         <v-btn
+          :color="ColorHelper.colorsHelper('info')"
+          variant="flat"
+          class="mr-2"
+          @click="globalStore.setFeedbackActionDialog(true, applicant)"
+        >
+          <v-icon class="mr-2">mdi-message-bulleted</v-icon>
+          Leave a feedback
+        </v-btn>
+        <v-btn
           :color="ColorHelper.colorsHelper('primary')"
           variant="flat"
           class="mr-2"
@@ -283,6 +292,7 @@
     </v-card-text>
   </v-card>
   <ViewDocument />
+  <FeedbackActions />
 </template>
 
 <script setup>
@@ -295,6 +305,7 @@ import BiodataComponent from './BiodataComponent.vue'
 import ViewDocument from '@/components/ViewDocument.vue'
 import { useToast } from 'vue-toastification'
 import ColorHelper from '@/util/ColorHelper'
+import FeedbackActions from '@/components/FeedbackActions.vue'
 
 // REFS
 const tab = ref()
@@ -464,16 +475,16 @@ watch(
 onMounted(() => {
   switch (route.query?.queue) {
     case 'applications':
-      applicationStore.getApplications({ offset: 1, limit: 10 })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 10 })
       break
     case 'onboarded':
-      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 10, onboarding: true })
       break
     case 'approved':
-      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 10, approved: true })
       break
     case 'hrreviewed':
-      applicationStore.getApplications({ offset: 1, limit: 10, hrReviewed: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 10, hrReviewed: true })
       break
     default:
       console.log('Unknown')

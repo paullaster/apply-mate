@@ -57,7 +57,7 @@
           :color="ColorHelper.colorsHelper('primary')"
           variant="flat"
           class="mr-4"
-          v-if="user.role.toLowerCase() === 'hr' && route.query?.queue === 'approved'"
+          v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
         >
           <v-icon class="mr-2">mdi-flash</v-icon>
           <span>HR Review</span>
@@ -73,10 +73,13 @@
         items-selectable="selectable"
         select-strategy="page"
         v-model="selected"
-        items-per-page="10"
         show-select
         :loading="loading"
         search
+        mobile-breakpoint="md"
+        :page="page"
+        items-per-page="10"
+        :total-items="totalItemsCount"
       >
         <template v-slot:[`item.gender`]="{ item }">
           <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)" elavation="0">{{
@@ -112,29 +115,30 @@
             categories?.find((c) => c?.code?.trim() === item?.category?.trim())?.description
           }}</v-chip>
         </template>
-        <template v-slot:[`item.createdAt`]="{ item }">
-          {{ DateUtil.toDate(item.createdAt) }}
+        <template v-slot:[`item.approvedByConsortia`]="{ item }">
+          <v-chip v-tooltip="`${getConsortiumFullName(item)}`">
+            {{ getConsortium(item) }}
+          </v-chip>
         </template>
         <template v-slot:[`item.modifiedAt`]="{ item }">
           {{ DateUtil.toDate(item.modifiedAt) }}
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn 
-          :color="ColorHelper.colorsHelper('hrbtn')" 
+          <v-btn  
           @click="(item)=>{}" 
-          class="my-2 mx-2"
-          v-if="user.role.toLowerCase() === 'hr'"
+          class="my-2 mx-1"
+          v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
           icon
           elevation="0"
+          v-tooltip="'Quick HR Review This Application'"
           >
-            <v-icon>mdi-flash</v-icon>
+          <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
           </v-btn>
-          <v-btn elevation="0" icon :color="ColorHelper.colorsHelper('infoLight')" @click="()=>{}" class="my-2 mx-2">
-            <v-icon >mdi-comment-quote</v-icon>
+          <v-btn elevation="0" icon  @click="()=>globalStore.setFeedbackActionDialog(true, item)" class="my-2 mx-1" v-tooltip="'Leave Feedback for this Application'">
+            <v-icon :color="ColorHelper.colorsHelper('info')" size="30" >mdi-comment-quote</v-icon>
           </v-btn>
-          <v-btn  elevation="0" icon hint="view application" :color="ColorHelper.colorsHelper('viewbtn')" @click="viewApplication(item)" class="my-2 mx-2">
-            <v-icon >mdi-file-eye</v-icon>
-            <v-tooltip>View Application</v-tooltip>
+          <v-btn  elevation="0" icon hint="view application" @click="viewApplication(item)" class="my-2 mx-1" v-tooltip="'View Application Details'">
+            <v-icon :color="ColorHelper.colorsHelper('primary')" size="30">mdi-file-eye</v-icon>
           </v-btn>
         </template>
       </v-data-table>
@@ -143,6 +147,7 @@
   <SearchComponent
     :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"
   />
+  <FeedbackActions />
 </template>
 
 <script setup>
@@ -154,6 +159,7 @@ import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
 import SearchComponent from '@/components/SearchComponent.vue'
+import FeedbackActions from '@/components/FeedbackActions.vue'
 
 // INJECT STATE
 const customError = inject('customError')
@@ -190,7 +196,8 @@ const headers = [
     value: 'category',
     sortable: true
   },
-  { title: 'Date Submitted', value: 'createdAt', sortable: true },
+  { title: 'Approved By', value: 'approvedByConsortia', sortable: true, aligne: 'center' },
+  // { title: 'Date Submitted', value: 'createdAt', sortable: true },
   { title: 'Date Modified', value: 'modifiedAt', sortable: true },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
@@ -203,13 +210,15 @@ const globalStore = useGlobalStore()
 
 // STATE & GETTERS
 const { applications, filteredApplication } = storeToRefs(applicationStore)
-const { counties, categories } = storeToRefs(setupStore)
-const { loading, searchQuery } = storeToRefs(globalStore)
+const { counties, categories, consortia } = storeToRefs(setupStore)
+const { loading, searchQuery, activeCommentable } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
 const categoryColors = ref({ default: '#F5F5F5' })
 const isAnyQueryParam = ref(false)
+const page = ref(1);
+const totalItemsCount = ref(1);
 
 // HOOKS
 onMounted(() => {
@@ -224,19 +233,27 @@ onMounted(() => {
 onMounted(() => {
   switch (route.name) {
     case 'applications':
-      applicationStore.getApplications({ offset: 1, limit: 10 })
+      applicationStore.getApplications({ $top: 10 })
       break
     case 'onboarded':
-      applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+      applicationStore.getApplications({ $top: 10, onboarding: true })
       break
     case 'approved':
-      applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+      applicationStore.getApplications({ $top: 10, approved: true })
       break
     default:
       console.log('Unknown')
       break
   }
 })
+
+onMounted(()=> {
+  if (user.value.role.toLowerCase() === 'hr') {
+    setupStore.getConsortia({$filter: `type eq 'Consortia'`})
+  }
+})
+
+// COMPUTED
 
 // WATCH
 watch(
@@ -255,16 +272,16 @@ watch(
     applicationStore.$reset()
     switch (name) {
       case 'applications':
-        applicationStore.getApplications({ offset: 1, limit: 10 })
+        applicationStore.getApplicationsSync({ offset: 1, limit: 10 })
         break
       case 'onboarded':
-        applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+        applicationStore.getApplicationsSync({ offset: 1, limit: 10, onboarding: true })
         break
       case 'approved':
-        applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+        applicationStore.getApplicationsSync({ offset: 1, limit: 10, approved: true })
         break
       case 'hrreviewed':
-        applicationStore.getApplications({ offset: 1, limit: 10, hrReviewed: true })
+        applicationStore.getApplicationsSync({ offset: 1, limit: 10, hrReviewed: true })
         break
       default:
         console.log('Unknown')
@@ -305,6 +322,12 @@ function viewApplication(item) {
     useToast().error(error.message)
   }
 }
+
+watch(
+  ()=>activeCommentable.value,
+  ()=> globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no}),
+  {immediate: true, deep: true}
+)
 
 function batchAcceptApplications() {
   try {
@@ -456,6 +479,29 @@ function resetApplicationList() {
     isAnyQueryParam.value = false;
   } catch (error) {
     useToast().error('We ran into an error!')
+  }
+}
+
+function getConsortium(item) {
+  try {
+    const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
+    const result = consortium?.name?.split(' ');
+    return result[0][0] + result[1][0];
+
+  } catch (error) {
+    console.error(error)
+    // useToast().error('We ran into an error!')
+  }
+}
+
+function getConsortiumFullName(item) {
+  try {
+    const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
+    return consortium?.name;
+
+  } catch (error) {
+    console.error(error)
+    // useToast().error('We ran into an error!')
   }
 }
 setupStore.getCouties()

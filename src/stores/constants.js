@@ -5,4 +5,5 @@ export default {
     // SETUP
     counties: "/setup/counties",
     categories: "/setup/categories",
+    consortia: "/setup/consortia",
 }

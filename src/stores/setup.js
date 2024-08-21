@@ -10,6 +10,7 @@ export const useSetupStore = defineStore('setup', {
         counties: [],
         filteredCounties: [],
         categories: [],
+        consortia: [],
     }),
     getters: {
         setupDataGetter: (state) => (key) => state[key],
@@ -42,6 +43,25 @@ export const useSetupStore = defineStore('setup', {
                 .then((response) => {
                     this.$patch({
                         categories: response?.data?.data?.value,
+                    });
+                })
+                .catch((error) => {
+                    useToast().error(error?.response?.data?.message || error.message || customError);
+                });
+            } catch (error) {
+                useToast().error( error.message || customError);
+            }
+        },
+        async getConsortia(params) {
+            try {
+                _request.axiosRequest({
+                    method: 'GET',
+                    url: constants.consortia,
+                    params,
+                })
+                .then((response) => {
+                    this.$patch({
+                        consortia: response?.data?.data?.value,
                     });
                 })
                 .catch((error) => {
