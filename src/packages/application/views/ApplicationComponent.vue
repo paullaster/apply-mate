@@ -311,6 +311,15 @@ watch(
 )
 
 // METHODS
+watch(
+  ()=>activeCommentable.value,
+  ()=>{
+    if(Object.keys(activeCommentable).length) {
+      globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no})
+    }
+  },
+  {immediate: true, deep: true}
+)
 function viewApplication(item) {
   try {
     router.push({
@@ -323,11 +332,6 @@ function viewApplication(item) {
   }
 }
 
-watch(
-  ()=>activeCommentable.value,
-  ()=> globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no}),
-  {immediate: true, deep: true}
-)
 
 function batchAcceptApplications() {
   try {
