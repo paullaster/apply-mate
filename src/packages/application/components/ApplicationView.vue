@@ -332,6 +332,7 @@ applicantId.value && applicationStore.getApplicant(applicantId.value)
 const { applicant, applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
+const { activeCommentable } = storeToRefs(globalStore)
 
 // VARS
 const applicationsSize = filteredApplication.value.length ?? applications.value?.length
@@ -469,6 +470,16 @@ watch(
     }
   },
   { immediate: true }
+)
+
+watch(
+  ()=>activeCommentable.value,
+  ()=>{
+    if(Object.keys(activeCommentable).length) {
+      globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no})
+    }
+  },
+  {immediate: true, deep: true}
 )
 
 // HOOKS
