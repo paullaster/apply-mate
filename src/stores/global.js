@@ -15,6 +15,7 @@ export const useGlobalStore = defineStore('global', {
             searchText: '',
             county: '',
             category: '',
+            consortium: '',
         }
     }),
     getters: {

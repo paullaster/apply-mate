@@ -35,6 +35,18 @@
                 clearable
               ></v-select>
             </v-col>
+            <v-col cols="12">
+              <v-select
+                v-model="searchQuery.consortium"
+                :items="consortia"
+                item-title="name"
+                item-value="no"
+                label="Filter by Consortium"
+                @update:modelValue="sortByConsortium"
+                clearable
+                v-if="route.name === 'approved' && user.role.toLowerCase() === 'hr'"
+              ></v-select>
+            </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
@@ -63,7 +75,7 @@ const setupStore = useSetupStore()
 const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
-const { counties, categories } = storeToRefs(setupStore)
+const { counties, categories, consortia } = storeToRefs(setupStore)
 const { applications, filteredApplication } = storeToRefs(applicationStore);
 
 defineProps({
@@ -154,6 +166,27 @@ function sortByCategory(){
     console.error(error.message);
   }
 }
+
+function sortByConsortium(){
+  try {
+    const matchedApplications = filteredApplication.value?.length  && searchQuery.value.consortium?
+    filteredApplication.value?.filter((app) => {
+      return app.approvedByConsortia.toString().toLowerCase() === searchQuery.value.consortium.toString().toLowerCase();
+    })
+    :
+    applications.value?.filter((app) => {
+      return searchQuery.value.consortium ? 
+      app.approvedByConsortia.toString().toLowerCase() === searchQuery.value.consortium.toString().toLowerCase()
+      : app;
+    })
+    applicationStore.$patch({
+      filteredApplication: matchedApplications,
+    })
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
 </script>
 
 <style scoped>
