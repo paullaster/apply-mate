@@ -7,16 +7,33 @@
       <template v-slot:subtitle="{ subtitle }">
         <div v-html="subtitle"></div>
       </template>
+      <template v-slot:prepend="{  }">
+        <v-avatar 
+        :color="
+        ColorHelper.colorsHelper(
+          user.role.toLowerCase() === 'hr'  ?  'success' : 
+          user.role.toLowerCase() === 'lead' ? 'lead' : user.role.toLowerCase()
+        )
+        "
+        >
+          <v-icon>mdi-account</v-icon>
+        </v-avatar>
+      </template>
     </v-list>
 </template>
   
   <script setup>
+import ColorHelper from '@/util/ColorHelper';
+import { useAuth } from '@/stores';
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
+ const authStore = useAuth();
+    const {user} =  storeToRefs(authStore);
     const comments = ref([
-        { type: 'subheader', title: 'Today' },
+        { type: 'subheader', title: 'Comments' },
         {
-          prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+          prepend: 'mdi-account',
           title: 'Brunch this weekend?',
           subtitle: `<span class="text-primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
         },
