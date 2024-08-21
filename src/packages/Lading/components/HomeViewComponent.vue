@@ -3,7 +3,7 @@
         <section>
             <h1>The Kenya Affordable Housing Program</h1>
             <p>A goverment initiative that aims to provide affordable housing for Kenyans</p>
-            <!-- <div :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
+            <div :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
                 <div class="cta-card">
                     <h2>See vacancies</h2>
                     <p>
@@ -12,7 +12,7 @@
                     <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn"   @click="()=>router.push({name: 'apply'})" disabled min-width="100%" >View vacancies</v-btn>
                 </div>
                 <div class="cta-card">
-                    <h2>Consortium portal</h2>
+                    <h2>Consortium and HR portal</h2>
                     <p>
                         Access a comprehensive database of consortia
                     </p>
@@ -25,8 +25,8 @@
                     </p>
                     <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="100%">Become a partner</v-btn>
                 </div>
-            </div> -->
-            <v-row :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
+            </div>
+            <!-- <v-row :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">
                 <v-col cols="12" lg="4" md="4" sm="12" class="cta-card">
                     <h2>See vacancies</h2>
                     <p>
@@ -55,7 +55,7 @@
                     </p>
                     <v-btn :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="100%">Become a partner</v-btn>
                 </v-col>
-            </v-row>
+            </v-row> -->
         </section>
     </main>
 </template>
