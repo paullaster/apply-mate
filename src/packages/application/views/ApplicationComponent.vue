@@ -120,12 +120,9 @@
           </v-chip>
         </template>
         <template v-slot:[`item.approvedByConsortia`]="{ item }">
-          <v-chip>
-            {{ item.approvedByConsortia }}
-          </v-chip>
-          <!-- <v-chip v-tooltip="`${getConsortiumFullName(item)}`">
+          <v-chip v-tooltip="`${getConsortiumFullName(item)}`">
             {{ getConsortium(item) }}
-          </v-chip> -->
+          </v-chip>
         </template>
         <template v-slot:[`item.modifiedAt`]="{ item }">
           {{ DateUtil.toDate(item.modifiedAt) }}
@@ -607,28 +604,26 @@ function onModalChange() {
   }
 }
 
-// function getConsortium(item) {
-//   try {
-//     const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
-//     const result = consortium?.name?.split(' ');
-//     return result[0][0] + result[1][0];
+function getConsortium(item) {
+  try {
+    const result = item?.approvedByConsortiaName?.split(' ');
+    return result[0][0] + result[1][0];
 
-//   } catch (error) {
-//     console.error(error)
-//     // useToast().error('We ran into an error!')
-//   }
-// }
+  } catch (error) {
+    console.error(error)
+    // useToast().error('We ran into an error!')
+  }
+}
 
-// function getConsortiumFullName(item) {
-//   try {
-//     const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
-//     return consortium?.name;
+function getConsortiumFullName(item) {
+  try {
+    return item?.approvedByConsortiaName;
 
-//   } catch (error) {
-//     console.error(error)
-//     // useToast().error('We ran into an error!')
-//   }
-// }
+  } catch (error) {
+    console.error(error)
+    // useToast().error('We ran into an error!')
+  }
+}
 setupStore.getCouties()
 
 // EVENTS
