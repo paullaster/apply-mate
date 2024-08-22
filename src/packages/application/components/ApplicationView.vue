@@ -3,11 +3,11 @@
     <v-card-title>
       <v-toolbar>
         <v-toolbar-items>
-          <v-btn icon @click="navigateBack">
+          <v-btn icon @click="()=> applicantQuickView ? globalStore.setQuickViewScreen(false, {}) : navigateBack()">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-toolbar-items>
-        <v-toolbar-title class="headline">Applicant Details</v-toolbar-title>
+        <v-toolbar-title class="headline" v-if="!applicantQuickView">Applicant Details</v-toolbar-title>
         <v-spacer></v-spacer>
         <span>
           Status:
@@ -76,7 +76,7 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-col cols="12" class="col-navigation">
+        <v-col cols="12" class="col-navigation" v-if="!applicantQuickView">
           <div class="navigation-container" :key="uniqueId">
             <div>
               <v-btn
@@ -332,7 +332,7 @@ applicantId.value && applicationStore.getApplicant(applicantId.value)
 const { applicant, applications, filteredApplication } = storeToRefs(applicationStore)
 const { counties } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
-const { activeCommentable } = storeToRefs(globalStore)
+const { activeCommentable, applicantQuickView } = storeToRefs(globalStore)
 
 // VARS
 const applicationsSize = filteredApplication.value.length ?? applications.value?.length

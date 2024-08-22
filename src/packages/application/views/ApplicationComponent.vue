@@ -77,9 +77,8 @@
         :loading="loading"
         search
         mobile-breakpoint="md"
-        :page="page"
         items-per-page="10"
-        :total-items="totalItemsCount"
+        hide-default-footer
       >
         <template v-slot:[`item.gender`]="{ item }">
           <v-chip :color="ColorHelper.colorsHelper(`gender${item?.gender}`)" elavation="0">{{
@@ -115,39 +114,78 @@
             categories?.find((c) => c?.code?.trim() === item?.category?.trim())?.description
           }}</v-chip>
         </template>
-        <template v-slot:[`item.approvedByConsortia`]="{ item }">
-          <v-chip v-tooltip="`${getConsortiumFullName(item)}`">
-            {{ getConsortium(item) }}
+        <template v-slot:[`item.disabled`]="{ item }">
+          <v-chip :color="ColorHelper.colorsHelper(item?.biodata?.disabled?.toLowerCase())">
+            {{ item?.biodata?.disabled }}
           </v-chip>
+        </template>
+        <template v-slot:[`item.approvedByConsortia`]="{ item }">
+          <v-chip>
+            {{ item.approvedByConsortia }}
+          </v-chip>
+          <!-- <v-chip v-tooltip="`${getConsortiumFullName(item)}`">
+            {{ getConsortium(item) }}
+          </v-chip> -->
         </template>
         <template v-slot:[`item.modifiedAt`]="{ item }">
           {{ DateUtil.toDate(item.modifiedAt) }}
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn  
-          @click="(item)=>{}" 
-          class="my-2 mx-1"
-          v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
-          icon
-          elevation="0"
-          v-tooltip="'Quick HR Review This Application'"
+          <v-btn
+            @click="() => globalStore.setQuickViewScreen(true, item)"
+            class="my-2 mx-1"
+            v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
+            icon
+            elevation="0"
+            v-tooltip="'Quick HR Review This Application'"
           >
-          <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
+            <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
           </v-btn>
-          <v-btn elevation="0" icon  @click="()=>globalStore.setFeedbackActionDialog(true, item)" class="my-2 mx-1" v-tooltip="'Leave Feedback for this Application'">
-            <v-icon :color="ColorHelper.colorsHelper('info')" size="30" >mdi-comment-quote</v-icon>
+          <v-btn
+            elevation="0"
+            icon
+            @click="() => globalStore.setFeedbackActionDialog(true, item)"
+            class="my-2 mx-1"
+            v-tooltip="'Leave Feedback for this Application'"
+          >
+            <v-icon :color="ColorHelper.colorsHelper('info')" size="30">mdi-comment-quote</v-icon>
           </v-btn>
-          <v-btn  elevation="0" icon hint="view application" @click="viewApplication(item)" class="my-2 mx-1" v-tooltip="'View Application Details'">
+          <v-btn
+            elevation="0"
+            icon
+            hint="view application"
+            @click="viewApplication(item)"
+            class="my-2 mx-1"
+            v-tooltip="'View Application Details'"
+          >
             <v-icon :color="ColorHelper.colorsHelper('primary')" size="30">mdi-file-eye</v-icon>
           </v-btn>
         </template>
       </v-data-table>
+      <v-divider></v-divider>
+      <div class="text-right" style="padding: 0.4rem 0; display: flex; justify-content: flex-end">
+        <v-pagination
+          v-model="page"
+          :length="totalItemsCount"
+          :total-visible="7"
+          next-icon="mdi-skip-next"
+          prev-icon="mdi-skip-previous"
+          variant="flat"
+          previous-aria-label="Previous"
+          density="comfortable"
+          :active-color="ColorHelper.colorsHelper('accent')"
+          @update:modelValue="onModalChange"
+          @first="onFirstPage"
+        ></v-pagination>
+      </div>
+      <v-divider></v-divider>
     </v-card-text>
   </v-card>
   <SearchComponent
     :propertiesArray="['Name', 'County of Origin', 'Gender', 'Category', 'Status']"
   />
   <FeedbackActions />
+  <ApplicantQuickView />
 </template>
 
 <script setup>
@@ -160,6 +198,7 @@ import DateUtil from '@/util/DateUtil'
 import ColorHelper from '@/util/ColorHelper'
 import SearchComponent from '@/components/SearchComponent.vue'
 import FeedbackActions from '@/components/FeedbackActions.vue'
+import ApplicantQuickView from '@/components/ApplicantQuickView.vue'
 
 // INJECT STATE
 const customError = inject('customError')
@@ -191,13 +230,13 @@ const headers = [
     value: 'countyOfOrigin',
     sortable: true
   },
+  { title: 'Disabled', value: 'disabled', sortable: true },
   {
     title: 'Category',
     value: 'category',
     sortable: true
   },
   { title: 'Approved By', value: 'approvedByConsortia', sortable: true, aligne: 'center' },
-  // { title: 'Date Submitted', value: 'createdAt', sortable: true },
   { title: 'Date Modified', value: 'modifiedAt', sortable: true },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
@@ -209,16 +248,15 @@ const authStore = useAuth()
 const globalStore = useGlobalStore()
 
 // STATE & GETTERS
-const { applications, filteredApplication } = storeToRefs(applicationStore)
-const { counties, categories, consortia } = storeToRefs(setupStore)
+const { applications, filteredApplication, totalItemsCount } = storeToRefs(applicationStore)
+const { counties, categories } = storeToRefs(setupStore)
 const { loading, searchQuery, activeCommentable } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
 const categoryColors = ref({ default: '#F5F5F5' })
 const isAnyQueryParam = ref(false)
-const page = ref(1);
-const totalItemsCount = ref(1);
+const page = ref(1)
 
 // HOOKS
 onMounted(() => {
@@ -247,18 +285,18 @@ onMounted(() => {
   }
 })
 
-onMounted(()=> {
+onMounted(() => {
   if (user.value.role.toLowerCase() === 'hr') {
-    const consortiaArray = user.value?.consortiaFilter.split('|');
-    let consortiaFilter;
+    const consortiaArray = user.value?.consortiaFilter.split('|')
+    let consortiaFilter
     consortiaArray.forEach((consortium) => {
-        if(!consortiaFilter) {
-          consortiaFilter = `no eq '${consortium}'`;
-        }else {
-          consortiaFilter += ` OR no eq '${consortium}'`;
-        }
+      if (!consortiaFilter) {
+        consortiaFilter = `no eq '${consortium}'`
+      } else {
+        consortiaFilter += ` OR no eq '${consortium}'`
+      }
     })
-    setupStore.getConsortia({$filter: `${consortiaFilter}`})
+    setupStore.getConsortia({ $filter: `${consortiaFilter}` })
   }
 })
 
@@ -281,16 +319,16 @@ watch(
     applicationStore.$reset()
     switch (name) {
       case 'applications':
-        applicationStore.getApplicationsSync({ offset: 1, limit: 10 })
+        applicationStore.getApplications({ $top: 10 })
         break
       case 'onboarded':
-        applicationStore.getApplicationsSync({ offset: 1, limit: 10, onboarding: true })
+        applicationStore.getApplications({ $top: 10, onboarding: true })
         break
       case 'approved':
-        applicationStore.getApplicationsSync({ offset: 1, limit: 10, approved: true })
+        applicationStore.getApplications({ $top: 10, approved: true })
         break
       case 'hrreviewed':
-        applicationStore.getApplicationsSync({ offset: 1, limit: 10, hrReviewed: true })
+        applicationStore.getApplications({ $top: 10, hrReviewed: true })
         break
       default:
         console.log('Unknown')
@@ -321,13 +359,13 @@ watch(
 
 // METHODS
 watch(
-  ()=>activeCommentable.value,
-  (commentable)=>{
-    if(Object.keys(commentable).length) {
-      globalStore.fetchFeedbackHistory({documentNo: commentable.no})
+  () => activeCommentable.value,
+  (commentable) => {
+    if (Object.keys(commentable).length) {
+      globalStore.fetchFeedbackHistory({ documentNo: commentable.no })
     }
   },
-  {immediate: true, deep: true}
+  { immediate: true, deep: true }
 )
 function viewApplication(item) {
   try {
@@ -340,7 +378,6 @@ function viewApplication(item) {
     useToast().error(error.message)
   }
 }
-
 
 function batchAcceptApplications() {
   try {
@@ -390,7 +427,7 @@ function batchOnboardApplications() {
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+        onModalChange()
       })
       .catch((error) => {
         globalStore.setLoader(false)
@@ -421,7 +458,8 @@ function batchHRReviewApplications() {
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        applicationStore.getApplications({ offset: 1, limit: 10, approved: true })
+        onModalChange()
+        
       })
       .catch((error) => {
         globalStore.setLoader(false)
@@ -459,9 +497,10 @@ function batchReverseOnboardedApplications() {
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        route.query?.queue === 'onboarded'
-          ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
-          : applicationStore.getApplications({ offset: 1, limit: 10 })
+        // route.query?.queue === 'onboarded'
+        //   ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
+        //   : applicationStore.getApplications({ offset: 1, limit: 10 })
+        onModalChange()
       })
       .catch((error) => {
         console.error(error)
@@ -488,35 +527,108 @@ function resetApplicationList() {
         county: '',
         category: ''
       }
-    });
-    isAnyQueryParam.value = false;
+    })
+    isAnyQueryParam.value = false
   } catch (error) {
     useToast().error('We ran into an error!')
   }
 }
 
-function getConsortium(item) {
+function onFirstPage(){
   try {
-    const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
-    const result = consortium?.name?.split(' ');
-    return result[0][0] + result[1][0];
-
+    globalStore.$reset()
+    applicationStore.$patch({
+      filteredApplication: [],
+    })
+      switch (route.name) {
+        case 'applications':
+          applicationStore.getApplications({ $top: 10 })
+          break
+        case 'onboarded':
+          applicationStore.getApplications({ $top: 10, onboarding: true })
+          break
+        case 'approved':
+          applicationStore.getApplications({ $top: 10, approved: true })
+          break
+        case 'hrreviewed':
+          applicationStore.getApplications({ $top: 10, hrReviewed: true })
+          break
+        default:
+          console.log('Unknown')
+      }
   } catch (error) {
-    console.error(error)
-    // useToast().error('We ran into an error!')
+    useToast().error('We ran into an error!');
   }
 }
 
-function getConsortiumFullName(item) {
+function onModalChange() {
   try {
-    const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
-    return consortium?.name;
-
+    globalStore.$reset()
+    applicationStore.$patch({
+      filteredApplication: [],
+    })
+    if (Number(page.value) === 1) {
+      switch (route.name) {
+        case 'applications':
+          applicationStore.getApplications({ $top: 10 })
+          break
+        case 'onboarded':
+          applicationStore.getApplications({ $top: 10, onboarding: true })
+          break
+        case 'approved':
+          applicationStore.getApplications({ $top: 10, approved: true })
+          break
+        case 'hrreviewed':
+          applicationStore.getApplications({ $top: 10, hrReviewed: true })
+          break
+        default:
+          console.log('Unknown')
+      }
+    }
+    switch (route.name) {
+      case 'applications':
+        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10 })
+        break
+      case 'onboarded':
+        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10,  onboarding: true })
+        break
+      case 'approved':
+        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10,  approved: true })
+        break
+      case 'hrreviewed':
+        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10, hrReviewed: true })
+        break
+      default:
+        console.log('Unknown')
+        break
+    }
   } catch (error) {
-    console.error(error)
-    // useToast().error('We ran into an error!')
+    useToast().error('We ran into an error!')
   }
 }
+
+// function getConsortium(item) {
+//   try {
+//     const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
+//     const result = consortium?.name?.split(' ');
+//     return result[0][0] + result[1][0];
+
+//   } catch (error) {
+//     console.error(error)
+//     // useToast().error('We ran into an error!')
+//   }
+// }
+
+// function getConsortiumFullName(item) {
+//   try {
+//     const consortium = consortia.value?.find((c)=>c.no === item?.approvedByConsortia);
+//     return consortium?.name;
+
+//   } catch (error) {
+//     console.error(error)
+//     // useToast().error('We ran into an error!')
+//   }
+// }
 setupStore.getCouties()
 
 // EVENTS

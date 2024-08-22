@@ -15,6 +15,8 @@ class ColorHelper {
           admin: '#FFB04C',
           user: '#2196F3',
           hr: '#4CAF50',
+          no: '#FFB04C',
+          yes: '#2196F3',
           hrbtn: '#cae8cb',
           viewbtn: '#c0c5f2',
           primary: '#5867DD',

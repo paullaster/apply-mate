@@ -10,6 +10,7 @@ export const useApplication = defineStore('application', {
         applications: [],
         applicant: {},
         filteredApplication: [],
+        totalItemsCount: 1,
     }),
     getters: {
         applicationGetter: (state) => (key) => state[key],
@@ -32,6 +33,7 @@ export const useApplication = defineStore('application', {
             .then((response) => {
                 this.$patch({
                     applications: response.data.value,
+                    totalItemsCount: Math.ceil(response.data['@odata.count']/10),
                 });
                 this.setLoader(false);
             })

@@ -30,7 +30,7 @@
                     bottom: 12%;
                     right: 5%;
                     "
-                    :color="ColorHelper.colorsHelper('primary')" class="btn" @click="()=>router.push({name: 'auth'})" min-width="90%">Login</v-btn>
+                    :color="ColorHelper.colorsHelper('primary')" class="" @click="()=>router.push({name: 'auth'})" min-width="90%">Login</v-btn>
                 </div>
                 <div class="cta-card" style="position:relative;">
                     <h2>University partner</h2>
@@ -43,7 +43,7 @@
                     bottom: 12%;
                     right: 5%;
                     "
-                    :color="ColorHelper.colorsHelper('primary')" class="btn" min-width="90%">Become a partner</v-btn>
+                    :color="ColorHelper.colorsHelper('primary')" class="btn my-3" min-width="90%">Become a partner</v-btn>
                 </div>
             </div>
             <!-- <v-row :class="lgAndUp ? 'cta-cards-wrapper big-screen' : 'cta-cards-wrapper small-screen'">

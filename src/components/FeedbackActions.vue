@@ -22,7 +22,7 @@
                 >
               </v-form>
             </v-col>
-            <v-divider vertical></v-divider>
+            <v-divider vertical v-if="lgAndUp"></v-divider>
             <v-col cols="12" sm="6">
              <h2 class="headline mb-4">Feedback History</h2>    
              <FeedbackDialog/>
@@ -50,6 +50,11 @@ const { user } = storeToRefs(authStore);
 import { ref } from 'vue'
 import ColorHelper from '@/util/ColorHelper';
 import { useToast } from 'vue-toastification';
+import { useDisplay } from 'vuetify/lib/framework.mjs';
+
+// VUETIFY
+const { lgAndUp } = useDisplay();
+
 
 // COMPONENTN STATE
 const feedback = ref({
@@ -83,13 +88,12 @@ async function submitFeedback(){
             documentNo: activeCommentable.value.no,
         }
         globalStore.leaveFeedback(feedbackPayload)
-        .then(() =>{
-            //  feedbackActions.value = false
+        .then((data) =>{
+            console.log(data)
+            isSubmitting.value = false
              useToast().success('Feedback submitted successfully')
              feedback.value.comment = ''
-             feedbackForm.value.resetFields();
              globalStore.fetchFeedbackHistory({documentNo: activeCommentable.value.no});
-             isSubmitting.value = false
         });
     } catch (error) {
         console.log(error)

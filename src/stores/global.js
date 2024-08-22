@@ -1,6 +1,7 @@
 import { _request } from "@/service";
 import { defineStore } from "pinia";
 import { useToast } from "vue-toastification";
+import { useApplication } from "./application";
 
 export const useGlobalStore = defineStore('global', {
     state: () => ({
@@ -9,6 +10,7 @@ export const useGlobalStore = defineStore('global', {
         searchDialog: false,
         profileToggle: false,
         feedbackActions: false,
+        applicantQuickView: null,
         activeCommentable: {},
         feedbackHistory: [],
         searchQuery: {
@@ -22,6 +24,18 @@ export const useGlobalStore = defineStore('global', {
         globalStateGetter: (state) => (key) => state[key],
     },
     actions: {
+        setQuickViewScreen(status, item) {
+            try {
+                this.$patch({
+                    applicantQuickView: status,
+                });
+                useApplication().$patch({
+                    applicant: item,
+                })
+            } catch (error) {
+                useToast().error(error.message);
+            }
+        },
         setLoader(payload) {
             try {
                 this.$patch({ loading: payload });

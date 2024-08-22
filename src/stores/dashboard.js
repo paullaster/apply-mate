@@ -38,6 +38,13 @@ export const useDashboard = defineStore("dashboard", {
             } catch (error) {
                 useToast().error(error.message);
             }
+        },
+        updateUserStatus() {
+            try {
+                console.log('update status');
+            } catch (error) {
+                useToast().error(error.message);
+            }
         }
     },
 });
