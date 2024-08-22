@@ -131,11 +131,11 @@
           <v-btn
             @click="() => globalStore.setQuickViewScreen(true, item)"
             class="my-2 mx-1"
-            v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
             icon
             elevation="0"
-            v-tooltip="'Quick HR Review This Application'"
-          >
+            v-tooltip="'Application Quick View'"
+            >
+            <!-- v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'" -->
             <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
           </v-btn>
           <v-btn
@@ -252,8 +252,8 @@ const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
 const categoryColors = ref({ default: '#F5F5F5' })
-const isAnyQueryParam = ref(false)
 const page = ref(1)
+const isAnyQueryParam = ref(false)
 
 // HOOKS
 onMounted(() => {
@@ -300,6 +300,13 @@ onMounted(() => {
 // COMPUTED
 
 // WATCH
+watch(
+  ()=> page.value,
+  (val)=> applicationStore.$patch({
+    currentPage: val
+  }),
+  {immediate: true, deep:true}
+)
 watch(
   () => user.value.id,
   () => {
@@ -494,9 +501,6 @@ function batchReverseOnboardedApplications() {
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        // route.query?.queue === 'onboarded'
-        //   ? applicationStore.getApplications({ offset: 1, limit: 10, onboarding: true })
-        //   : applicationStore.getApplications({ offset: 1, limit: 10 })
         onModalChange()
       })
       .catch((error) => {

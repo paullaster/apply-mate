@@ -11,6 +11,7 @@ export const useApplication = defineStore('application', {
         applicant: {},
         filteredApplication: [],
         totalItemsCount: 1,
+        currentPage:1,
     }),
     getters: {
         applicationGetter: (state) => (key) => state[key],

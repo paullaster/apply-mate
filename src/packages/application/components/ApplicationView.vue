@@ -329,7 +329,7 @@ const setupStore = useSetupStore()
 const globalStore = useGlobalStore()
 const authStore = useAuth()
 applicantId.value && applicationStore.getApplicant(applicantId.value)
-const { applicant, applications, filteredApplication } = storeToRefs(applicationStore)
+const { applicant, applications, filteredApplication, currentPage:page } = storeToRefs(applicationStore)
 const { counties } = storeToRefs(setupStore)
 const { user } = storeToRefs(authStore)
 const { activeCommentable, applicantQuickView } = storeToRefs(globalStore)
@@ -589,7 +589,12 @@ async function acceptApplication() {
         .then((res) => {
           globalStore.setLoader(false)
           useToast().success(res.message)
-          navigateApplication('next')
+          return applicantQuickView ?
+          (
+            globalStore.setQuickViewScreen(false, {}),
+            updateAdampter()
+          ) :
+          navigateApplication('next');
         })
         .catch((error) => {
           globalStore.setLoader(false)
@@ -624,7 +629,12 @@ async function onboardApplication() {
         .then((res) => {
           globalStore.setLoader(false)
           useToast().success(res.message)
-          navigateApplication('next')
+          return applicantQuickView ?
+          (
+            globalStore.setQuickViewScreen(false, {}),
+            updateAdampter()
+          ) :
+          navigateApplication('next');
         })
         .catch((error) => {
           globalStore.setLoader(false)
@@ -659,7 +669,13 @@ async function hrReviewApplication() {
         .then((res) => {
           globalStore.setLoader(false)
           useToast().success(res.message)
-          navigateApplication('next')
+          return applicantQuickView ? 
+          (
+            globalStore.setQuickViewScreen(false, {}),
+            updateAdampter() 
+          ) :
+           navigateApplication('next');
+          
         })
         .catch((error) => {
           globalStore.setLoader(false)
@@ -744,6 +760,30 @@ function navigateBack() {
     })
   } catch (error) {
     useToast().error(error.message)
+  }
+}
+
+function updateAdampter() {
+  try {
+    switch (route.query?.queue) {
+      case 'applications':
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10 })
+        break
+      case 'onboarded':
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10,  onboarding: true })
+        break
+      case 'approved':
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10,  approved: true })
+        break
+      case 'hrreviewed':
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10, hrReviewed: true })
+        break
+    default:
+      console.log('Unknown')
+      break
+  }
+  } catch (error) {
+    console.log(error);
   }
 }
 </script>
