@@ -486,16 +486,16 @@ watch(
 onMounted(() => {
   switch (route.query?.queue) {
     case 'applications':
-      applicationStore.getApplicationsSync({ offset: 1, limit: 10 })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 20 })
       break
     case 'onboarded':
-      applicationStore.getApplicationsSync({ offset: 1, limit: 10, onboarding: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 20, onboarding: true })
       break
     case 'approved':
-      applicationStore.getApplicationsSync({ offset: 1, limit: 10, approved: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 20, approved: true })
       break
     case 'hrreviewed':
-      applicationStore.getApplicationsSync({ offset: 1, limit: 10, hrReviewed: true })
+      applicationStore.getApplicationsSync({ offset: 1, limit: 20, hrReviewed: true })
       break
     default:
       console.log('Unknown')
@@ -767,16 +767,16 @@ function updateAdampter() {
   try {
     switch (route.query?.queue) {
       case 'applications':
-        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10 })
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 20) - 20), $top: 20 })
         break
       case 'onboarded':
-        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10,  onboarding: true })
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 20) - 20), $top: 20,  onboarding: true })
         break
       case 'approved':
-        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10,  approved: true })
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 20) - 20), $top: 20,  approved: true })
         break
       case 'hrreviewed':
-        applicationStore.getApplicationsSync({ $skip: ((page.value * 10) - 10), $top: 10, hrReviewed: true })
+        applicationStore.getApplicationsSync({ $skip: ((page.value * 20) - 20), $top: 20, hrReviewed: true })
         break
     default:
       console.log('Unknown')

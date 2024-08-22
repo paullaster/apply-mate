@@ -77,7 +77,7 @@
         :loading="loading"
         search
         mobile-breakpoint="md"
-        items-per-page="10"
+        items-per-page="20"
         hide-default-footer
       >
         <template v-slot:[`item.gender`]="{ item }">
@@ -268,13 +268,13 @@ onMounted(() => {
 onMounted(() => {
   switch (route.name) {
     case 'applications':
-      applicationStore.getApplications({ $top: 10 })
+      applicationStore.getApplications({ $top: 20 })
       break
     case 'onboarded':
-      applicationStore.getApplications({ $top: 10, onboarding: true })
+      applicationStore.getApplications({ $top: 20, onboarding: true })
       break
     case 'approved':
-      applicationStore.getApplications({ $top: 10, approved: true })
+      applicationStore.getApplications({ $top: 20, approved: true })
       break
     default:
       console.log('Unknown')
@@ -323,16 +323,16 @@ watch(
     applicationStore.$reset()
     switch (name) {
       case 'applications':
-        applicationStore.getApplications({ $top: 10 })
+        applicationStore.getApplications({ $top: 20 })
         break
       case 'onboarded':
-        applicationStore.getApplications({ $top: 10, onboarding: true })
+        applicationStore.getApplications({ $top: 20, onboarding: true })
         break
       case 'approved':
-        applicationStore.getApplications({ $top: 10, approved: true })
+        applicationStore.getApplications({ $top: 20, approved: true })
         break
       case 'hrreviewed':
-        applicationStore.getApplications({ $top: 10, hrReviewed: true })
+        applicationStore.getApplications({ $top: 20, hrReviewed: true })
         break
       default:
         console.log('Unknown')
@@ -400,7 +400,7 @@ function batchAcceptApplications() {
       .then((res) => {
         useToast().success(res?.message)
         globalStore.setLoader(false)
-        applicationStore.getApplications({ offset: 1, limit: 10 })
+        applicationStore.getApplications({ offset: 1, limit: 20 })
       })
       .catch((error) => {
         globalStore.setLoader(false)
@@ -543,16 +543,16 @@ function onFirstPage(){
     })
       switch (route.name) {
         case 'applications':
-          applicationStore.getApplications({ $top: 10 })
+          applicationStore.getApplications({ $top: 20 })
           break
         case 'onboarded':
-          applicationStore.getApplications({ $top: 10, onboarding: true })
+          applicationStore.getApplications({ $top: 20, onboarding: true })
           break
         case 'approved':
-          applicationStore.getApplications({ $top: 10, approved: true })
+          applicationStore.getApplications({ $top: 20, approved: true })
           break
         case 'hrreviewed':
-          applicationStore.getApplications({ $top: 10, hrReviewed: true })
+          applicationStore.getApplications({ $top: 20, hrReviewed: true })
           break
         default:
           console.log('Unknown')
@@ -571,16 +571,16 @@ function onModalChange() {
     if (Number(page.value) === 1) {
       switch (route.name) {
         case 'applications':
-          applicationStore.getApplications({ $top: 10 })
+          applicationStore.getApplications({ $top: 20 })
           break
         case 'onboarded':
-          applicationStore.getApplications({ $top: 10, onboarding: true })
+          applicationStore.getApplications({ $top: 20, onboarding: true })
           break
         case 'approved':
-          applicationStore.getApplications({ $top: 10, approved: true })
+          applicationStore.getApplications({ $top: 20, approved: true })
           break
         case 'hrreviewed':
-          applicationStore.getApplications({ $top: 10, hrReviewed: true })
+          applicationStore.getApplications({ $top: 20, hrReviewed: true })
           break
         default:
           console.log('Unknown')
@@ -588,16 +588,16 @@ function onModalChange() {
     }
     switch (route.name) {
       case 'applications':
-        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10 })
+        applicationStore.getApplications({ $skip: ((page.value * 20) - 20), $top: 20 })
         break
       case 'onboarded':
-        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10,  onboarding: true })
+        applicationStore.getApplications({ $skip: ((page.value * 20) - 20), $top: 20,  onboarding: true })
         break
       case 'approved':
-        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10,  approved: true })
+        applicationStore.getApplications({ $skip: ((page.value * 20) - 20), $top: 20,  approved: true })
         break
       case 'hrreviewed':
-        applicationStore.getApplications({ $skip: ((page.value * 10) - 10), $top: 10, hrReviewed: true })
+        applicationStore.getApplications({ $skip: ((page.value * 20) - 20), $top: 20, hrReviewed: true })
         break
       default:
         console.log('Unknown')
