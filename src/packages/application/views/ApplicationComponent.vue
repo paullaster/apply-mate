@@ -128,14 +128,19 @@
           {{ DateUtil.toDate(item.modifiedAt) }}
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn
+          <div
+          style="
+            display: flex;
+            flex-wrap: nowrap;
+          "
+          >
+            <v-btn
             @click="() => globalStore.setQuickViewScreen(true, item)"
             class="my-2 mx-1"
             icon
             elevation="0"
             v-tooltip="'Application Quick View'"
             >
-            <!-- v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'" -->
             <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
           </v-btn>
           <v-btn
@@ -157,6 +162,7 @@
           >
             <v-icon :color="ColorHelper.colorsHelper('primary')" size="30">mdi-file-eye</v-icon>
           </v-btn>
+          </div>
         </template>
       </v-data-table>
       <v-divider></v-divider>
@@ -610,7 +616,7 @@ function onModalChange() {
 
 function getConsortium(item) {
   try {
-    const result = item?.approvedByConsortiaName?.split(' ');
+    const result = route.name === 'onboarded' ?  item?.onboardingConsortiaName.split(' ') : item?.approvedByConsortiaName.split(' ');
     return result[0][0] + result[1][0];
 
   } catch (error) {
@@ -621,7 +627,7 @@ function getConsortium(item) {
 
 function getConsortiumFullName(item) {
   try {
-    return item?.approvedByConsortiaName;
+    return route.name === 'onboarded' ? item?.onboardingConsortiaName :  item?.approvedByConsortiaName;
 
   } catch (error) {
     console.error(error)
