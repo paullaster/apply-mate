@@ -617,7 +617,7 @@ function onModalChange() {
 function getConsortium(item) {
   try {
     const result = route.name === 'onboarded' ?  item?.onboardingConsortiaName.split(' ') : item?.approvedByConsortiaName.split(' ');
-    return result[0][0] + result[1][0];
+    return result[0][0] + result[0][1];
 
   } catch (error) {
     console.error(error)
