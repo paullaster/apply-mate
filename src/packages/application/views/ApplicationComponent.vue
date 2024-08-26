@@ -166,7 +166,12 @@
         </template>
       </v-data-table>
       <v-divider></v-divider>
-      <div class="text-right" style="padding: 0.4rem 0; display: flex; justify-content: flex-end">
+      <div class="text-right" style="padding: 0.4rem 0; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <p>
+            Showing 20 of {{ (totalItemsCount * 20) }} Applications
+          </p>
+        </div>
         <v-pagination
           v-model="page"
           :length="totalItemsCount"

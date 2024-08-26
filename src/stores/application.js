@@ -34,7 +34,7 @@ export const useApplication = defineStore('application', {
             .then((response) => {
                 this.$patch({
                     applications: response.data.value,
-                    totalItemsCount: Math.ceil(response.data['@odata.count']/10),
+                    totalItemsCount: Math.ceil(response.data['@odata.count']/20),
                 });
                 this.setLoader(false);
             })
