@@ -1,7 +1,7 @@
 <template>
   <v-card-title> Login </v-card-title>
   <v-card-text>
-    <v-form ref="loginForm">
+    <v-form ref="loginForm" max-width="700" style="transition: all 2s ease-in-out;">
       <v-row>
         <v-col cols="12">
           <v-text-field
@@ -22,7 +22,7 @@
           >
           </v-text-field>
         </v-col>
-        <v-col>
+        <v-col cols="12" lg="6">
           <v-btn
             @click="login"
             variant="flat"
@@ -41,6 +41,24 @@
           >
             <v-icon class="mr-3">mdi-lock</v-icon>
             <span>Login</span>
+          </v-btn>
+        </v-col>
+        <v-col cols="12" lg="6" class="d-flex flex-end">
+          <v-btn
+            @click="()=>router.push({name: 'register'})"
+            variant="flat"
+            v-if="mdAndUp"
+          >
+            <span>Register</span>
+          </v-btn>
+          <v-btn
+            @click="()=>router.push({name: 'register'})"
+            variant="flat"
+            v-if="!mdAndUp"
+            block
+          >
+            <v-icon class="mr-3">mdi-lock</v-icon>
+            <span>Register</span>
           </v-btn>
         </v-col>
       </v-row>

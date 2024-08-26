@@ -43,6 +43,22 @@ const router = createRouter({
           component: () => import('@/packages/auth/components/LoginView.vue'),
         },
         {
+          path: 'register',
+          name: 'register',
+          component: () => import('@/packages/auth/components/RegisterComponent.vue'),
+          meta: {
+            title: 'Register'
+          },
+        },
+        {
+          path: 'verify-account',
+          name:'verify-account',
+          component: () => import('@/packages/auth/components/VerifyAccount.vue'),
+          meta: {
+            title: 'Verify Account'
+          },
+        },
+        {
           path: 'activate',
           name: 'activate',
           component: () => import('@/packages/auth/components/ActivateAccount.vue'),
@@ -67,6 +83,71 @@ const router = createRouter({
         }else {
           next();
         }
+      }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/packages/profile/views/ProfileLayout.vue'),
+      children: [
+        {
+          path: '__bd_x',
+          name: 'biodata',
+          component: () => import("@/packages/profile/components/BiodataComponent.vue"),
+          
+          // {
+          //   biodata: () => import("@/packages/profile/components/BiodataComponent.vue"),
+          //   contacts: () => import("@/packages/profile/components/ContactPerson.vue"),
+          //   accommodation: () => import("@/packages/profile/components/AccommodationComponent.vue"),
+          // },
+          meta: {
+            title: 'Profile Biodata',
+          }
+        },
+        {
+          path: '__cts_i',
+          name: 'contact_info',
+          component: () => import("@/packages/profile/components/ContactPerson.vue"),
+          meta: {
+            title: 'Profile Contact Information',
+          }
+        },
+        {
+          path: '__acc_i',
+          name: 'accommodation_info',
+          component: () => import("@/packages/profile/components/AccommodationComponent.vue"),
+          meta: {
+            title: 'Profile Accommodation Information',
+          }
+        },
+        {
+          path: '__lnd_i',
+          name: 'land_info',
+          component: () => import("@/packages/profile/components/LandDetails.vue"),
+          meta: {
+            title: 'Profile Land Details',
+          }
+        },
+        {
+          path: '__dclr_f',
+          name: 'declaration_form',
+          component: () => import("@/packages/profile/components/DeclarationForm.vue"),
+          meta: {
+            title: 'Profile Declaration Form',
+          }
+        },
+        {
+          path: '__sgn_f',
+          name:'sign_form',
+          component: () => import("@/packages/profile/components/SigningForm.vue"),
+          meta: {
+            title: 'Profile Sign Form',
+          }
+        }
+      ],
+      meta: {
+        title: 'Profile',
+        // requiresAuth: true
       }
     },
     {

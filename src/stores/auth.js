@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useToast } from "vue-toastification";
+import { globalEventBus, useToast } from "vue-toastification";
 import { _request } from "@/service";
 import AuthService from "@/packages/auth/AuthService";
 import router from "@/router";
@@ -43,6 +43,29 @@ export const useAuth = defineStore("auth", {
                 useToast().error(error.message);
             }
         },
+        async register(payload) {
+            try {
+                this.setLoader(true);
+                _request.axiosRequest({
+                    url: "/auth/register",
+                    method: "POST",
+                    data: payload,
+                })
+                 .then(() => {
+                    this.setLoader(false);
+                    useToast().success("Registration successful!");
+                    globalEventBus.emit("verifyAccount", payload);
+                 })
+                 .catch((err) =>{
+                    this.setLoader(false);
+                    useToast().error(err.response.data.message);
+                 });
+            } catch (error) {
+                this.setLoader(false);
+                console.error(error);
+                useToast().error('Error registering')
+            }
+        },
         async login(payload) {
             try {
                 this.setLoader(true);
@@ -52,7 +75,7 @@ export const useAuth = defineStore("auth", {
                     data: payload,
                 })
                     .then(async (response) => {
-                        AuthService.login(response.data).then(async(user) => {
+                        AuthService.login(response.data).then(async (user) => {
                             await this.setUser(user);
                             router.push({
                                 name: 'userLayout',

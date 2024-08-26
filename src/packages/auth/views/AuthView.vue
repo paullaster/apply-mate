@@ -6,7 +6,7 @@
         style="
           box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
           padding: 4rem 2rem;
-          width: max-content;
+          max-width: 800px;
           border-radius: 0.8rem;
         "
       >
@@ -16,9 +16,11 @@
           flat
         >
           <LoginView v-if="route.name === 'login'" />
+          <RegisterComponent v-if="route.name === 'register'" />
           <ActivateAccount v-if="route.name === 'activate'" />
           <ForgotPassword v-if="route.name === 'forgot-password'" />
           <SetPassword v-if="route.name === 'set-password'" />
+          <VerifyAccount v-if="route.name ==='verify-account'" />
         </v-card>
       </div>
     </section>
@@ -32,13 +34,33 @@ import ActivateAccount from '../components/ActivateAccount.vue'
 import ForgotPassword from '../components/ForgotPassword.vue'
 import SetPassword from '../components/SetPassword.vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
+import RegisterComponent from '@/packages/auth/components/RegisterComponent.vue';
+import { onMounted, ref, provide } from 'vue'
+import { globalEventBus } from 'vue-toastification'
+import VerifyAccount from '../components/VerifyAccount.vue'
 
 // VUETIFY
 const { lgAndUp } = useDisplay()
 
 // ROUTER
 const route = useRoute()
-</script>
 
-<style lang="scss" scoped>
-</style>
+
+// VARS
+const account = ref({});
+
+// HOOKS
+onMounted(
+  ()=> {
+    globalEventBus.on('verifyAccount', (data)=> {
+      account.value = data;
+      route.push({ name: 'verify-account' })
+    })
+  }
+)
+
+
+// PROVIDERS
+provide('account', account)
+
+</script>
