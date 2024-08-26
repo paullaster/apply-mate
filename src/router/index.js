@@ -94,12 +94,6 @@ const router = createRouter({
           path: '__bd_x',
           name: 'biodata',
           component: () => import("@/packages/profile/components/BiodataComponent.vue"),
-          
-          // {
-          //   biodata: () => import("@/packages/profile/components/BiodataComponent.vue"),
-          //   contacts: () => import("@/packages/profile/components/ContactPerson.vue"),
-          //   accommodation: () => import("@/packages/profile/components/AccommodationComponent.vue"),
-          // },
           meta: {
             title: 'Profile Biodata',
           }

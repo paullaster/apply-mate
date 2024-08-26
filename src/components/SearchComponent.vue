@@ -61,7 +61,7 @@
 <script setup>
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router';
 
 // ROUTE
@@ -82,6 +82,7 @@ defineProps({
   propertiesArray: Array
 })
 
+const fetchedFromAPI = ref(false);
 
 // COMPONENT State
 const countyList = computed(() => {
@@ -130,38 +131,71 @@ function search() {
 }
 function sortByCounty() {
   try {
+    if (!searchQuery.value.county) {
+      applicationStore.$patch({
+        filteredApplication: filteredApplication.value?.length ? filteredApplication.value : applications.value,
+      })
+      return;
+    }
+    fetchedFromAPI.value = false;
     const matchedApplications = filteredApplication.value.length && searchQuery.value.county ? 
     filteredApplication.value?.filter((app) => {
       return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
     })
     :
-    applications.value?.filter((app) => {
-      return searchQuery.value.county ?
-      app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase()
-      : app;
-    })
-    applicationStore.$patch({
-      filteredApplication: matchedApplications,
-    })
+    (
+      fetchedFromAPI.value = true,
+      applicationStore.applicationCustomFilter({county: searchQuery.value.county, category: searchQuery.value.category})
+    );
+
+    // applications.value?.filter((app) => {
+    //   return searchQuery.value.county ?
+    //   app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase()
+    //   : app;
+    // })
+    if (!fetchedFromAPI.value) {
+      applicationStore.$patch({
+        filteredApplication: matchedApplications,
+      })
+    }
+    // applicationStore.$patch({
+    //   filteredApplication: matchedApplications,
+    // })
   } catch (error) {
     console.error(error.message);
   }
 }
 function sortByCategory(){
   try {
+    if (!searchQuery.value.category) {
+      applicationStore.$patch({
+        filteredApplication: filteredApplication.value?.length ? filteredApplication.value : applications.value,
+      })
+      return;
+    }
+    fetchedFromAPI.value = false;
     const matchedApplications = filteredApplication.value?.length  && searchQuery.value.category?
     filteredApplication.value?.filter((app) => {
       return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
     })
     :
-    applications.value?.filter((app) => {
-      return searchQuery.value.category ? 
-      app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase()
-      : app;
-    })
-    applicationStore.$patch({
-      filteredApplication: matchedApplications,
-    })
+    (
+      fetchedFromAPI.value = true,
+      applicationStore.applicationCustomFilter({county: searchQuery.value.county, category: searchQuery.value.category})
+    );
+    // applications.value?.filter((app) => {
+    //   return searchQuery.value.category ? 
+    //   app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase()
+    //   : app;
+    // })
+    // applicationStore.$patch({
+    //   filteredApplication: matchedApplications,
+    // })
+    if (!fetchedFromAPI.value) {
+      applicationStore.$patch({
+        filteredApplication: matchedApplications,
+      })
+    }
   } catch (error) {
     console.error(error.message);
   }

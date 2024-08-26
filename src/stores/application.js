@@ -154,6 +154,37 @@ export const useApplication = defineStore('application', {
                 method: 'POST',
                 data: payload,
             })
+        },
+        async applicationCustomFilter(params) {
+            try {
+                for (const [keys , value] of Object.entries(params)) {
+                    if (!value) {
+                        delete params[keys];
+                    }
+                }
+                this.setLoader(true);
+               _request.axiosRequest({
+                method: 'GET',
+                url: '/applications/filters',
+                params,
+               })
+               .then(res => {
+                console.log(res.data.value);
+                this.$patch({
+                    filteredApplication: res.data.value,
+                });
+                this.setLoader(false);
+               })
+               .catch(error => {
+                this.setLoader(false);
+                console.error(error);
+                useToast().error("Error filtering application");
+               });
+            } catch (error) {
+                this.setLoader(false);
+                console.error(error);
+                useToast().error("Error filtering application");
+            }
         }
     },
 })
