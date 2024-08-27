@@ -60,13 +60,13 @@
 
 <script setup>
 import { useGlobalStore, useAuth, useSetupStore, useApplication } from '@/stores'
+import Helpers from '@/util/Helpers'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router';
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 // ROUTE
-const route = useRoute();
-
+const route = useRoute()
 
 // STORE
 const globalStore = useGlobalStore()
@@ -76,13 +76,11 @@ const applicationStore = useApplication()
 const { searchDialog, searchQuery } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
 const { counties, categories, consortia } = storeToRefs(setupStore)
-const { applications, filteredApplication } = storeToRefs(applicationStore);
+const { applications, filteredApplication, searchedAgainstAPI } = storeToRefs(applicationStore)
 
 defineProps({
   propertiesArray: Array
 })
-
-const fetchedFromAPI = ref(false);
 
 // COMPONENT State
 const countyList = computed(() => {
@@ -94,7 +92,7 @@ const countyList = computed(() => {
     }
   })
   return countiesList
-});
+})
 const categoryList = computed(() => {
   const categoryList = []
   user.value?.categoriesFilter?.split('|').forEach((category) => {
@@ -108,119 +106,151 @@ const categoryList = computed(() => {
 
 function search() {
   try {
-    const matchedApplications = (filteredApplication.value.length && (searchQuery.value.searchText !== '' || searchQuery.value.searchText))?
-    filteredApplication.value?.filter((app) => {
-      return (
-        app.no.toString().includes(searchQuery.value.searchText) ||
-        app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
-      );
-    })
-    :
-    applications.value?.filter((app) => {
-      return (
-        app.no.toString().includes(searchQuery.value.searchText) ||
-        app.fullName.toString().toLowerCase().includes(searchQuery.value.searchText.toLowerCase())
-      );
-    })
+    const matchedApplications =
+      filteredApplication.value.length &&
+      (searchQuery.value.searchText !== '' || searchQuery.value.searchText)
+        ? filteredApplication.value?.filter((app) => {
+            return (
+              app.no.toString().includes(searchQuery.value.searchText) ||
+              app.fullName
+                .toString()
+                .toLowerCase()
+                .includes(searchQuery.value.searchText.toLowerCase())
+            )
+          })
+        : applications.value?.filter((app) => {
+            return (
+              app.no.toString().includes(searchQuery.value.searchText) ||
+              app.fullName
+                .toString()
+                .toLowerCase()
+                .includes(searchQuery.value.searchText.toLowerCase())
+            )
+          })
     applicationStore.$patch({
-      filteredApplication: matchedApplications,
+      filteredApplication: matchedApplications
     })
   } catch (error) {
-    console.error(error.message);
+    console.error(error.message)
   }
 }
 function sortByCounty() {
   try {
     if (!searchQuery.value.county) {
       applicationStore.$patch({
-        filteredApplication: filteredApplication.value?.length ? filteredApplication.value : applications.value,
+        filteredApplication: filteredApplication.value?.length
+          ? filteredApplication.value
+          : applications.value,
+        itemCount: filteredApplication.value?.length
+          ? filteredApplication.value.length
+          : applications.value.length
       })
-      return;
+      return
     }
-    fetchedFromAPI.value = false;
-    const matchedApplications = filteredApplication.value.length && searchQuery.value.county ? 
-    filteredApplication.value?.filter((app) => {
-      return app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase();
-    })
-    :
-    (
-      fetchedFromAPI.value = true,
-      applicationStore.applicationCustomFilter({county: searchQuery.value.county, category: searchQuery.value.category})
-    );
+    searchedAgainstAPI.value = false
+    const matchedApplications =
+      filteredApplication.value.length && searchQuery.value.county
+        ? filteredApplication.value?.filter((app) => {
+            return (
+              app.countyOfOrigin.toString().toLowerCase() ===
+              searchQuery.value.county.toString().toLowerCase()
+            )
+          })
+        : ((searchedAgainstAPI.value = true),
+          applicationStore.applicationCustomFilter({
+            county: searchQuery.value.county,
+            category: searchQuery.value.category,
+            status: Helpers.getStatusValueFilter(route.name)
+          }))
 
     // applications.value?.filter((app) => {
     //   return searchQuery.value.county ?
     //   app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase()
     //   : app;
     // })
-    if (!fetchedFromAPI.value) {
+    if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
+        itemCount: matchedApplications.length
       })
     }
     // applicationStore.$patch({
     //   filteredApplication: matchedApplications,
     // })
   } catch (error) {
-    console.error(error.message);
+    console.error(error.message)
   }
 }
-function sortByCategory(){
+function sortByCategory() {
   try {
     if (!searchQuery.value.category) {
       applicationStore.$patch({
-        filteredApplication: filteredApplication.value?.length ? filteredApplication.value : applications.value,
+        filteredApplication: filteredApplication.value?.length
+          ? filteredApplication.value
+          : applications.value,
+          itemCount: filteredApplication.value?.length
+          ? filteredApplication.value.length
+          : applications.value.length
       })
-      return;
+      return
     }
-    fetchedFromAPI.value = false;
-    const matchedApplications = filteredApplication.value?.length  && searchQuery.value.category?
-    filteredApplication.value?.filter((app) => {
-      return app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase();
-    })
-    :
-    (
-      fetchedFromAPI.value = true,
-      applicationStore.applicationCustomFilter({county: searchQuery.value.county, category: searchQuery.value.category})
-    );
+    searchedAgainstAPI.value = false
+    const matchedApplications =
+      filteredApplication.value?.length && searchQuery.value.category
+        ? filteredApplication.value?.filter((app) => {
+            return (
+              app.category.toString().toLowerCase() ===
+              searchQuery.value.category.toString().toLowerCase()
+            )
+          })
+        : ((searchedAgainstAPI.value = true),
+          applicationStore.applicationCustomFilter({
+            county: searchQuery.value.county,
+            category: searchQuery.value.category,
+            status: Helpers.getStatusValueFilter(route.name)
+          }))
     // applications.value?.filter((app) => {
-    //   return searchQuery.value.category ? 
+    //   return searchQuery.value.category ?
     //   app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase()
     //   : app;
     // })
     // applicationStore.$patch({
     //   filteredApplication: matchedApplications,
     // })
-    if (!fetchedFromAPI.value) {
+    if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
+        itemCount: matchedApplications.length
       })
     }
   } catch (error) {
-    console.error(error.message);
+    console.error(error.message)
   }
 }
 
-function sortByConsortium(){
+function sortByConsortium() {
   try {
-    const matchedApplications = filteredApplication.value?.length  && searchQuery.value.consortium?
-    filteredApplication.value?.filter((app) => {
-      return app.approvedByConsortia.toString().toLowerCase() === searchQuery.value.consortium.toString().toLowerCase();
-    })
-    :
-    applications.value?.filter((app) => {
-      return searchQuery.value.consortium ? 
-      app.approvedByConsortia.toString().toLowerCase() === searchQuery.value.consortium.toString().toLowerCase()
-      : app;
-    })
+    const matchedApplications =
+      filteredApplication.value?.length && searchQuery.value.consortium
+        ? filteredApplication.value?.filter((app) => {
+            return (
+              app.approvedByConsortia.toString().toLowerCase() ===
+              searchQuery.value.consortium.toString().toLowerCase()
+            )
+          })
+        : applications.value?.filter((app) => {
+            return searchQuery.value.consortium
+              ? app.approvedByConsortia.toString().toLowerCase() ===
+                  searchQuery.value.consortium.toString().toLowerCase()
+              : app
+          })
     applicationStore.$patch({
-      filteredApplication: matchedApplications,
+      filteredApplication: matchedApplications
     })
   } catch (error) {
-    console.error(error.message);
+    console.error(error.message)
   }
 }
-
 </script>
 
 <style scoped>

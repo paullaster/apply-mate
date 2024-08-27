@@ -11,7 +11,11 @@ export const useApplication = defineStore('application', {
         applicant: {},
         filteredApplication: [],
         totalItemsCount: 1,
-        currentPage:1,
+        itemCount: 0,
+        currentPage: 1,
+        nextPageToken: null,
+        searchedAgainstAPI: false,
+
     }),
     getters: {
         applicationGetter: (state) => (key) => state[key],
@@ -25,65 +29,67 @@ export const useApplication = defineStore('application', {
             }
         },
         getApplications(params = {}) {
-           try {
-            this.setLoader(true);
-            _request.axiosRequest({
-                url: constants.application,
-                params,
-            })
-            .then((response) => {
-                this.$patch({
-                    applications: response.data.value,
-                    totalItemsCount: Math.ceil(response.data['@odata.count']/20),
-                });
-                this.setLoader(false);
-            })
-            .catch((error) => {
+            try {
+                this.setLoader(true);
+                _request.axiosRequest({
+                    url: constants.application,
+                    params,
+                })
+                    .then((response) => {
+                        this.$patch({
+                            applications: response.data.value,
+                            totalItemsCount: Math.ceil(response.data['@odata.count'] / 20),
+                            itemCount: (response.data['@odata.count']),
+                            nextPageToken: response.data['@odata.nextLink']?.split("?")[1],
+                        });
+                        this.setLoader(false);
+                    })
+                    .catch((error) => {
+                        this.setLoader(false);
+                        useToast().error(error.message);
+                    });
+            } catch (error) {
                 this.setLoader(false);
                 useToast().error(error.message);
-            });
-           } catch (error) {
-            this.setLoader(false);
-            useToast().error(error.message);
-           }
+            }
         },
         getApplicationsSync(params = {}) {
             try {
-             _request.axiosRequest({
-                 url: constants.application,
-                 params,
-             })
-             .then((response) => {
-                 this.$patch({
-                     applications: response.data.value,
-                 });
-                 this.setLoader(false);
-             })
-             .catch((error) => {
-                 this.setLoader(false);
-                 useToast().error(error.message);
-             });
+                _request.axiosRequest({
+                    url: constants.application,
+                    params,
+                })
+                    .then((response) => {
+                        this.$patch({
+                            applications: response.data.value,
+                        });
+                        this.setLoader(false);
+                    })
+                    .catch((error) => {
+                        this.setLoader(false);
+                        useToast().error(error.message);
+                    });
             } catch (error) {
-             this.setLoader(false);
-             useToast().error(error.message);
+                this.setLoader(false);
+                useToast().error(error.message);
             }
-         },
+        },
         async getApplicant(id) {
             try {
                 this.setLoader(true);
-               _request.axiosRequest({
-                url: `${constants.applicant}/${atob(id)}`,
-               })
-               .then(res => {
-                this.$patch({
-                    applicant: res.data,
-                });
-                this.setLoader(false);
-               })
-               .catch(error => {
-                this.setLoader(false);
-                useToast().error(error.message);
-               });
+                _request.axiosRequest({
+                    url: `${constants.applicant}/${atob(id)}`,
+                })
+                    .then(res => {
+                        this.$patch({
+                            applicant: res.data,
+                        });
+                        this.setLoader(false);
+                    })
+                    .catch(error => {
+                        this.setLoader(false);
+                        useToast().error(error.message);
+                    });
             } catch (error) {
                 this.setLoader(false);
                 useToast().error(error.message);
@@ -157,33 +163,49 @@ export const useApplication = defineStore('application', {
         },
         async applicationCustomFilter(params) {
             try {
-                for (const [keys , value] of Object.entries(params)) {
+                for (const [keys, value] of Object.entries(params)) {
                     if (!value) {
                         delete params[keys];
                     }
                 }
                 this.setLoader(true);
-               _request.axiosRequest({
-                method: 'GET',
-                url: '/applications/filters',
-                params,
-               })
-               .then(res => {
-                console.log(res.data.value);
-                this.$patch({
-                    filteredApplication: res.data.value,
-                });
-                this.setLoader(false);
-               })
-               .catch(error => {
-                this.setLoader(false);
-                console.error(error);
-                useToast().error("Error filtering application");
-               });
+                _request.axiosRequest({
+                    method: 'GET',
+                    url: '/applications/filters',
+                    params,
+                })
+                    .then(res => {
+                        this.$patch({
+                            filteredApplication: res.data.value,
+                            totalItemsCount: Math.ceil(res.data['@odata.count'] / 20),
+                            itemCount: (res.data['@odata.count']),
+                            nextPageToken: res.data['@odata.nextLink']?.split("?")[1],
+                        });
+                        this.setLoader(false);
+                    })
+                    .catch(error => {
+                        this.setLoader(false);
+                        console.error(error);
+                        useToast().error("Error filtering application");
+                    });
             } catch (error) {
                 this.setLoader(false);
                 console.error(error);
                 useToast().error("Error filtering application");
+            }
+        },
+        async goToNextFilteredPage() {
+            try {
+                this.setLoader(true);
+                if (this.nextPageToken) {
+                    const params = new URLSearchParams(this.nextPageToken);
+                    this.currentPage++;
+                    await this.applicationCustomFilter(params);
+                }
+            } catch (error) {
+                this.setLoader(false);
+                console.error(error);
+                useToast().error("Error fetching next page");
             }
         }
     },

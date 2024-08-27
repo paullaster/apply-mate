@@ -169,13 +169,17 @@
       <div class="text-right" style="padding: 0.4rem 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
           <p>
-            Showing 20 of {{ (totalItemsCount * 20) }} Applications
+            Showing {{
+              filteredApplication.length || isAnyQueryParam ? 
+              filteredApplication.length > 20 ? 20 : filteredApplication.length : 
+              applications.length
+            }} of {{ itemCount }} Applications
           </p>
         </div>
         <v-pagination
           v-model="page"
           :length="totalItemsCount"
-          :total-visible="7"
+          :total-visible=" searchedAgainstAPI ? 1 : 7"
           next-icon="mdi-skip-next"
           prev-icon="mdi-skip-previous"
           variant="flat"
@@ -183,7 +187,6 @@
           density="comfortable"
           :active-color="ColorHelper.colorsHelper('accent')"
           @update:modelValue="onModalChange"
-          @first="onFirstPage"
         ></v-pagination>
       </div>
       <v-divider></v-divider>
@@ -256,7 +259,7 @@ const authStore = useAuth()
 const globalStore = useGlobalStore()
 
 // STATE & GETTERS
-const { applications, filteredApplication, totalItemsCount } = storeToRefs(applicationStore)
+const { applications, filteredApplication, totalItemsCount, itemCount, searchedAgainstAPI, nextPageToken } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
 const { loading, searchQuery, activeCommentable } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
@@ -545,44 +548,22 @@ function resetApplicationList() {
     useToast().error('We ran into an error!')
   }
 }
-
-function onFirstPage(){
-  try {
-    globalStore.$reset()
-    applicationStore.$patch({
-      filteredApplication: [],
-    })
-      switch (route.name) {
-        case 'applications':
-          applicationStore.getApplications({ $top: 20 })
-          break
-        case 'onboarded':
-          applicationStore.getApplications({ $top: 20, onboarding: true })
-          break
-        case 'approved':
-          applicationStore.getApplications({ $top: 20, approved: true })
-          break
-        case 'hrreviewed':
-          applicationStore.getApplications({ $top: 20, hrReviewed: true })
-          break
-        default:
-          console.log('Unknown')
-      }
-  } catch (error) {
-    useToast().error('We ran into an error!');
-  }
-}
-
 function onModalChange() {
   try {
     globalStore.$reset()
     applicationStore.$patch({
       filteredApplication: [],
     })
+    if (searchedAgainstAPI.value && nextPageToken.value) {
+      applicationStore.goToNextFilteredPage();
+      return;
+    }else {
+      searchedAgainstAPI.value = false;
+    }
     if (Number(page.value) === 1) {
       switch (route.name) {
         case 'applications':
-          applicationStore.getApplications({ $top: 20 })
+          applicationStore.getApplications({ $top: 20, })
           break
         case 'onboarded':
           applicationStore.getApplications({ $top: 20, onboarding: true })
