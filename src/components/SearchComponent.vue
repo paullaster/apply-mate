@@ -27,7 +27,7 @@
             <v-col cols="12">
               <v-select
                 v-model="searchQuery.category"
-                :items="route.name === 'application' ? categoryList : categories"
+                :items="route.name === 'applications' ? categoryList : categories"
                 item-title="description"
                 item-value="code"
                 label="Filter by category"
@@ -106,6 +106,9 @@ const categoryList = computed(() => {
 
 function search() {
   try {
+    applicationStore.$patch({
+      currentPage: 1,
+    })
     const matchedApplications =
       filteredApplication.value.length &&
       (searchQuery.value.searchText !== '' || searchQuery.value.searchText)
@@ -128,7 +131,9 @@ function search() {
             )
           })
     applicationStore.$patch({
-      filteredApplication: matchedApplications
+      filteredApplication: matchedApplications,
+      itemCount: matchedApplications.length,
+      currentPage: 1,
     })
   } catch (error) {
     console.error(error.message)
@@ -136,6 +141,9 @@ function search() {
 }
 function sortByCounty() {
   try {
+    applicationStore.$patch({
+      currentPage: 1,
+    })
     if (!searchQuery.value.county) {
       applicationStore.$patch({
         filteredApplication: filteredApplication.value?.length
@@ -171,7 +179,8 @@ function sortByCounty() {
     if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
-        itemCount: matchedApplications.length
+        itemCount: matchedApplications.length,
+        currentPage: 1
       })
     }
     // applicationStore.$patch({
@@ -183,6 +192,9 @@ function sortByCounty() {
 }
 function sortByCategory() {
   try {
+    applicationStore.$patch({
+      currentPage: 1,
+    })
     if (!searchQuery.value.category) {
       applicationStore.$patch({
         filteredApplication: filteredApplication.value?.length
@@ -220,7 +232,8 @@ function sortByCategory() {
     if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
-        itemCount: matchedApplications.length
+        itemCount: matchedApplications.length,
+        currentPage: 1
       })
     }
   } catch (error) {
@@ -230,6 +243,9 @@ function sortByCategory() {
 
 function sortByConsortium() {
   try {
+    applicationStore.$patch({
+      currentPage: 1,
+    })
     const matchedApplications =
       filteredApplication.value?.length && searchQuery.value.consortium
         ? filteredApplication.value?.filter((app) => {
@@ -245,7 +261,9 @@ function sortByConsortium() {
               : app
           })
     applicationStore.$patch({
-      filteredApplication: matchedApplications
+      filteredApplication: matchedApplications,
+      itemCount: matchedApplications.length,
+      currentPage: 1,
     })
   } catch (error) {
     console.error(error.message)

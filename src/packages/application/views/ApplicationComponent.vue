@@ -535,7 +535,7 @@ function batchReverseOnboardedApplications() {
 
 function resetApplicationList() {
   try {
-    applicationStore.$patch({ filteredApplication: [] })
+    applicationStore.$patch({ filteredApplication: [], currentPage: 1 })
     globalStore.$patch({
       searchQuery: {
         searchText: '',
