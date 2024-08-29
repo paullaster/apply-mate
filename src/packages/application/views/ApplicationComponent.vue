@@ -173,7 +173,7 @@
               filteredApplication.length || isAnyQueryParam ? 
               filteredApplication.length > 20 ? 20 : filteredApplication.length : 
               applications.length
-            }} of {{ itemCount }} Applications
+            }} of {{ displayItemCount }} Applications
           </p>
         </div>
         <v-pagination
@@ -202,7 +202,7 @@
 <script setup>
 import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { inject, onMounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DateUtil from '@/util/DateUtil'
@@ -259,7 +259,7 @@ const authStore = useAuth()
 const globalStore = useGlobalStore()
 
 // STATE & GETTERS
-const { applications, filteredApplication, totalItemsCount, itemCount, searchedAgainstAPI, nextPageToken } = storeToRefs(applicationStore)
+const { applications, filteredApplication, totalItemsCount, itemCount, searchedAgainstAPI, nextPageToken, itemCountOnQuery } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
 const { loading, searchQuery, activeCommentable } = storeToRefs(globalStore)
 const { user } = storeToRefs(authStore)
@@ -312,8 +312,19 @@ onMounted(() => {
 })
 
 // COMPUTED
+const displayItemCount = computed(() => {
+  return (filteredApplication.value.length || isAnyQueryParam.value) ? itemCountOnQuery.value : itemCount.value
+})
 
 // WATCH
+watch(
+  ()=> displayItemCount.value,
+  (value)=> {
+    applicationStore.$patch({
+      totalItemsCount: (Math.ceil(value/20)),
+    })
+  }
+)
 watch(
   ()=> page.value,
   (val)=> applicationStore.$patch({
@@ -360,11 +371,11 @@ watch(
   () => searchQuery.value,
   (query) => {
     for (const prop in query) {
-      if (query[prop] || query[prop] !== '') {
-        isAnyQueryParam.value = true
-        return
+      if (!query[prop]) {
+        isAnyQueryParam.value = false;
       } else {
-        isAnyQueryParam.value = false
+        isAnyQueryParam.value = true;
+        return
       }
     }
     !isAnyQueryParam.value &&
@@ -535,7 +546,7 @@ function batchReverseOnboardedApplications() {
 
 function resetApplicationList() {
   try {
-    applicationStore.$patch({ filteredApplication: [], currentPage: 1 })
+    applicationStore.$patch({ filteredApplication: [], currentPage: 1, searchedAgainstAPI: false })
     globalStore.$patch({
       searchQuery: {
         searchText: '',
@@ -544,6 +555,7 @@ function resetApplicationList() {
       }
     })
     isAnyQueryParam.value = false
+    page.value =  1;
   } catch (error) {
     useToast().error('We ran into an error!')
   }

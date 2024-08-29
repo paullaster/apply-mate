@@ -12,6 +12,7 @@ export const useApplication = defineStore('application', {
         filteredApplication: [],
         totalItemsCount: 1,
         itemCount: 0,
+        itemCountOnQuery: 0,
         currentPage: 1,
         nextPageToken: null,
         searchedAgainstAPI: false,
@@ -178,7 +179,7 @@ export const useApplication = defineStore('application', {
                         this.$patch({
                             filteredApplication: res.data.value,
                             totalItemsCount: Math.ceil(res.data['@odata.count'] / 20),
-                            itemCount: (res.data['@odata.count']),
+                            itemCountOnQuery: (res.data['@odata.count']),
                             nextPageToken: res.data['@odata.nextLink']?.split("?")[1],
                         });
                         this.setLoader(false);

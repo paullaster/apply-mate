@@ -21,6 +21,7 @@
                 item-value="CountyNo"
                 label="Filter by county"
                 @update:modelValue="sortByCounty"
+                @click:clear="() => clear('county')"
                 clearable
               ></v-select>
             </v-col>
@@ -32,6 +33,7 @@
                 item-value="code"
                 label="Filter by category"
                 @update:modelValue="sortByCategory"
+                @click:clear="() => clear('category')"
                 clearable
               ></v-select>
             </v-col>
@@ -43,6 +45,7 @@
                 item-value="no"
                 label="Filter by Consortium"
                 @update:modelValue="sortByConsortium"
+                @click:clear="()=>clear('consortium')"
                 clearable
                 v-if="route.name === 'approved' && user.role.toLowerCase() === 'hr'"
               ></v-select>
@@ -107,7 +110,7 @@ const categoryList = computed(() => {
 function search() {
   try {
     applicationStore.$patch({
-      currentPage: 1,
+      currentPage: 1
     })
     const matchedApplications =
       filteredApplication.value.length &&
@@ -132,8 +135,8 @@ function search() {
           })
     applicationStore.$patch({
       filteredApplication: matchedApplications,
-      itemCount: matchedApplications.length,
-      currentPage: 1,
+      itemCountOnQuery: matchedApplications.length,
+      currentPage: 1
     })
   } catch (error) {
     console.error(error.message)
@@ -142,20 +145,47 @@ function search() {
 function sortByCounty() {
   try {
     applicationStore.$patch({
-      currentPage: 1,
+      currentPage: 1
     })
     if (!searchQuery.value.county) {
-      applicationStore.$patch({
-        filteredApplication: filteredApplication.value?.length
-          ? filteredApplication.value
-          : applications.value,
-        itemCount: filteredApplication.value?.length
-          ? filteredApplication.value.length
-          : applications.value.length
-      })
+      let validQuery = false
+      for (const value of Object.values(searchQuery.value)) {
+        if (value) {
+          validQuery = true
+          break
+        }
+      }
+      if (validQuery) {
+        applicationStore.$patch({
+          filteredApplication: filteredApplication.value?.length
+            ? filteredApplication.value
+            : applications.value,
+          itemCountOnQuery: filteredApplication.value?.length
+            ? filteredApplication.value.length
+            : applications.value.length,
+            currentPage: 1,
+            searchedAgainstAPI: false,
+        })
+      } else {
+        applicationStore.$patch({
+          filteredApplication: [],
+          itemCountOnQuery: 0,
+          searchedAgainstAPI: false,
+        })
+        globalStore.$patch({
+          searchQuery: {
+            category: null,
+            county: null,
+            searchText: '',
+            consortium: null
+          }
+        })
+      }
       return
     }
-    searchedAgainstAPI.value = false
+    applicationStore.$patch({
+      searchedAgainstAPI: false
+    })
     const matchedApplications =
       filteredApplication.value.length && searchQuery.value.county
         ? filteredApplication.value?.filter((app) => {
@@ -164,28 +194,21 @@ function sortByCounty() {
               searchQuery.value.county.toString().toLowerCase()
             )
           })
-        : ((searchedAgainstAPI.value = true),
+        : ((applicationStore.$patch({
+      searchedAgainstAPI: true,
+    })),
           applicationStore.applicationCustomFilter({
             county: searchQuery.value.county,
             category: searchQuery.value.category,
             status: Helpers.getStatusValueFilter(route.name)
           }))
-
-    // applications.value?.filter((app) => {
-    //   return searchQuery.value.county ?
-    //   app.countyOfOrigin.toString().toLowerCase() === searchQuery.value.county.toString().toLowerCase()
-    //   : app;
-    // })
     if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
-        itemCount: matchedApplications.length,
+        itemCountOnQuery: matchedApplications.length,
         currentPage: 1
       })
     }
-    // applicationStore.$patch({
-    //   filteredApplication: matchedApplications,
-    // })
   } catch (error) {
     console.error(error.message)
   }
@@ -193,20 +216,48 @@ function sortByCounty() {
 function sortByCategory() {
   try {
     applicationStore.$patch({
-      currentPage: 1,
+      currentPage: 1
     })
     if (!searchQuery.value.category) {
-      applicationStore.$patch({
-        filteredApplication: filteredApplication.value?.length
-          ? filteredApplication.value
-          : applications.value,
-          itemCount: filteredApplication.value?.length
-          ? filteredApplication.value.length
-          : applications.value.length
-      })
+      let validQuery = false
+      for (const value of Object.values(searchQuery.value)) {
+        if (value) {
+          validQuery = true
+          break
+        }
+      }
+      if (validQuery) {
+        applicationStore.$patch({
+          filteredApplication: filteredApplication.value?.length
+            ? filteredApplication.value
+            : applications.value,
+          itemCountOnQuery: filteredApplication.value?.length
+            ? filteredApplication.value.length
+            : applications.value.length,
+            currentPage: 1,
+            searchedAgainstAPI: false
+        })
+      } else {
+        applicationStore.$patch({
+          filteredApplication: [],
+          itemCountOnQuery: 0,
+          searchedAgainstAPI: false,
+          currentPage: 1
+        })
+        globalStore.$patch({
+          searchQuery: {
+            category: null,
+            county: null,
+            searchText: '',
+            consortium: null
+          }
+        })
+      }
       return
     }
-    searchedAgainstAPI.value = false
+    applicationStore.$patch({
+      searchedAgainstAPI: false
+    })
     const matchedApplications =
       filteredApplication.value?.length && searchQuery.value.category
         ? filteredApplication.value?.filter((app) => {
@@ -215,24 +266,18 @@ function sortByCategory() {
               searchQuery.value.category.toString().toLowerCase()
             )
           })
-        : ((searchedAgainstAPI.value = true),
+        : ((applicationStore.$patch({
+      searchedAgainstAPI: true,
+    })),
           applicationStore.applicationCustomFilter({
             county: searchQuery.value.county,
             category: searchQuery.value.category,
             status: Helpers.getStatusValueFilter(route.name)
           }))
-    // applications.value?.filter((app) => {
-    //   return searchQuery.value.category ?
-    //   app.category.toString().toLowerCase() === searchQuery.value.category.toString().toLowerCase()
-    //   : app;
-    // })
-    // applicationStore.$patch({
-    //   filteredApplication: matchedApplications,
-    // })
     if (!searchedAgainstAPI.value) {
       applicationStore.$patch({
         filteredApplication: matchedApplications,
-        itemCount: matchedApplications.length,
+        itemCountOnQuery: matchedApplications.length,
         currentPage: 1
       })
     }
@@ -244,7 +289,7 @@ function sortByCategory() {
 function sortByConsortium() {
   try {
     applicationStore.$patch({
-      currentPage: 1,
+      currentPage: 1
     })
     const matchedApplications =
       filteredApplication.value?.length && searchQuery.value.consortium
@@ -262,11 +307,40 @@ function sortByConsortium() {
           })
     applicationStore.$patch({
       filteredApplication: matchedApplications,
-      itemCount: matchedApplications.length,
-      currentPage: 1,
+      itemCountOnQuery: matchedApplications.length,
+      currentPage: 1
     })
   } catch (error) {
     console.error(error.message)
+  }
+}
+
+function clear(val) {
+  switch (val) {
+    case 'county':
+    globalStore.$patch({
+        searchQuery: {
+          category: null,
+          ...searchQuery.value
+        }
+      })
+      sortByCounty()
+      break
+    case 'category':
+      globalStore.$patch({
+        searchQuery: {
+          county: null,
+          ...searchQuery.value
+        }
+      })
+      sortByCategory()
+      break
+    case 'consortium':
+      searchQuery.value.consortium = null
+      break
+    default:
+      searchQuery.value.searchText = null
+      break
   }
 }
 </script>
