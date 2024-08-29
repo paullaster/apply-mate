@@ -1,11 +1,14 @@
 class ColorHelper {
-  createRandonColor(guide) {
-    const randomColor = {};
+  createRandonColor(guide = undefined) {
+    let randomColor = {};
     if (Array.isArray(guide)) {
       guide.forEach(g => {
         const color = '#' + Math.floor(Math.random() * 16777215).toString(16);
         randomColor[g] = color;
       });
+    }else {
+      const color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        randomColor = color;
     }
     return randomColor;
   }
@@ -50,6 +53,7 @@ class ColorHelper {
           county007: '#2196F3',
           county005: '#2196F3',
           county004: '#2196F3',
+          random: this.createRandonColor()
         }[type];
       }
 }

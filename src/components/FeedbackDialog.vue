@@ -2,9 +2,9 @@
   <v-list lines="three">
     <v-list-subheader inset>Comments</v-list-subheader>
     <v-group v-for="feedback in feedbackHistory" :key="feedback.documentNo">
-      <v-list-item :subtitle="feedback.comment" :title="feedback.reviewer">
+      <v-list-item :subtitle="feedback.comment" :title="feedback.consortia.name">
         <template v-slot:prepend>
-          <v-avatar :color="ColorHelper.colorsHelper(user.role.toLowerCase())">
+          <v-avatar :color="ColorHelper.colorsHelper(feedback.reviewer.includes('HR') ? 'hr' : 'random')">
             <v-icon>mdi-account</v-icon>
           </v-avatar>
         </template>
@@ -16,11 +16,9 @@
   
   <script setup>
 import ColorHelper from '@/util/ColorHelper'
-import { useAuth, useGlobalStore } from '@/stores'
+import { useGlobalStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
-const authStore = useAuth()
 const globalStore = useGlobalStore()
-const { user } = storeToRefs(authStore)
 const { feedbackHistory } = storeToRefs(globalStore)
 </script>
