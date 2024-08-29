@@ -2,7 +2,7 @@
   <v-list lines="three">
     <v-list-subheader inset>Comments</v-list-subheader>
     <v-group v-for="feedback in feedbackHistory" :key="feedback.documentNo">
-      <v-list-item :subtitle="feedback.comment" :title="feedback.consortia.name">
+      <v-list-item :subtitle="feedback.comment" :title="`${feedback.consortia.name} (${feedback.consortia.type})`">
         <template v-slot:prepend>
           <v-avatar :color="ColorHelper.colorsHelper(feedback.reviewer.includes('HR') ? 'hr' : 'random')">
             <v-icon>mdi-account</v-icon>
