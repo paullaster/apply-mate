@@ -3,7 +3,7 @@
   <v-card-text>
     <v-form ref="registerForm" max-width="700" style="transition: all 5s ease-in-out">
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" lg="6">
           <v-text-field
             v-model="formData.email"
             :rules="rules.email"
@@ -13,7 +13,17 @@
             
           />
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" lg="6">
+          <v-text-field
+            v-model="formData.phone"
+            :rules="rules.required"
+            label="Phone Number"
+            variant="outlined"
+            style="transition: all 2s ease-in-out;"
+            
+          />
+        </v-col>
+        <v-col cols="12" lg="6">
           <v-text-field
             v-model="formData.firstName"
             :rules="rules.required"
@@ -23,7 +33,7 @@
             
           />
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" lg="6">
           <v-text-field
             v-model="formData.lastName"
             :rules="rules.required"
@@ -59,7 +69,7 @@
           <v-btn
             type="submit"
             variant="flat"
-            @click="register"
+            @click.prevent="register"
             :color="ColorHelper.colorsHelper('primary')"
             v-if="mdAndUp"
             >Register</v-btn
@@ -104,6 +114,7 @@ const formData = ref({
   email: '',
   firstName:'',
   lastName: '',
+  phone: '',
   password: '',
   confirmPassword: '',
   type: 'institution'
@@ -119,10 +130,8 @@ const rules = computed(() => {
       (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Invalid email format',
       (v) => {
         const domain = v.substring(v.indexOf('@')).split('.').slice(1).join('.')
-        console.log(domain)
-        const isDomainAvailable = ['ac.ke', '.edu', '.SC.KE'].includes(domain)
-        console.log(isDomainAvailable)
-        return isDomainAvailable || 'Email from this domain is not accepted'
+        const isDomainAvailable = ['ac.ke', '.edu', '.sc.ke'].includes(domain)
+        return isDomainAvailable || 'Email from this domain is not accepted, accepted domains (.ac.ke, .edu, .sc.ke)'
       }
     ],
     password: [
@@ -141,7 +150,7 @@ async function register() {
   try {
     const { valid } = await registerForm.value.validate()
     if (!valid) {
-      useToast().success('enter valid information')
+      useToast().error('enter valid information')
       return
     }
     authStore.register(formData.value)
@@ -151,6 +160,3 @@ async function register() {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

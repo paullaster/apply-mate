@@ -86,7 +86,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/profile',
+      path: '/profile/:institution',
       name: 'profile',
       component: () => import('@/packages/profile/views/ProfileLayout.vue'),
       children: [
