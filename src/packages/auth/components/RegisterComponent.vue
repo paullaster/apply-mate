@@ -130,7 +130,7 @@ const rules = computed(() => {
       (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Invalid email format',
       (v) => {
         const domain = v.substring(v.indexOf('@')).split('.').slice(1).join('.')
-        const isDomainAvailable = ['ac.ke', '.edu', '.sc.ke'].includes(domain)
+        const isDomainAvailable = ['ac.ke', 'edu', 'sc.ke'].includes(domain)
         return isDomainAvailable || 'Email from this domain is not accepted, accepted domains (.ac.ke, .edu, .sc.ke)'
       }
     ],
