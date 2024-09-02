@@ -1,6 +1,4 @@
 <template>
-  <v-card elevation="0" style="text-align: center">
-    <h3>Accommondation Information</h3>
     <v-card-text>
       <v-expansion-panels class="my-4" variant="inset">
         <v-expansion-panel>
@@ -142,7 +140,6 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-card-text>
-  </v-card>
 </template>
 
 <script setup>

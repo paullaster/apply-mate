@@ -86,65 +86,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/profile/:institution',
-      name: 'profile',
-      component: () => import('@/packages/profile/views/ProfileLayout.vue'),
-      children: [
-        {
-          path: '__bd_x',
-          name: 'biodata',
-          component: () => import("@/packages/profile/components/BiodataComponent.vue"),
-          meta: {
-            title: 'Profile Biodata',
-          }
-        },
-        {
-          path: '__cts_i',
-          name: 'contact_info',
-          component: () => import("@/packages/profile/components/ContactPerson.vue"),
-          meta: {
-            title: 'Profile Contact Information',
-          }
-        },
-        {
-          path: '__acc_i',
-          name: 'accommodation_info',
-          component: () => import("@/packages/profile/components/AccommodationComponent.vue"),
-          meta: {
-            title: 'Profile Accommodation Information',
-          }
-        },
-        {
-          path: '__lnd_i',
-          name: 'land_info',
-          component: () => import("@/packages/profile/components/LandDetails.vue"),
-          meta: {
-            title: 'Profile Land Details',
-          }
-        },
-        {
-          path: '__dclr_f',
-          name: 'declaration_form',
-          component: () => import("@/packages/profile/components/DeclarationForm.vue"),
-          meta: {
-            title: 'Profile Declaration Form',
-          }
-        },
-        {
-          path: '__sgn_f',
-          name:'sign_form',
-          component: () => import("@/packages/profile/components/SigningForm.vue"),
-          meta: {
-            title: 'Profile Sign Form',
-          }
-        }
-      ],
-      meta: {
-        title: 'Profile',
-        // requiresAuth: true
-      }
-    },
-    {
       path: '/:user',
       name: 'userLayout',
       redirect: { name: 'applications', query: { queue: 'applications'}},
@@ -209,6 +150,61 @@ const router = createRouter({
           meta: {
             title: 'HR Reviewed Applications'
           }
+        },
+        {
+          path: 'profile/:institution',
+          name: 'profile',
+          component: () => import('@/packages/profile/views/ProfileLayout.vue'),
+          children: [
+            {
+              path: '__bd_x',
+              name: 'biodata',
+              component: () => import("@/packages/profile/components/BiodataComponent.vue"),
+              meta: {
+                title: 'Profile Biodata',
+              }
+            },
+            {
+              path: '__cts_i',
+              name: 'contact_info',
+              component: () => import("@/packages/profile/components/ContactPerson.vue"),
+              meta: {
+                title: 'Profile Contact Information',
+              }
+            },
+            {
+              path: '__acc_i',
+              name: 'accommodation_info',
+              component: () => import("@/packages/profile/components/AccommodationComponent.vue"),
+              meta: {
+                title: 'Profile Accommodation Information',
+              }
+            },
+            {
+              path: '__lnd_i',
+              name: 'land_info',
+              component: () => import("@/packages/profile/components/LandDetails.vue"),
+              meta: {
+                title: 'Profile Land Details',
+              }
+            },
+            {
+              path: '__dclr_f',
+              name: 'declaration_form',
+              component: () => import("@/packages/profile/components/DeclarationForm.vue"),
+              meta: {
+                title: 'Profile Declaration Form',
+              }
+            },
+            {
+              path: '__sgn_f',
+              name:'sign_form',
+              component: () => import("@/packages/profile/components/SigningForm.vue"),
+              meta: {
+                title: 'Profile Sign Form',
+              }
+            }
+          ],
         },
       ],
       meta: {

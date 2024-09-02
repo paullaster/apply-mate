@@ -1,6 +1,4 @@
 <template>
-  <v-card elevation="0" style="text-align: center">
-    <h3>Land Details</h3>
     <v-card-text>
       <v-form class="my-4">
         <v-row>
@@ -57,7 +55,6 @@
         </v-row>
       </v-form>
     </v-card-text>
-  </v-card>
 </template>
 
 <script setup>

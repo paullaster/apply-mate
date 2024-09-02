@@ -1,11 +1,4 @@
 <template>
-    <v-card
-    elevation="0"
-    style="text-align: center"
-    >
-        <h3>
-            Contact persons
-        </h3>
         <v-card-text>
             <v-form>
                 <v-row class="my-4">
@@ -43,7 +36,6 @@
                 </v-row>
             </v-form>
         </v-card-text>
-    </v-card>
 </template>
 
 <script setup>

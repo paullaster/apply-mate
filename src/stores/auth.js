@@ -134,7 +134,7 @@ export const useAuth = defineStore("auth", {
                             user.role === 'institution' ?
                             router.push({
                                 name: 'profile',
-                                params: { institution: btoa(user.id) },
+                                params: { institution: btoa(user.id), user: btoa(user.id) },
                             }) 
                             :
                             router.push({
