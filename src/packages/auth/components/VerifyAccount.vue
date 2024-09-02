@@ -90,7 +90,7 @@ function verifyOTP() {
     otp.value = '';
     // Reset timer
     globalEventBus.emit("stop-resend-otp-timer", null);
-    authStore.updateUser({...account, isVerified: true });
+    // authStore.updateUser({...account, isVerified: true });
   } catch (error) {
     console.error(error);
     useToast().error("Sorry, We ran into an error!");

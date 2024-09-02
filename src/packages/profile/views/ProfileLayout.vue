@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main style="width: 100vw">
-      <v-sheet color="white" elevation="3" rounded="lg" min-height="100vh">
+      <v-sheet color="white" elevation="0" rounded="lg" min-height="100vh">
         <v-tabs
           v-model="activeProfileTab"
           :items="profileSections"
@@ -40,6 +40,31 @@
           </template>
         </v-tabs>
       </v-sheet>
+      <v-row style=" display: flex; justify-content: center; align-items: center; padding-inline: 16rem;">
+        <v-col cols="12" class="d-flex justify-space-between" >
+          <v-btn
+            text
+            @click="$router.push({ name: 'home' })"
+            class="mb-2"
+            width="150px"
+          >
+          <v-icon class="mr-2">mdi-step-backward</v-icon>
+            <span>Previous</span>
+          </v-btn>
+          <v-btn
+            variant="flat"
+            :color="ColorHelper.colorsHelper('primary')"
+            @click="saveProfileSection"
+            class="mb-2"
+            width="150px"
+          >
+          <v-icon class="mr-2">
+            mdi-content-save-outline
+          </v-icon>
+            <span>Save</span>
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-main>
   </v-app>
 </template>
@@ -76,4 +101,9 @@ watch(
     deep: true
   }
 )
+
+// METHODS
+function saveProfileSection() {
+  console.log("saved");
+}
 </script>

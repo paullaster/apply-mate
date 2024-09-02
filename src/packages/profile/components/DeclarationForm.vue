@@ -13,7 +13,10 @@
             <v-checkbox v-model="agreeToBoardResolution" label="The Institution’s board will pass a resolution and sign a Memorandum of Understanding with SDHUD" required />
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" type="submit" >Submit</v-btn>
+            <v-btn 
+            width="150px"
+            variant="flat"
+            :color="ColorHelper.colorsHelper('primary')"  >Agree</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -21,7 +24,8 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import ColorHelper from '@/util/ColorHelper';
+import { ref } from 'vue';
   
   const agreeToLandAvailability = ref(false);
   const agreeToLandSeparation = ref(false);

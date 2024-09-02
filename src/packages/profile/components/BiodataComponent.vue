@@ -42,11 +42,9 @@
                         />
                     </v-col>
                 </v-row>
-                
-                <h4>Location Information</h4>
                 <v-row class="my-4">
                     <v-col >
-                        <v-select
+                        <v-autocomplete
                             v-model="age"
                             label="Region"
                             type="text"
@@ -54,7 +52,7 @@
                         />
                     </v-col>
                     <v-col>
-                        <v-select
+                        <v-autocomplete
                             v-model="age"
                             label="County"
                             type="text"
@@ -62,7 +60,7 @@
                         />
                     </v-col>
                     <v-col>
-                        <v-select
+                        <v-autocomplete
                             v-model="age"
                             label="Town/City"
                             type="text"

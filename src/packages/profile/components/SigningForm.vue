@@ -4,22 +4,35 @@
   
       <v-form ref="form" @submit="submitForm">
         <v-card class="mt-4">
-          <v-card-title>Institution Authority Information</v-card-title>
+          <v-card-title>Download the application form below to complete this section and then re-upload a duly completed signed application form</v-card-title>
           <v-card-text>
-            <v-text-field label="Name" v-model="name" required />
-            <v-text-field label="Designation" v-model="designation" required />
-            <v-text-field label="ID Number" v-model="idNumber" required />
-            <v-text-field label="Telephone" v-model="telephone" required />
-            <v-text-field label="Email" v-model="email" required />
+            <v-select
+            :items="userActions"
+            item-title="label"
+            item-value="value"
+            v-model="selectedAction"
+            label="Select action here e.g Download or Upload the application form"
+            clearable
+            >
+
+            </v-select>
   
-            <v-otp-input v-model="otp" :length="6" />
-  
-            <v-file-input label="Upload Signature" accept=".jpg,.jpeg,.png" v-model="signatureFile" />
-            <SignatureComponent />
+            <v-file-input label="Upload completed and signed application form" accept=".jpg,.jpeg,.png" v-model="signatureFile" v-if="selectedAction === 'Uploadtheapplicationform'"/>
            
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" type="submit" >Submit</v-btn>
+            <v-btn
+            v-if="selectedAction === 'Downloadapplicationform'"
+            variant="flat"
+            :color="ColorHelper.colorsHelper('primary')"
+            >
+              <v-icon size="40" class="mr-2">mdi-cloud-download-outline</v-icon>
+              <span>Download Application Form</span>
+            </v-btn>
+            <v-btn 
+            variant="flat"
+            :color="ColorHelper.colorsHelper('primary')"
+            v-if="selectedAction === 'Uploadtheapplicationform'" >Submit Signed Application Form</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -28,35 +41,32 @@
   
   <script setup>
   import { ref } from 'vue';
-  import SignatureComponent from './SignatureComponent.vue';
+import ColorHelper from '@/util/ColorHelper';
   
-  const name = ref('');
-  const designation = ref('');
-  const idNumber = ref('');
-  const telephone = ref('');
-  const email = ref('');
-  const otp = ref('');
-  const signatureFile = ref(null);
-  const scribbleSignature = ref('');
+  const selectedAction = ref('');
   
+  const downloadedApplicationForm = ref(false);
   const form = ref(null);
-  
-  const submitForm = () => {
-    // Validate OTP and other fields
-    // Send OTP verification request
-    // ...
-  
-    // If OTP is valid, proceed with submission
-    // Handle form submission here, e.g., send data to a server
-    console.log('Form submitted:', {
-      name: name.value,
-      designation: designation.value,
-      idNumber: idNumber.value,
-      telephone: telephone.value,
-      email: email.value,
-      otp: otp.value,
-      signatureFile: signatureFile.value,
-      scribbleSignature: scribbleSignature.value,
-    });
-  };
+  const userActions = [
+    {
+      label: 'Download application form',
+      // action: () => {
+      //   // Download application form and update downloadedApplicationForm flag
+      //   downloadedApplicationForm.value = true;
+      // },
+      disabled:!downloadedApplicationForm.value,
+      value: 'Downloadapplicationform',
+
+    },
+    {
+      label: 'Upload the application form',
+      // action: () => {
+      //   // Upload application form and update downloadedApplicationForm flag
+      //   downloadedApplicationForm.value = true;
+      // },
+      disabled: downloadedApplicationForm.value,
+      value: 'Uploadtheapplicationform',
+    }
+  ];
+
   </script>

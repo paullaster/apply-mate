@@ -131,7 +131,7 @@ export const useAuth = defineStore("auth", {
                     .then(async (response) => {
                         AuthService.login(response.data).then(async (user) => {
                             await this.setUser(user);
-                            user.type === 'institution' ?
+                            user.role === 'institution' ?
                             router.push({
                                 name: 'profile',
                                 params: { institution: btoa(user.id) },
