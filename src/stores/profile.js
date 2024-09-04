@@ -48,10 +48,76 @@ export const useProfile = defineStore('profile', {
             }
         ],
         profile: {},
+        component: {
+            status: false,
+            componentTypes: {
+                items: [],
+                label: "",
+                item_value: "",
+                item_title: "",
+                type: "",
+                required: false,
+                disabled: false,
+                options: [],
+            },
+
+        }
 
     }),
     getters: {
         profileGetter: (state) => state.profile,
     },
-    actions: {}
+    actions: {
+        setDialogComponent(data) {
+            switch(data) {
+                case 'student':
+                    this.$patch({
+                        component: {
+                            status: true,
+                            componentTypes: {
+                                items: [
+                                    {
+                                        year: 1,
+                                        description: "First Year",
+                                    },
+                                    {
+                                        year: 2,
+                                        description: "Second Year",
+                                    },
+                                    {
+                                        year: 3,
+                                        description: "Third Year",
+                                    },
+                                    {
+                                        year: 4,
+                                        description: "Fourth Year",
+                                    },
+                                    {
+                                        year: 5,
+                                        description: "Fifth Year",
+                                    },
+                                    {
+                                        year: 6,
+                                        description: "Sixth Year",
+                                    },
+                                    {
+                                        year: 7,
+                                        description: "Seventh Year",
+                                    }
+                                ],
+                                label: "Student Information",
+                                item_value: "year",
+                                item_title: "description",
+                                type: "number",
+                                required: true,
+                                disabled: false,
+                                options: [],
+                            },
+                        },
+                    });
+                    break;
+                default:
+            }
+        }
+    }
 });

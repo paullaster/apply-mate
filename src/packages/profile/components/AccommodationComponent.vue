@@ -4,9 +4,6 @@
         <v-expansion-panel>
           <v-expansion-panel-title>
             Student Data
-            <!-- <template v-slot:actions="{ expanded }">
-            <v-icon :color="!expanded ? 'teal' : ''" :icon="expanded ? 'mdi-pencil' : 'mdi-check'"></v-icon>
-          </template> -->
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-toolbar>
@@ -14,8 +11,14 @@
                 Current number of students and their years of study
               </v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn variant="flat" :color="ColorHelper.colorsHelper('primary')"
-                >Add students</v-btn
+              <v-btn 
+              variant="flat" 
+              :color="ColorHelper.colorsHelper('primary')"
+              @click="()=>profileStore.setDialogComponent('student')"
+                >
+                <v-icon class="mr-2">mdi-account-plus</v-icon>
+                <span>Add students</span>
+                </v-btn
               >
             </v-toolbar>
             <v-data-table :headers="headers"> </v-data-table>
@@ -103,9 +106,6 @@
         <v-expansion-panel>
           <v-expansion-panel-title>
             Students Accommodation Rates
-            <!-- <template v-slot:actions="{ expanded }">
-              <v-icon :color="!expanded ? 'teal' : ''" :icon="expanded ? 'mdi-pencil' : 'mdi-check'"></v-icon>
-            </template> -->
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-form>
@@ -143,8 +143,16 @@
 </template>
 
 <script setup>
+import { useProfile } from '@/stores';
 import ColorHelper from '@/util/ColorHelper'
 
+
+
+
+// STORE
+const profileStore = useProfile();
+
+// VARIABLES
 const headers = [
   { title: 'Year of Study', value: 'yearOfStudy' },
   { title: 'Number of Student', value: 'count' },

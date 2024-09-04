@@ -25,19 +25,9 @@
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
-            v-model="formData.firstName"
+            v-model="formData.institutionName"
             :rules="rules.required"
-            label="First Name"
-            variant="outlined"
-            style="transition: all 2s ease-in-out;"
-            
-          />
-        </v-col>
-        <v-col cols="12" lg="6">
-          <v-text-field
-            v-model="formData.lastName"
-            :rules="rules.required"
-            label="Last Name"
+            label="Institution Name"
             variant="outlined"
             style="transition: all 2s ease-in-out;"
             
@@ -112,8 +102,7 @@ const authStore = useAuth()
 // COMPONENT VARS
 const formData = ref({
   email: '',
-  firstName:'',
-  lastName: '',
+  institutionName:'',
   phone: '',
   password: '',
   confirmPassword: '',

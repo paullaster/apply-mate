@@ -68,6 +68,7 @@
         </v-col>
       </v-row>
     </v-main>
+    <DialogComponent />
   </v-app>
 </template>
 
@@ -83,6 +84,7 @@ import { storeToRefs } from 'pinia'
 import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ColorHelper from '@/util/ColorHelper'
+import DialogComponent from '../components/DialogComponent.vue'
 
 // ROUTING
 const router = useRouter()
