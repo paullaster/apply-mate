@@ -511,7 +511,7 @@ function batchReverseOnboardedApplications() {
     }
     const applicationsReversible = selected.value.filter(
       (app) =>
-        app.status.trim() === 'Onboarded' && app.onboardedBy.trim() === user.value.consoltium.trim()
+        app.status.trim() === 'Onboarded' && (app.onboardedBy.trim() === user.value.consoltium.trim() || user.value.role.trim().toLowerCase() === 'lead')
     )
     if (!applicationsReversible.length) {
       globalStore.setLoader(false)
