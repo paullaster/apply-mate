@@ -1,3 +1,4 @@
+import ColorHelper from "@/util/ColorHelper";
 import { defineStore } from "pinia";
 
 export const useProfile = defineStore('profile', {
@@ -50,16 +51,40 @@ export const useProfile = defineStore('profile', {
         profile: {},
         component: {
             status: false,
-            componentTypes: {
-                items: [],
-                label: "",
-                item_value: "",
-                item_title: "",
-                type: "",
-                required: false,
-                disabled: false,
-                options: [],
-            },
+            description:"Add A Record",
+            controls: {
+                autocomplete: {
+                    items: [],
+                    label: "",
+                    item_value: "",
+                    item_title: "",
+                    type: "",
+                    required: false,
+                    disabled: false,
+                    options: [],
+                },
+                textField: {
+                    label: "",
+                    value: "",
+                    type: "",
+                    required: false,
+                    disabled: false,
+                },
+                vmodel: {
+                    autocomplete: '',
+                    textField: '',
+                },
+                actions: {
+                    caption: "",
+                    icon: "",
+                    disabled: false,
+                    loading: false,
+                    options: [],
+                    color: "",
+                    iconColor: "",
+                    fn: function (v) { console.log(v);  },
+                }
+            }
 
         }
 
@@ -74,45 +99,62 @@ export const useProfile = defineStore('profile', {
                     this.$patch({
                         component: {
                             status: true,
-                            componentTypes: {
-                                items: [
-                                    {
-                                        year: 1,
-                                        description: "First Year",
-                                    },
-                                    {
-                                        year: 2,
-                                        description: "Second Year",
-                                    },
-                                    {
-                                        year: 3,
-                                        description: "Third Year",
-                                    },
-                                    {
-                                        year: 4,
-                                        description: "Fourth Year",
-                                    },
-                                    {
-                                        year: 5,
-                                        description: "Fifth Year",
-                                    },
-                                    {
-                                        year: 6,
-                                        description: "Sixth Year",
-                                    },
-                                    {
-                                        year: 7,
-                                        description: "Seventh Year",
-                                    }
-                                ],
-                                label: "Student Information",
-                                item_value: "year",
-                                item_title: "description",
-                                type: "number",
-                                required: true,
-                                disabled: false,
-                                options: [],
-                            },
+                            description:"Add Students Data",
+                            controls: {
+                                autocomplete: {
+                                    items: [
+                                        {
+                                            year: 1,
+                                            description: "First Year",
+                                        },
+                                        {
+                                            year: 2,
+                                            description: "Second Year",
+                                        },
+                                        {
+                                            year: 3,
+                                            description: "Third Year",
+                                        },
+                                        {
+                                            year: 4,
+                                            description: "Fourth Year",
+                                        },
+                                        {
+                                            year: 5,
+                                            description: "Fifth Year",
+                                        },
+                                        {
+                                            year: 6,
+                                            description: "Sixth Year",
+                                        },
+                                        {
+                                            year: 7,
+                                            description: "Seventh Year",
+                                        }
+                                    ],
+                                    label: "Student Information",
+                                    item_value: "year",
+                                    item_title: "description",
+                                    type: "number",
+                                    required: true,
+                                    disabled: false,
+                                    options: [],
+                                },
+                                textField: {
+                                    type: 'number',
+                                    label: "Number of Students",
+                                    value: '',
+                                    required: true,
+                                    disabled: false,
+                                },
+                                actions: {
+                                    caption: "Submit",
+                                    disabled: false,
+                                    options: [],
+                                    color: ColorHelper.colorsHelper("primary"),
+                                    icon:  "mdi-send"
+                                }
+                            }
                         },
                     });
                     break;
