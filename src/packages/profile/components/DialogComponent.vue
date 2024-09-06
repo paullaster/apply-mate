@@ -11,6 +11,7 @@
               v-model="component.controls.vmodel.autocomplete"
               :item-title="component.controls.autocomplete.item_title"
               :item-value="component.controls.autocomplete.item_value"
+              :type="component.controls.autocomplete.type"
               variant="outlined"
             />
           </v-col>
@@ -18,19 +19,18 @@
             <v-text-field
               :label="component.controls.textField.label"
               v-model="component.controls.vmodel.textField"
-              :type="component.controls.vmodel.textField.type"
+              :type="component.controls.textField.type"
               variant="outlined"
             />
           </v-col>
           <v-col cols="12">
             <v-btn 
             :color="component.controls.actions.color"
-            :loading="component.controls.actions.loading"
-            @click.stop="component.status = false"
+            :loading="profileRecordsLoadingStatus"
             @click.prevent="component.controls.actions.fn(component.controls.vmodel)"
             
             >
-            <template v-if="component.controls.actions.loading">
+            <template v-if="profileRecordsLoadingStatus">
               <v-icon>loading</v-icon>
             </template>
             <template v-else>
@@ -54,5 +54,5 @@ import { storeToRefs } from 'pinia'
 
 // STORE
 const profileStore = useProfile()
-const { component } = storeToRefs(profileStore)
+const { component, profileRecordsLoadingStatus } = storeToRefs(profileStore)
 </script>

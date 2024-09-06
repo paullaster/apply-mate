@@ -15,6 +15,7 @@
               variant="flat" 
               :color="ColorHelper.colorsHelper('primary')"
               @click="()=>profileStore.setDialogComponent('student')"
+              :loading="profileRecordsLoadingStatus"
                 >
                 <v-icon class="mr-2">mdi-account-plus</v-icon>
                 <span>Add students</span>
@@ -145,12 +146,14 @@
 <script setup>
 import { useProfile } from '@/stores';
 import ColorHelper from '@/util/ColorHelper'
+import { storeToRefs } from 'pinia';
 
 
 
 
 // STORE
 const profileStore = useProfile();
+const {  profileRecordsLoadingStatus } = storeToRefs(profileStore)
 
 // VARIABLES
 const headers = [

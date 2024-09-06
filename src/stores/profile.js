@@ -1,5 +1,7 @@
+import { _request } from "@/service";
 import ColorHelper from "@/util/ColorHelper";
 import { defineStore } from "pinia";
+import { useToast } from "vue-toastification";
 
 export const useProfile = defineStore('profile', {
     state: () => ({
@@ -49,6 +51,7 @@ export const useProfile = defineStore('profile', {
             }
         ],
         profile: {},
+        profileRecordsLoadingStatus: false,
         component: {
             status: false,
             description:"Add A Record",
@@ -94,6 +97,9 @@ export const useProfile = defineStore('profile', {
     },
     actions: {
         setDialogComponent(data) {
+            this.$patch({
+                profileRecordsLoadingStatus: false,
+            });
             switch(data) {
                 case 'student':
                     this.$patch({
@@ -147,12 +153,20 @@ export const useProfile = defineStore('profile', {
                                     required: true,
                                     disabled: false,
                                 },
+                                vmodel: {
+                                    autocomplete: '',
+                                    textField: '',
+                                },
                                 actions: {
                                     caption: "Submit",
                                     disabled: false,
                                     options: [],
                                     color: ColorHelper.colorsHelper("primary"),
-                                    icon:  "mdi-send"
+                                    icon:  "mdi-send",
+                                    fn: async(payload)=>{
+                                        await this.submitStudentRecord(payload)
+                                        console.log(this.component)
+                                    }
                                 }
                             }
                         },
@@ -160,6 +174,38 @@ export const useProfile = defineStore('profile', {
                     break;
                 default:
             }
+        },
+        async getStudentRecord(){
+            this.$patch({
+                profileRecordsLoadingStatus: true,
+            });
+        },
+        async submitStudentRecord(payload) {
+            this.$patch({
+                profileRecordsLoadingStatus: true,
+            });
+            const data = {
+                yearOfStudy: parseInt(payload.autocomplete),
+                totalNo: parseInt(payload.textField),
+            }
+            console.log(data)
+            _request.axiosRequest({
+                url: '/student/record/add',
+                method: 'POST',
+                data: data,
+            })
+           .then(() => {
+             this.$patch({
+                 profileRecordsLoadingStatus: false,
+             });
+             useToast().success("Student record submitted successfully!");
+           })
+            .catch((error) => {
+                console.error(error.message);
+                useToast().error("Error while submitting student record");
+                this.setDialogComponent('student');
+            });
+            
         }
     }
 });
