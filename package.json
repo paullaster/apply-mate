@@ -11,7 +11,7 @@
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "docker-build": "docker build -t apply-mate:production  . && docker run -d -p 3000:80 --rm --name apply-mate-app apply-mate:production"
+    "docker-build": "docker build -t versate:production  . && docker run -d -p 3001:80 --rm --name versate-app versate:production"
   },
   "dependencies": {
     "@brainspore/transport": "^0.0.8",
