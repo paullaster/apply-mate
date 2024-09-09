@@ -221,34 +221,32 @@ const route = useRoute()
 const selected = ref([])
 const headers = [
   {
-    title: 'Applicant Name',
-    value: 'fullName',
+    title: 'Intitution Type',
+    value: 'institutionType',
     sortable: true
   },
   {
-    title: 'Gender',
-    value: 'gender',
+    title: 'Intitution Name',
+    value: 'institutionName',
     sortable: true
   },
-  { title: 'Age', value: 'age', sortable: true },
+  {
+    title: 'Campus',
+    value: 'campus',
+    sortable: true
+  },
+  { title: 'County', value: 'county', sortable: true },
+  {
+    title: 'Town',
+    value: 'town',
+    sortable: true
+  },
   {
     title: 'Status',
     value: 'status',
-    sortable: true
+    sortable: true,
+    align: 'center'
   },
-  {
-    title: 'County of Origin',
-    value: 'countyOfOrigin',
-    sortable: true
-  },
-  { title: 'Disabled', value: 'disabled', sortable: true },
-  {
-    title: 'Category',
-    value: 'category',
-    sortable: true
-  },
-  { title: 'Approved By', value: 'approvedByConsortia', sortable: true, aligne: 'center' },
-  { title: 'Date Modified', value: 'modifiedAt', sortable: true },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
 

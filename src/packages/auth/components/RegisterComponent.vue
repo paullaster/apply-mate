@@ -1,5 +1,9 @@
 <template>
-  <v-card-titl>Register {{}} Account</v-card-titl>
+  <v-card-title
+  style="
+  margin: .8rem .2rem;
+  "
+  >Register University Account</v-card-title>
   <v-card-text>
     <v-form ref="registerForm" max-width="700" style="transition: all 5s ease-in-out">
       <v-row>
@@ -23,7 +27,7 @@
             
           />
         </v-col>
-        <v-col cols="12" lg="6">
+        <v-col cols="12">
           <v-text-field
             v-model="formData.institutionName"
             :rules="rules.required"
