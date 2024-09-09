@@ -131,12 +131,12 @@ export const useAuth = defineStore("auth", {
                     .then(async (response) => {
                         AuthService.login(response.data).then(async (user) => {
                             await this.setUser(user);
-                            user.role === 'institution' ?
-                            router.push({
-                                name: 'profile',
-                                params: { institution: btoa(user.id), user: btoa(user.id) },
-                            }) 
-                            :
+                            // user.role === 'institution' ?
+                            // router.push({
+                            //     name: 'profile',
+                            //     params: { institution: btoa(user.id), user: btoa(user.id) },
+                            // }) 
+                            // :
                             router.push({
                                 name: 'userLayout',
                                 params: { user: btoa(user.id) },

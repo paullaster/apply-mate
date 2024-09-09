@@ -43,7 +43,7 @@
             <span>Login</span>
           </v-btn>
         </v-col>
-        <v-col cols="12" lg="6" class="d-flex flex-end">
+        <!-- <v-col cols="12" lg="6" class="d-flex flex-end">
           <v-btn
             @click="()=>router.push({name: 'register'})"
             variant="flat"
@@ -60,7 +60,7 @@
             <v-icon class="mr-3">mdi-lock</v-icon>
             <span>Register</span>
           </v-btn>
-        </v-col>
+        </v-col> -->
       </v-row>
     </v-form>
     <v-row>
