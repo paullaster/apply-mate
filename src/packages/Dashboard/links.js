@@ -10,11 +10,11 @@ export default [
         id: 'dashboard',
     },
     {
-        path: `/${btoa(AuthService.getUser().id)}/applications?queue=applications`,
+        path: `/${btoa(AuthService.getUser().id)}/requests?queue=requests`,
         order: 2,
         hasSubs: false,
         icon: "mdi-file-multiple",
-        title: "Applications",
-        id: 'applications',
+        title: "Requests",
+        id: 'requests',
     },
 ];

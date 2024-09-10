@@ -63,7 +63,7 @@
             min-width="150px"
           >
             <v-icon class="mr-2"> mdi-content-save-outline </v-icon>
-            <span>{{ saveButtonLabel }}</span>
+            <span>{{ profileSections.find(sec => sec.value === activeProfileTab )?.btnCaption || 'NEXT' }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -81,10 +81,11 @@ import DeclarationForm from '../components/DeclarationForm.vue'
 import SigningForm from '../components/SigningForm.vue'
 import { useProfile } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { watch, computed } from 'vue'
+import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ColorHelper from '@/util/ColorHelper'
 import DialogComponent from '../components/DialogComponent.vue'
+import { useToast } from 'vue-toastification'
 
 // ROUTING
 const router = useRouter()
@@ -93,25 +94,8 @@ const router = useRouter()
 const profileStore = useProfile()
 const { profileSections, activeProfileTab } = storeToRefs(profileStore)
 
-// COMPUTED
-const saveButtonLabel = computed(() => {
-  switch (activeProfileTab.value) {
-    case 'BIODATA':
-      return 'Save Institution Information'
-    case 'CONTACT_INFO':
-      return 'Save Contact Information'
-    case 'ACCOMMODATION_INFO':
-      return 'Save Accommodation Information'
-    case 'LAND_INFO':
-      return 'Save Land Information'
-    case 'DECLARATION_FORM':
-      return 'Save Declaration Form'
-    case 'SIGN_FORM':
-      return 'Submit Signed Application Form'
-    default:
-      return 'NEXT'
-  }
-})
+// // COMPUTED
+
 // WATCHERS
 watch(
   () => activeProfileTab.value,
@@ -128,6 +112,11 @@ watch(
 
 // METHODS
 function saveProfileSection() {
-  console.log('saved')
+  try {
+    const tab = profileSections.value.find(sec => sec.value === activeProfileTab.value )
+    tab?.fn(tab.vmodel)
+  } catch (error) {
+    useToast().error(error.message);
+  }
 }
 </script>

@@ -1,10 +1,10 @@
 <template>
         <v-card-text>
-            <v-form>
+            <v-form :ref="profileSections[0].formRef">
                 <v-row class="my-4">
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="biodata.institutionName"
+                            v-model="profileSections[0].vmodel.institutionName"
                             label="Institution Name"
                             variant="outlined"
                             required
@@ -12,7 +12,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="branch"
+                            v-model="profileSections[0].vmodel.campus"
                             label="Branch/Campus"
                             type="text"
                             variant="outlined"
@@ -20,7 +20,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="biodata.durationEachSemester"
+                            v-model="profileSections[0].vmodel.durationEachSemester"
                             label="Duration of each semester (in months)"
                             type="text"
                             variant="outlined"
@@ -28,7 +28,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-autocomplete
-                            v-model="biodata.region"
+                            v-model="profileSections[0].vmodel.region"
                             label="Region"
                             type="text"
                             variant="outlined"
@@ -39,7 +39,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-autocomplete
-                            v-model="county"
+                            v-model="profileSections[0].vmodel.county"
                             label="County"
                             type="text"
                             variant="outlined"
@@ -50,7 +50,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="biodata.town"
+                            v-model="profileSections[0].vmodel.town"
                             label="Town/City"
                             type="text"
                             variant="outlined"
@@ -62,26 +62,16 @@
 </template>
 
 <script setup>
-import { useSetupStore } from '@/stores';
+import { useProfile, useSetupStore } from '@/stores';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
 
 // STORE
 const setupStore = useSetupStore();
+const profileStore = useProfile();
 const { counties } = storeToRefs(setupStore);
+const { profileSections } = storeToRefs(profileStore)
 
 
-// VARIABLES
-const biodata = ref(
-    {
-        institutionName: '',
-        branch: '',
-        durationEachSemester: '',
-        region: '',
-        county: '',
-        town: ''
-    }
-)
 const regions = [
     {
         code: "NYANZA",

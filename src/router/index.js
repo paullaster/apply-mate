@@ -102,13 +102,13 @@ const router = createRouter({
           }
         },
         {
-          path: 'applications',
-          name: 'applications',
+          path: 'requests',
+          name: 'requests',
           components: {
             default: () => import("@/packages/application/views/ApplicationComponent.vue"),
           },
           meta: {
-            title: 'New Applications'
+            title: 'Hostel Requests'
           }
         },
         {

@@ -2,6 +2,9 @@ import { _request } from "@/service";
 import ColorHelper from "@/util/ColorHelper";
 import { defineStore } from "pinia";
 import { useToast } from "vue-toastification";
+import { useGlobalStore } from "./global";
+import { hostelRequest } from "./constants";
+import router from "@/router";
 
 export const useProfile = defineStore('profile', {
     state: () => ({
@@ -13,6 +16,23 @@ export const useProfile = defineStore('profile', {
                 value: "BIODATA",
                 heading: "Institution Information",
                 description: "Details of the institution",
+                btnCaption: "Save Institution Information",
+                formRef: 'biodata',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    console.log(payload);
+                    useProfile().saveHostelRequesSection({
+                        ...payload,
+                        durationEachSemester: parseInt(payload.durationEachSemester),
+                    })
+                }
             },
             {
                 title: "Contact Person Information",
@@ -20,6 +40,19 @@ export const useProfile = defineStore('profile', {
                 value: "CONTACT_INFO",
                 heading: "Contact Person Information",
                 description: "Details of the primary contact persons",
+                btnCaption: "Save Contact Information",
+                formRef: 'contactorForm',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    this.saveHostelRequesSection(payload);
+                }
             },
             {
                 title: "Accommodation Information",
@@ -27,6 +60,19 @@ export const useProfile = defineStore('profile', {
                 value: "ACCOMMODATION_INFO",
                 heading: "Accommodation Information",
                 description: "Details of the accommodation provided by the institution",
+                btnCaption: "Save Accommodation Information",
+                formRef: 'accommodationform',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    console.log(payload);
+                }
             },
             {
                 title: "Land Details",
@@ -34,6 +80,19 @@ export const useProfile = defineStore('profile', {
                 value: "LAND_INFO",
                 heading: "Land Details",
                 description: "Details of the land allocated for accommodation",
+                btnCaption: "Save Declaration Form",
+                formRef: 'ladinfoForm',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    console.log(payload);
+                }
             },
             {
                 title: "Declaration Form",
@@ -41,6 +100,19 @@ export const useProfile = defineStore('profile', {
                 value: "DECLARATION_FORM",
                 heading: "Declaration Form",
                 description: "Declaration by Institution Authority",
+                btnCaption: "Submit Signed Application Form",
+                formRef: 'declarationForm',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    console.log(payload);
+                }
             },
             {
                 title: "Sign",
@@ -48,6 +120,19 @@ export const useProfile = defineStore('profile', {
                 value: "SIGN_FORM",
                 heading: "Signing Form",
                 description: "Download the application form below to complete this section and then re-upload a duly completed signed application form",
+                btnCaption: "Submit Signed Application Form",
+                formRef: 'signForm',
+                vmodel: {
+                    institutionName: '',
+                    campus: '',
+                    durationEachSemester: '',
+                    region: '',
+                    county: '',
+                    town: ''
+                },
+                fn: (payload) => {
+                    console.log(payload);
+                }
             }
         ],
         profile: {},
@@ -96,6 +181,13 @@ export const useProfile = defineStore('profile', {
         profileGetter: (state) => state.profile,
     },
     actions: {
+        setLoading(payload) {
+            try {
+                useGlobalStore().setLoader(payload);
+            } catch (error) {
+                useToast().error(error.message);
+            }
+        },
         setDialogComponent(data) {
             this.$patch({
                 profileRecordsLoadingStatus: false,
@@ -178,6 +270,36 @@ export const useProfile = defineStore('profile', {
         async getStudentRecord(){
             this.$patch({
                 profileRecordsLoadingStatus: true,
+            });
+        },
+        async saveHostelRequesSection(paylaod) {
+            this.setLoading(true);
+            _request.axiosRequest({
+                url: hostelRequest[this.activeProfileTab],
+                method: 'POST',
+                data: paylaod,
+            })
+            .then(() => {
+                this.setLoading(false);
+                useToast().success("Biodata information saved successfully!");
+                const currentTabIndex = this.profileSections.findIndex(
+                    (tab) => tab.value === this.activeProfileTab
+                );
+                const state = {
+                    TAB: this.profileSections[currentTabIndex + 1],
+                    LAST: router.push({ name: 'requests'})
+                };
+                if (currentTabIndex >= this.profileSections.length - 1 || currentTabIndex < 0) {
+                    return state['LAST'];
+                };
+                this.$patch({
+                    activeProfileTab : state['TAB'].value,
+                })
+            })
+            .catch((error) => {
+                console.error(error.message);
+                this.setLoading(true);
+                useToast().error("Error while saving information");
             });
         },
         async submitStudentRecord(payload) {
