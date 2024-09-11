@@ -18,56 +18,12 @@
           <v-icon>mdi-magnify</v-icon>
           <span>Search</span>
         </v-btn>
-        <v-btn
-          :disabled="!selected.length"
-          @click="batchAcceptApplications"
-          :color="ColorHelper.colorsHelper('success')"
-          variant="flat"
-          class="mr-4"
-          v-if="route.query.queue === 'applications' && user.role.toLowerCase() !== 'hr'"
-        >
-          <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
-          <span>accept applications</span>
-        </v-btn>
-        <v-btn
-          :disabled="!selected.length"
-          @click="batchReverseOnboardedApplications"
-          :color="ColorHelper.colorsHelper('info')"
-          variant="flat"
-          class="mr-4"
-          v-if="route.query.queue !== 'approved' && user.role.toLowerCase() !== 'hr'"
-        >
-          <v-icon class="mr-2">mdi-arrow-u-left-top</v-icon>
-          <span>Reverse Applications</span>
-        </v-btn>
-        <v-btn
-          :disabled="!selected.length || user.role !== 'lead'"
-          @click="batchOnboardApplications"
-          :color="ColorHelper.colorsHelper('success')"
-          variant="flat"
-          class="mr-4"
-          v-if="route.query.queue === 'onboarded' && user.role.toLowerCase() !== 'hr'"
-        >
-          <v-icon class="mr-2">mdi-file-multiple-outline</v-icon>
-          <span>Approve Applications</span>
-        </v-btn>
-        <v-btn
-          :disabled="!selected.length"
-          @click="batchHRReviewApplications"
-          :color="ColorHelper.colorsHelper('primary')"
-          variant="flat"
-          class="mr-4"
-          v-if="user.role.toLowerCase() === 'hr' && route.query.queue === 'approved'"
-        >
-          <v-icon class="mr-2">mdi-flash</v-icon>
-          <span>HR Review</span>
-        </v-btn>
       </v-toolbar>
     </v-card-title>
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="filteredApplication.length || isAnyQueryParam ? filteredApplication : applications"
+        :items="hostelRequests"
         :item-value="id"
         return-object
         items-selectable="selectable"
@@ -139,18 +95,9 @@
             class="my-2 mx-1"
             icon
             elevation="0"
-            v-tooltip="'Application Quick View'"
+            v-tooltip="'Request Quick View'"
             >
-            <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-flash</v-icon>
-          </v-btn>
-          <v-btn
-            elevation="0"
-            icon
-            @click="() => globalStore.setFeedbackActionDialog(true, item)"
-            class="my-2 mx-1"
-            v-tooltip="'Leave Feedback for this Application'"
-          >
-            <v-icon :color="ColorHelper.colorsHelper('info')" size="30">mdi-comment-quote</v-icon>
+            <v-icon :color="ColorHelper.colorsHelper('success')" size="30">mdi-file-find</v-icon>
           </v-btn>
           <v-btn
             elevation="0"
@@ -158,9 +105,9 @@
             hint="view application"
             @click="viewApplication(item)"
             class="my-2 mx-1"
-            v-tooltip="'View Application Details'"
+            v-tooltip="'View Request Details'"
           >
-            <v-icon :color="ColorHelper.colorsHelper('primary')" size="30">mdi-file-eye</v-icon>
+            <v-icon :color="ColorHelper.colorsHelper('primary')" size="30">mdi-view-grid</v-icon>
           </v-btn>
           </div>
         </template>
@@ -200,7 +147,7 @@
 </template>
 
 <script setup>
-import { useApplication, useSetupStore, useAuth, useGlobalStore } from '@/stores'
+import { useApplication, useSetupStore, useAuth, useGlobalStore, useProfile } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -255,11 +202,14 @@ const applicationStore = useApplication()
 const setupStore = useSetupStore()
 const authStore = useAuth()
 const globalStore = useGlobalStore()
+const profileStore = useProfile();
 
 // STATE & GETTERS
 const { applications, filteredApplication, totalItemsCount, itemCount, searchedAgainstAPI, nextPageToken, itemCountOnQuery } = storeToRefs(applicationStore)
 const { counties, categories } = storeToRefs(setupStore)
 const { loading, searchQuery, activeCommentable } = storeToRefs(globalStore)
+const {hostelRequests} = storeToRefs(profileStore);
+
 const { user } = storeToRefs(authStore)
 
 // VARIABLES OR COMPONENT STATE OR REFS
@@ -276,7 +226,9 @@ onMounted(() => {
     Object.keys(user.value).length &&
     ColorHelper.createRandonColor(Array.from(new Set(user.value?.categoriesFilter?.split('|'))))
 })
-
+onMounted(()=> {
+  profileStore.getHostelRequests();
+})
 onMounted(() => {
   switch (route.name) {
     case 'applications':
@@ -396,8 +348,11 @@ watch(
 )
 function viewApplication(item) {
   try {
+    profileStore.$patch({
+      profile: item,
+    })
     router.push({
-      name: 'application',
+      name: 'request',
       params: { id: btoa(item.id) },
       query: { queue: route.query?.queue }
     })
@@ -406,141 +361,6 @@ function viewApplication(item) {
   }
 }
 
-function batchAcceptApplications() {
-  try {
-    globalStore.setLoader(true)
-    if (!selected.value.length) {
-      useToast().error('No applications selected')
-      return globalStore.setLoader(false)
-    }
-    const applicationsAcceptable = selected.value.filter((app) => app.status === 'New')
-    if (!applicationsAcceptable.length) {
-      return globalStore.setLoader(false)
-    }
-
-    applicationStore
-      .batchAcceptApplications(applicationsAcceptable.map((app) => app.no))
-      .then((res) => {
-        useToast().success(res?.message)
-        globalStore.setLoader(false)
-        applicationStore.getApplications({ offset: 1, limit: 20 })
-      })
-      .catch((error) => {
-        globalStore.setLoader(false)
-        useToast().error(error?.response?.data?.message || error.message || customError)
-      })
-  } catch (error) {
-    globalStore.setLoader(false)
-    useToast().error(error.message)
-  } finally {
-    selected.value = []
-  }
-}
-
-function batchOnboardApplications() {
-  try {
-    globalStore.setLoader(true)
-    if (!selected.value.length) {
-      useToast().error('No applications selected')
-      return globalStore.setLoader(false)
-    }
-    const applicationsOnboardable = selected.value.filter((app) => app.status === 'Onboarded')
-    if (!applicationsOnboardable.length) {
-      return globalStore.setLoader(false)
-    }
-
-    applicationStore
-      .batchOnboardApplication(applicationsOnboardable.map((app) => app.no))
-      .then((res) => {
-        useToast().success(res?.message)
-        globalStore.setLoader(false)
-        onModalChange()
-      })
-      .catch((error) => {
-        globalStore.setLoader(false)
-        useToast().error(error?.response?.data?.message || error.message || customError)
-      })
-  } catch (error) {
-    globalStore.setLoader(false)
-    useToast().error(error.message)
-  } finally {
-    selected.value = []
-  }
-}
-
-function batchHRReviewApplications() {
-  try {
-    globalStore.setLoader(true)
-    if (!selected.value.length) {
-      useToast().error('No applications selected')
-      return globalStore.setLoader(false)
-    }
-    const reviewableApplications = selected.value.filter((app) => app.status === 'Approved')
-    if (!reviewableApplications.length) {
-      return globalStore.setLoader(false)
-    }
-
-    applicationStore
-      .batchHRReviewedApplication(reviewableApplications.map((app) => app.no))
-      .then((res) => {
-        useToast().success(res?.message)
-        globalStore.setLoader(false)
-        onModalChange()
-        
-      })
-      .catch((error) => {
-        globalStore.setLoader(false)
-        useToast().error(error?.response?.data?.message || error.message || customError)
-      })
-  } catch (error) {
-    globalStore.setLoader(false)
-    useToast().error(error.message)
-  } finally {
-    selected.value = []
-  }
-}
-
-function batchReverseOnboardedApplications() {
-  try {
-    globalStore.setLoader(true)
-    if (!selected.value.length) {
-      useToast().error('No applications selected')
-      return globalStore.setLoader(false)
-    }
-    const applicationsReversible = selected.value.filter(
-      (app) =>
-        app.status.trim() === 'Onboarded' && (app.onboardedBy.trim() === user.value.consoltium.trim() || user.value.role.trim().toLowerCase() === 'lead')
-    )
-    if (!applicationsReversible.length) {
-      globalStore.setLoader(false)
-      useToast().info(
-        'The applications you had selected for reversal were either reversed by another consortium other than yourself or are currently not having the onboraded status. Please select again!'
-      )
-      return
-    }
-
-    applicationStore
-      .batchReverseOnboardedApplications(applicationsReversible.map((app) => app.no))
-      .then((res) => {
-        useToast().success(res?.message)
-        globalStore.setLoader(false)
-        onModalChange()
-      })
-      .catch((error) => {
-        console.error(error)
-        globalStore.setLoader(false)
-        useToast().error(
-          'Sorry, We could not complete this process at this time. Please try again!'
-        )
-      })
-  } catch (error) {
-    globalStore.setLoader(false)
-    console.error(error)
-    useToast().error('Sorry, We  could not complete this process. Please try again!')
-  } finally {
-    selected.value = []
-  }
-}
 
 function resetApplicationList() {
   try {

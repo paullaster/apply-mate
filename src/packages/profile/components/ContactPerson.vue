@@ -4,7 +4,7 @@
                 <v-row class="my-4">
                     <v-col cols="12" lg="6">
                         <v-autocomplete
-                            v-model="contactPErson.title"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.title"
                             label="Title"
                             type="text"
                             variant="outlined"
@@ -16,7 +16,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="contactPErson.fullName"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.fullName"
                             label="Full Name"
                             type="text"
                             variant="outlined"
@@ -24,14 +24,14 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="contactPErson.eMail"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.eMail"
                             label="Email"
                             variant="outlined"
                         />
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="contactPErson.phone"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.phone"
                             label="Phone number"
                             type="text"
                             variant="outlined"
@@ -39,7 +39,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="contactPErson.address"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.address"
                             label="Address"
                             type="text"
                             variant="outlined"
@@ -51,18 +51,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useProfile } from '@/stores';
+import { storeToRefs } from 'pinia';
 
-// VARIABLES
-const contactPErson = ref(
-    {
-        title: "",
-        eMail: "",
-        fullName: "",
-        phone: "",
-        address: ""
-    }
-)
+// STORE
+const profileStore = useProfile();
+const { profileSections, activeProfileTabIndex } = storeToRefs(profileStore)
+
+
+
 const titles = [
     {
         code: "MR.",

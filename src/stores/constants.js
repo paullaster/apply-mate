@@ -10,9 +10,9 @@ export default {
 }
 
 export const hostelRequest = {
-    BIODATA: "/hostel/request/biodata",
-    CONTACT_INFO: "/hostel/request/contacts",
-    ACCOMMODATION_INFO: "hostel/request/accommodation",
+    BIODATA: "/hostel/request/",
+    CONTACT_INFO: "/hostel/request/contact",
+    ACCOMMODATION_INFO: "",
     LAND_INFO: "hostel/request/land",
     DECLARATION_FORM: "hostel/request/declare",
     SIGN_FORM: "hostel/request/completed"

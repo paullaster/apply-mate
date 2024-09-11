@@ -94,6 +94,9 @@ const router = useRouter()
 const profileStore = useProfile()
 const { profileSections, activeProfileTab } = storeToRefs(profileStore)
 
+
+// HOOKS
+
 // // COMPUTED
 
 // WATCHERS

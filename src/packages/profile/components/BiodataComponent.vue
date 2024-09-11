@@ -1,10 +1,10 @@
 <template>
         <v-card-text>
-            <v-form :ref="profileSections[0].formRef">
+            <v-form :ref="profileSections[activeProfileTabIndex].formRef">
                 <v-row class="my-4">
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="profileSections[0].vmodel.institutionName"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.institutionName"
                             label="Institution Name"
                             variant="outlined"
                             required
@@ -12,7 +12,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="profileSections[0].vmodel.campus"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.campus"
                             label="Branch/Campus"
                             type="text"
                             variant="outlined"
@@ -20,7 +20,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="profileSections[0].vmodel.durationEachSemester"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.durationEachSemester"
                             label="Duration of each semester (in months)"
                             type="text"
                             variant="outlined"
@@ -28,7 +28,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-autocomplete
-                            v-model="profileSections[0].vmodel.region"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.region"
                             label="Region"
                             type="text"
                             variant="outlined"
@@ -39,7 +39,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-autocomplete
-                            v-model="profileSections[0].vmodel.county"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.county"
                             label="County"
                             type="text"
                             variant="outlined"
@@ -50,7 +50,7 @@
                     </v-col>
                     <v-col cols="12" lg="6">
                         <v-text-field
-                            v-model="profileSections[0].vmodel.town"
+                            v-model="profileSections[activeProfileTabIndex].vmodel.town"
                             label="Town/City"
                             type="text"
                             variant="outlined"
@@ -69,7 +69,7 @@ import { storeToRefs } from 'pinia';
 const setupStore = useSetupStore();
 const profileStore = useProfile();
 const { counties } = storeToRefs(setupStore);
-const { profileSections } = storeToRefs(profileStore)
+const { profileSections, activeProfileTabIndex } = storeToRefs(profileStore)
 
 
 const regions = [

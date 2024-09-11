@@ -27,7 +27,6 @@ export const useProfile = defineStore('profile', {
                     town: ''
                 },
                 fn: (payload) => {
-                    console.log(payload);
                     useProfile().saveHostelRequesSection({
                         ...payload,
                         durationEachSemester: parseInt(payload.durationEachSemester),
@@ -43,15 +42,17 @@ export const useProfile = defineStore('profile', {
                 btnCaption: "Save Contact Information",
                 formRef: 'contactorForm',
                 vmodel: {
-                    institutionName: '',
-                    campus: '',
-                    durationEachSemester: '',
-                    region: '',
-                    county: '',
-                    town: ''
+                    title: "",
+                    eMail: "",
+                    fullName: "",
+                    phone: "",
+                    address: ""
                 },
                 fn: (payload) => {
-                    this.saveHostelRequesSection(payload);
+                    useProfile().saveHostelRequesSection({
+                        ...payload,
+                        documentNo: useProfile().profile.no
+                    }, 'POST');
                 }
             },
             {
@@ -174,11 +175,13 @@ export const useProfile = defineStore('profile', {
                 }
             }
 
-        }
+        },
+        hostelRequests: [],
 
     }),
     getters: {
         profileGetter: (state) => state.profile,
+        activeProfileTabIndex: (state) => state.profileSections.findIndex(section => section.value === state.activeProfileTab),
     },
     actions: {
         setLoading(payload) {
@@ -264,6 +267,61 @@ export const useProfile = defineStore('profile', {
                         },
                     });
                     break;
+                    case 'accommodationUnits':
+                    this.$patch({
+                        component: {
+                            status: true,
+                            description:"Add Accommodation Units Information",
+                            controls: {
+                                autocomplete: {
+                                    items: [
+                                        {
+                                            type: 'PENT HOUSE',
+                                            description: "Pent House",
+                                        },
+                                        {
+                                            type: "TWO SHARING",
+                                            description: "Two Sharing",
+                                        },
+                                        {
+                                            type: "FOUR SHARING",
+                                            description: "Four Sharing",
+                                        },
+                                    ],
+                                    label: "Accommodation Information",
+                                    item_value: "type",
+                                    item_title: "description",
+                                    type: "string",
+                                    required: true,
+                                    disabled: false,
+                                    options: [],
+                                },
+                                textField: {
+                                    type: 'number',
+                                    label: "Accommodation Units",
+                                    value: '',
+                                    required: true,
+                                    disabled: false,
+                                },
+                                vmodel: {
+                                    autocomplete: '',
+                                    textField: '',
+                                },
+                                actions: {
+                                    caption: "Submit",
+                                    disabled: false,
+                                    options: [],
+                                    color: ColorHelper.colorsHelper("primary"),
+                                    icon:  "mdi-send",
+                                    fn: async(payload)=>{
+                                        await this.submitStudentRecord(payload)
+                                        console.log(this.component)
+                                    }
+                                }
+                            }
+                        },
+                    });
+                    break;
                 default:
             }
         },
@@ -272,15 +330,18 @@ export const useProfile = defineStore('profile', {
                 profileRecordsLoadingStatus: true,
             });
         },
-        async saveHostelRequesSection(paylaod) {
+        async saveHostelRequesSection(paylaod, method = 'POST') {
             this.setLoading(true);
             _request.axiosRequest({
                 url: hostelRequest[this.activeProfileTab],
-                method: 'POST',
+                method: method,
                 data: paylaod,
             })
-            .then(() => {
+            .then((res) => {
                 this.setLoading(false);
+                this.$patch({
+                    profile: res.data,
+                });
                 useToast().success("Biodata information saved successfully!");
                 const currentTabIndex = this.profileSections.findIndex(
                     (tab) => tab.value === this.activeProfileTab
@@ -309,10 +370,11 @@ export const useProfile = defineStore('profile', {
             const data = {
                 yearOfStudy: parseInt(payload.autocomplete),
                 totalNo: parseInt(payload.textField),
+                documentNo: this.profile.no,
             }
             console.log(data)
             _request.axiosRequest({
-                url: '/student/record/add',
+                url: '/hostel/request/student',
                 method: 'POST',
                 data: data,
             })
@@ -328,6 +390,25 @@ export const useProfile = defineStore('profile', {
                 this.setDialogComponent('student');
             });
             
+        },
+        async getHostelRequests() {
+            this.setLoading(true);
+            _request.axiosRequest({
+                url: '/hostel/request/',
+                method: 'GET',
+            })
+           .then((res) => {
+             this.$patch({
+                 hostelRequests: res.data.value,
+                 profileRecordsLoadingStatus: false,
+             });
+             this.setLoading(false);
+           })
+            .catch((error) => {
+                console.error(error.message);
+                useToast().error("Error while fetching hostel requests");
+                this.setLoading(false);
+            });
         }
     }
 });
