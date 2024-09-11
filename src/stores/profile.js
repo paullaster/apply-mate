@@ -138,9 +138,10 @@ export const useProfile = defineStore('profile', {
         ],
         profile: {},
         profileRecordsLoadingStatus: false,
-        component: {
+        accommodationInformationDataRecord: [],
+        customComponent: {
             status: false,
-            description:"Add A Record",
+            description: "Add A Record",
             controls: {
                 autocomplete: {
                     items: [],
@@ -171,12 +172,13 @@ export const useProfile = defineStore('profile', {
                     options: [],
                     color: "",
                     iconColor: "",
-                    fn: function (v) { console.log(v);  },
+                    fn: function (v) { console.log(v); },
                 }
             }
 
         },
         hostelRequests: [],
+        studentDataRecord: [],
 
     }),
     getters: {
@@ -195,12 +197,12 @@ export const useProfile = defineStore('profile', {
             this.$patch({
                 profileRecordsLoadingStatus: false,
             });
-            switch(data) {
+            switch (data) {
                 case 'student':
                     this.$patch({
                         component: {
                             status: true,
-                            description:"Add Students Data",
+                            description: "Add Students Data",
                             controls: {
                                 autocomplete: {
                                     items: [
@@ -253,69 +255,182 @@ export const useProfile = defineStore('profile', {
                                     textField: '',
                                 },
                                 actions: {
-                                    caption: "Submit",
-                                    disabled: false,
-                                    options: [],
-                                    color: ColorHelper.colorsHelper("primary"),
-                                    icon:  "mdi-send",
-                                    fn: async(payload)=>{
-                                        await this.submitStudentRecord(payload)
-                                        console.log(this.component)
+                                    cancel: {
+                                        caption: "Cancel",
+                                        disabled: false,
+                                        options: [],
+                                        color: ColorHelper.colorsHelper("light"),
+                                        icon: "mdi-close-circle",
+                                        fn: async () => {
+                                            this.$patch({
+                                                component: {
+                                                    status: false,
+                                                    controls: {}
+                                                },
+                                            })
+                                        }
+                                    },
+                                    submit: {
+                                        caption: "Submit",
+                                        disabled: false,
+                                        options: [],
+                                        color: ColorHelper.colorsHelper("primary"),
+                                        icon: "mdi-send",
+                                        fn: async (payload) => {
+                                            await this.submitStudentRecord(payload)
+                                            console.log(this.component)
+                                        }
                                     }
                                 }
                             }
                         },
                     });
                     break;
-                    case 'accommodationUnits':
+                case 'accommodationUnits':
                     this.$patch({
-                        component: {
+                        customComponent: {
                             status: true,
-                            description:"Add Accommodation Units Information",
-                            controls: {
-                                autocomplete: {
-                                    items: [
-                                        {
-                                            type: 'PENT HOUSE',
-                                            description: "Pent House",
-                                        },
-                                        {
-                                            type: "TWO SHARING",
-                                            description: "Two Sharing",
-                                        },
-                                        {
-                                            type: "FOUR SHARING",
-                                            description: "Four Sharing",
-                                        },
-                                    ],
-                                    label: "Accommodation Information",
-                                    item_value: "type",
-                                    item_title: "description",
-                                    type: "string",
-                                    required: true,
+                            description: "Add Accommodation Units Information",
+                            controls: [
+                                {
+                                    prop: 'type',
+                                    component: 'v-autocomplete',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        items: [
+                                            {
+                                                type: 'Current',
+                                                description: "Current",
+                                            },
+                                            {
+                                                type: "Proposed",
+                                                description: "Proposed",
+                                            },
+                                        ],
+                                        label: "Proposed or Current Accommodation",
+                                        'item-value': "type",
+                                        'item-title': "description",
+                                        type: "string",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 12,
+                                },
+                                {
+                                    prop: 'hostType',
+                                    component: 'v-autocomplete',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        items: [
+                                            {
+                                                type: 'Student',
+                                                description: "Student Accommodation",
+                                            },
+                                            {
+                                                type: "Staff",
+                                                description: "Staff Accommodation",
+                                            },
+                                        ],
+                                        label: "For Students or Staff?",
+                                        'item-value': "type",
+                                        'item-title': "description",
+                                        type: "string",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 12,
+                                },
+                                {
+                                    prop: 'units',
+                                    component: 'v-text-field',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        type: 'number',
+                                        label: "Accommodation Units",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 6,
+                                },
+                                {
+                                    prop: 'capacity',
+                                    component: 'v-text-field',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        type: 'number',
+                                        label: "Capacity",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 6,
+                                },
+                                {
+                                    prop: 'chargesPerSemester',
+                                    component: 'v-text-field',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        type: 'number',
+                                        label: "Charges per Semester",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 12,
+                                },
+                                {
+                                    prop: 'description',
+                                    component: 'v-text-field',
+                                    model: '',
+                                    options: {
+                                        variant: 'outlined',
+                                        label: "Description",
+                                        required: true,
+                                        disabled: false,
+                                    },
+                                    cols: 12,
+                                }
+
+                            ],
+                            actions: {
+                                cancel: {
+                                    caption: "Cancel",
                                     disabled: false,
                                     options: [],
+                                    color: ColorHelper.colorsHelper("light"),
+                                    icon: "mdi-close-circle",
+                                    fn: async () => {
+                                        this.$patch({
+                                            component: {
+                                                status: false,
+                                                controls: {}
+                                            },
+                                        })
+                                    }
                                 },
-                                textField: {
-                                    type: 'number',
-                                    label: "Accommodation Units",
-                                    value: '',
-                                    required: true,
-                                    disabled: false,
-                                },
-                                vmodel: {
-                                    autocomplete: '',
-                                    textField: '',
-                                },
-                                actions: {
+                                submit: {
                                     caption: "Submit",
                                     disabled: false,
                                     options: [],
                                     color: ColorHelper.colorsHelper("primary"),
-                                    icon:  "mdi-send",
-                                    fn: async(payload)=>{
-                                        await this.submitStudentRecord(payload)
-                                        console.log(this.component)
+                                    icon: "mdi-send",
+                                    fn: async () => {
+                                        let payload = {};
+                                        this.customComponent.controls.forEach((control) => {
+                                            payload[control.prop] = control.model
+                                        })
+                                        payload['documentNo'] = this.profile.no;
+                                        payload = {
+                                            ...payload,
+                                            units: parseInt(payload.units),
+                                            capacity: parseInt(payload.capacity),
+                                            chargesPerSemester: parseInt(payload.chargesPerSemester),
+                                        }
+                                        console.log(payload)
+                                        await this.submitAccommodationRecord(payload)
                                     }
                                 }
                             }
@@ -325,10 +440,29 @@ export const useProfile = defineStore('profile', {
                 default:
             }
         },
-        async getStudentRecord(){
+        async getStudentRecord() {
+            this.setLoading(true);
             this.$patch({
                 profileRecordsLoadingStatus: true,
             });
+            _request.axiosRequest({
+                url: '/hostel/request/student',
+                method: 'GET',
+            })
+                .then((res) => {
+                    this.$patch({
+                        studentDataRecord: res.data.value,
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.setLoading(false);
+                })
+                .catch((error) => {
+                    this.$patch({
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.setLoading(false);
+                    useToast().error(error.message);
+                });
         },
         async saveHostelRequesSection(paylaod, method = 'POST') {
             this.setLoading(true);
@@ -337,31 +471,31 @@ export const useProfile = defineStore('profile', {
                 method: method,
                 data: paylaod,
             })
-            .then((res) => {
-                this.setLoading(false);
-                this.$patch({
-                    profile: res.data,
-                });
-                useToast().success("Biodata information saved successfully!");
-                const currentTabIndex = this.profileSections.findIndex(
-                    (tab) => tab.value === this.activeProfileTab
-                );
-                const state = {
-                    TAB: this.profileSections[currentTabIndex + 1],
-                    LAST: router.push({ name: 'requests'})
-                };
-                if (currentTabIndex >= this.profileSections.length - 1 || currentTabIndex < 0) {
-                    return state['LAST'];
-                };
-                this.$patch({
-                    activeProfileTab : state['TAB'].value,
+                .then((res) => {
+                    this.setLoading(false);
+                    this.$patch({
+                        profile: res.data,
+                    });
+                    useToast().success("Biodata information saved successfully!");
+                    const currentTabIndex = this.profileSections.findIndex(
+                        (tab) => tab.value === this.activeProfileTab
+                    );
+                    const state = {
+                        TAB: this.profileSections[currentTabIndex + 1],
+                        LAST: router.push({ name: 'requests' })
+                    };
+                    if (currentTabIndex >= this.profileSections.length - 1 || currentTabIndex < 0) {
+                        return state['LAST'];
+                    };
+                    this.$patch({
+                        activeProfileTab: state['TAB'].value,
+                    })
                 })
-            })
-            .catch((error) => {
-                console.error(error.message);
-                this.setLoading(true);
-                useToast().error("Error while saving information");
-            });
+                .catch((error) => {
+                    console.error(error.message);
+                    this.setLoading(true);
+                    useToast().error("Error while saving information");
+                });
         },
         async submitStudentRecord(payload) {
             this.$patch({
@@ -372,24 +506,83 @@ export const useProfile = defineStore('profile', {
                 totalNo: parseInt(payload.textField),
                 documentNo: this.profile.no,
             }
-            console.log(data)
             _request.axiosRequest({
                 url: '/hostel/request/student',
                 method: 'POST',
                 data: data,
             })
-           .then(() => {
-             this.$patch({
-                 profileRecordsLoadingStatus: false,
-             });
-             useToast().success("Student record submitted successfully!");
-           })
-            .catch((error) => {
-                console.error(error.message);
-                useToast().error("Error while submitting student record");
-                this.setDialogComponent('student');
+                .then(() => {
+                    this.$patch({
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.$patch({
+                        component: {
+                            status: false,
+                            controls: {}
+                        },
+                    });
+                    useToast().success("Student record submitted successfully!");
+                    this.getStudentRecord();
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                    useToast().error("Error while submitting student record");
+                    this.setDialogComponent('student');
+                });
+
+        },
+        async getAccommodationRecords(){
+            this.setLoading(true);
+            this.$patch({
+                profileRecordsLoadingStatus: true,
             });
-            
+            _request.axiosRequest({
+                url: '/hostel/request/accommodation',
+                method: 'GET',
+            })
+                .then((res) => {
+                    this.$patch({
+                        accommodationInformationDataRecord: res.data.value,
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.setLoading(false);
+                })
+                .catch((error) => {
+                    this.$patch({
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.setLoading(false);
+                    useToast().error(error.message);
+                });
+        },
+        async submitAccommodationRecord(payload) {
+            this.$patch({
+                profileRecordsLoadingStatus: true,
+            });
+            _request.axiosRequest({
+                url: '/hostel/request/accommodation',
+                method: 'POST',
+                data: payload,
+            })
+                .then(() => {
+                    this.$patch({
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.$patch({
+                        customComponent: {
+                            status: false,
+                            controls: []
+                        },
+                    });
+                    useToast().success("Accommodation record submitted successfully!");
+                    this.getAccommodationRecords();
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                    useToast().error("Error while submitting accommodation record");
+                    this.setDialogComponent('accommodationUnits');
+                });
+
         },
         async getHostelRequests() {
             this.setLoading(true);
@@ -397,18 +590,18 @@ export const useProfile = defineStore('profile', {
                 url: '/hostel/request/',
                 method: 'GET',
             })
-           .then((res) => {
-             this.$patch({
-                 hostelRequests: res.data.value,
-                 profileRecordsLoadingStatus: false,
-             });
-             this.setLoading(false);
-           })
-            .catch((error) => {
-                console.error(error.message);
-                useToast().error("Error while fetching hostel requests");
-                this.setLoading(false);
-            });
+                .then((res) => {
+                    this.$patch({
+                        hostelRequests: res.data.value,
+                        profileRecordsLoadingStatus: false,
+                    });
+                    this.setLoading(false);
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                    useToast().error("Error while fetching hostel requests");
+                    this.setLoading(false);
+                });
         }
     }
 });

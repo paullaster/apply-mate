@@ -17,7 +17,7 @@
               <span>Add students</span>
             </v-btn>
           </v-toolbar>
-          <v-data-table :headers="headers"> </v-data-table>
+          <v-data-table :headers="headers" :items="studentDataRecord"> </v-data-table>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -144,18 +144,21 @@ import { storeToRefs } from 'pinia'
 
 // STORE
 const profileStore = useProfile()
-const { profileRecordsLoadingStatus } = storeToRefs(profileStore)
+const { profileRecordsLoadingStatus, studentDataRecord } = storeToRefs(profileStore)
 
 // VARIABLES
 const headers = [
   { title: 'Year of Study', value: 'yearOfStudy' },
-  { title: 'Number of Student', value: 'count' },
+  { title: 'Number of Student', value: 'totalNo' },
   { title: 'Actions', value: 'action' }
 ]
 
 const bedsDataHeader = [
   { title: 'Type', value: 'type' },
+  { title: 'Accommodation Type', value: 'hostType' },
   { title: 'Units', value: 'units' },
+  {title: 'Capacity', value: 'capacity' },
+  { title: 'Charge/Semester', value: 'chargesPerSemester' },
   { title: 'Actions', value: 'action' }
 ]
 const staffAccommodationHeader = [

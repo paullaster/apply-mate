@@ -1,42 +1,51 @@
 <template>
-  <v-dialog v-model="component.status" max-width="500">
+  <v-dialog v-model="customComponent.status" max-width="500">
     <v-card style="padding: 1.6rem;">
-      <v-card-title class="my-3">{{component.description}}</v-card-title>
+      <v-card-title class="my-3">{{customComponent.description}}</v-card-title>
       <v-form>
         <v-row>
-          <v-col cols="12">
-            <v-autocomplete
-              :items="component.controls.autocomplete.items"
-              :label="component.controls.autocomplete.label"
-              v-model="component.controls.vmodel.autocomplete"
-              :item-title="component.controls.autocomplete.item_title"
-              :item-value="component.controls.autocomplete.item_value"
-              :type="component.controls.autocomplete.type"
-              variant="outlined"
-            />
-          </v-col>
-          <v-col cols="12">
-            <v-text-field
-              :label="component.controls.textField.label"
-              v-model="component.controls.vmodel.textField"
-              :type="component.controls.textField.type"
-              variant="outlined"
-            />
-          </v-col>
+          <template v-for=" (control) in customComponent.controls" :key="control.prop">
+            <v-col :cols="control.cols">
+              <component
+              :is="getCustomComponent(control.component)" 
+              :key="control.prop"
+              v-model="control.model"
+              v-bind="control.options"
+              />
+            </v-col>
+          </template>
           <v-col cols="12">
             <v-btn 
-            :color="component.controls.actions.color"
+            :color="customComponent.actions.cancel.color"
             :loading="profileRecordsLoadingStatus"
-            @click.prevent="component.controls.actions.fn(component.controls.vmodel)"
+            @click.prevent="customComponent.actions.cancel.fn()"
+            class="mr-3"
             
             >
             <template v-if="profileRecordsLoadingStatus">
               <v-icon>loading</v-icon>
             </template>
             <template v-else>
-              <v-icon :color="component.controls.actions.iconColor" class="mr-2">{{ component.controls.actions.icon }}</v-icon>
+              <v-icon :color="customComponent.actions.cancel.iconColor" class="mr-2">{{ customComponent.actions.cancel.icon }}</v-icon>
               <span>
-                {{ component.controls.actions.caption }}
+                {{ customComponent.actions.cancel.caption }}
+              </span>
+            </template>
+              
+            </v-btn>
+            <v-btn 
+            :color="customComponent.actions.submit.color"
+            :loading="profileRecordsLoadingStatus"
+            @click.prevent="customComponent.actions.submit.fn(customComponent.controls.vmodel)"
+            
+            >
+            <template v-if="profileRecordsLoadingStatus">
+              <v-icon>loading</v-icon>
+            </template>
+            <template v-else>
+              <v-icon :color="customComponent.actions.submit.iconColor" class="mr-2">{{ customComponent.actions.submit.icon }}</v-icon>
+              <span>
+                {{ customComponent.actions.submit.caption }}
               </span>
             </template>
               
@@ -51,8 +60,23 @@
 <script setup>
 import { useProfile } from '@/stores'
 import { storeToRefs } from 'pinia'
+import { VAutocomplete } from 'vuetify/components/VAutocomplete'
+import { VTextField } from 'vuetify/components/VTextField'
 
 // STORE
 const profileStore = useProfile()
-const { component, profileRecordsLoadingStatus } = storeToRefs(profileStore)
+const { customComponent, profileRecordsLoadingStatus } = storeToRefs(profileStore)
+
+// METHODS
+function getCustomComponent(component) {
+  switch (component) {
+    case 'v-autocomplete':
+      return VAutocomplete
+    case 'v-text-field':
+      return VTextField
+    default:
+      return null
+  }
+}
+
 </script>
