@@ -290,7 +290,7 @@ export const useProfile = defineStore('profile', {
                     this.$patch({
                         customComponent: {
                             status: true,
-                            description: "Add Accommodation Units Information",
+                            description: "Add Accommodation Information",
                             controls: [
                                 {
                                     prop: 'type',
@@ -404,9 +404,9 @@ export const useProfile = defineStore('profile', {
                                     icon: "mdi-close-circle",
                                     fn: async () => {
                                         this.$patch({
-                                            component: {
+                                            customComponent: {
                                                 status: false,
-                                                controls: {}
+                                                controls: []
                                             },
                                         })
                                     }
